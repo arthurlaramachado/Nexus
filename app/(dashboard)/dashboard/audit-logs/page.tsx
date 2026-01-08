@@ -102,7 +102,7 @@ export default async function AuditLogsPage({
 
   // Map to format expected by filter component
   const filterUsers = (users || []).map((u: any) => ({
-    id: u.user_id, // Filter expects 'id' but we filter by user_id on audit_logs
+    user_id: u.user_id,
     full_name: u.full_name
   }))
 
