@@ -23,8 +23,16 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
   const { data: assignments } = await supabase
     .from('contract_assignments')
     .select('*, collaborators(*, roles!collaborators_role_id_fkey(*))')
-    .eq('contract_id', params.id)
-    .order('assignment_start_date', { ascending: false })
+    .eq('contract_id', id)
+    .order('start_date', { ascending: false })
+
+  const transformedAssignments = (assignments || []).map((a: any) => ({
+    ...a,
+    collaborators: a.collaborators ? {
+      ...a.collaborators,
+      roles: Array.isArray(a.collaborators.roles) ? a.collaborators.roles[0] || null : a.collaborators.roles
+    } : null
+  }))
 
   return (
     <div>
@@ -103,7 +111,7 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
       </div>
 
       <Card title="Collaborators">
-        {assignments && assignments.length > 0 ? (
+        {transformedAssignments && transformedAssignments.length > 0 ? (
           <Table>
             <TableHead>
               <TableRow>
@@ -116,7 +124,7 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
               </TableRow>
             </TableHead>
             <TableBody>
-              {assignments.map((assignment: any) => (
+              {transformedAssignments.map((assignment: any) => (
                 <TableRow key={assignment.id}>
                   <TableCell>
                     <Link
@@ -130,11 +138,11 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
                     {assignment.collaborators?.roles?.name || '-'}
                   </TableCell>
                   <TableCell>
-                    {new Date(assignment.assignment_start_date).toLocaleDateString()}
+                    {new Date(assignment.start_date).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
-                    {assignment.assignment_end_date
-                      ? new Date(assignment.assignment_end_date).toLocaleDateString()
+                    {assignment.end_date
+                      ? new Date(assignment.end_date).toLocaleDateString()
                       : 'Active'}
                   </TableCell>
                   <TableCell>

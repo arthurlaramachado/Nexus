@@ -17,9 +17,14 @@ export default async function EditContractAssignmentPage({ params }: { params: P
 
   const [contractsResult, collaboratorsResult, clientsResult] = await Promise.all([
     supabase.from('contracts').select('id, name, client_id').order('name'),
-    supabase.from('collaborators').select('id, full_name, role_id, roles(*)').order('full_name'),
+    supabase.from('collaborators').select('id, full_name, role_id, roles(name)').order('full_name'),
     supabase.from('clients').select('id, name').order('name'),
   ])
+
+  const transformedCollaborators = (collaboratorsResult.data || []).map((c: any) => ({
+    ...c,
+    roles: Array.isArray(c.roles) ? c.roles[0] || null : c.roles
+  }))
 
   return (
     <div>
@@ -28,7 +33,7 @@ export default async function EditContractAssignmentPage({ params }: { params: P
         assignment={assignment}
         contracts={contractsResult.data || []}
         clients={clientsResult.data || []}
-        collaborators={collaboratorsResult.data || []}
+        collaborators={transformedCollaborators}
       />
     </div>
   )

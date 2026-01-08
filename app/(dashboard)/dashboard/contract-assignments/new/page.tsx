@@ -10,9 +10,14 @@ export default async function NewContractAssignmentPage({
   const supabase = await createClient()
   const [contractsResult, collaboratorsResult, clientsResult] = await Promise.all([
     supabase.from('contracts').select('id, name, client_id').order('name'),
-    supabase.from('collaborators').select('id, full_name, role_id, roles(*)').order('full_name'),
+    supabase.from('collaborators').select('id, full_name, role_id, roles(name)').order('full_name'),
     supabase.from('clients').select('id, name').order('name'),
   ])
+
+  const transformedCollaborators = (collaboratorsResult.data || []).map((c: any) => ({
+    ...c,
+    roles: Array.isArray(c.roles) ? c.roles[0] || null : c.roles
+  }))
 
   return (
     <div>
@@ -20,7 +25,7 @@ export default async function NewContractAssignmentPage({
       <ContractAssignmentForm
         contracts={contractsResult.data || []}
         clients={clientsResult.data || []}
-        collaborators={collaboratorsResult.data || []}
+        collaborators={transformedCollaborators}
         defaultContractId={contract_id}
         defaultCollaboratorId={collaborator_id}
       />

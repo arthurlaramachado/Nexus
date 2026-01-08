@@ -23,7 +23,7 @@ export default async function CollaboratorDetailPage({ params }: { params: Promi
   const { data: assignments } = await supabase
     .from('contract_assignments')
     .select('*, contracts(*, clients(name))')
-    .eq('collaborator_id', params.id)
+    .eq('collaborator_id', id)
     .order('start_date', { ascending: false })
 
   return (
@@ -40,7 +40,7 @@ export default async function CollaboratorDetailPage({ params }: { params: Promi
             </Badge>
           </div>
         </div>
-        <Link href={`/dashboard/collaborators/${params.id}/edit`}>
+        <Link href={`/dashboard/collaborators/${id}/edit`}>
           <Button>Edit Collaborator</Button>
         </Link>
       </div>
@@ -123,7 +123,7 @@ export default async function CollaboratorDetailPage({ params }: { params: Promi
           <p className="text-gray-500">No contract assignments found for this collaborator.</p>
         )}
         <div className="mt-4">
-          <Link href={`/dashboard/contract-assignments/new?collaborator_id=${params.id}`}>
+          <Link href={`/dashboard/contract-assignments/new?collaborator_id=${id}`}>
             <Button>Assign to Contract</Button>
           </Link>
         </div>

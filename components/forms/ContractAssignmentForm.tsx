@@ -24,8 +24,6 @@ interface ContractAssignmentFormProps {
   }>
   defaultContractId?: string
   defaultCollaboratorId?: string
-  onSuccess?: () => void
-  onCancel?: () => void
 }
 
 export default function ContractAssignmentForm({
@@ -35,8 +33,6 @@ export default function ContractAssignmentForm({
   collaborators,
   defaultContractId,
   defaultCollaboratorId,
-  onSuccess,
-  onCancel
 }: ContractAssignmentFormProps) {
   const router = useRouter()
   const supabase = createClient()
@@ -118,12 +114,9 @@ export default function ContractAssignmentForm({
         if (insertError) throw insertError
       }
 
-      if (onSuccess) {
-        onSuccess()
-      } else {
-        router.push('/dashboard/contract-assignments')
-        router.refresh()
-      }
+      router.push('/dashboard/contract-assignments')
+      // Also invalidate contracts/collaborators pages if needed
+      router.refresh()
     } catch (err: any) {
       console.error(err)
       setError(err.message || 'An error occurred')
@@ -225,7 +218,7 @@ export default function ContractAssignmentForm({
         <Button
           type="button"
           variant="outline"
-          onClick={() => onCancel ? onCancel() : router.back()}
+          onClick={() => router.back()}
         >
           Cancel
         </Button>

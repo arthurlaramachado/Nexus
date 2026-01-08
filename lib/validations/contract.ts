@@ -8,8 +8,7 @@ export const contractSchema = z.object({
   start_date: z.string().min(1, 'Start date is required'),
   end_date: z.string().optional(),
   renewal_date: z.string().optional(),
-  contract_value: z.string().optional().transform((val) => (val ? parseFloat(val) : null)),
+  contract_value: z.string().optional(),
 })
 
 export type ContractFormData = z.infer<typeof contractSchema>
-

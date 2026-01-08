@@ -64,7 +64,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
             </div>
             <div className="flex items-center">
               <span className="text-sm text-gray-700 mr-4">
-                {collaborator?.full_name || 'User'} ({collaborator?.role || 'N/A'})
+                {collaborator?.full_name || 'User'} ({collaborator?.roles?.name || 'N/A'})
               </span>
               <SignOutButton />
             </div>

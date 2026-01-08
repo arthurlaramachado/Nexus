@@ -16,11 +16,9 @@ interface ContractFormProps {
   contract?: Contract
   clients: Array<{ id: string; name: string }>
   defaultClientId?: string
-  onSuccess?: () => void
-  onCancel?: () => void
 }
 
-export default function ContractForm({ contract, clients, defaultClientId, onSuccess, onCancel }: ContractFormProps) {
+export default function ContractForm({ contract, clients, defaultClientId }: ContractFormProps) {
   const router = useRouter()
   const supabase = createClient()
   const [error, setError] = useState<string | null>(null)
@@ -92,12 +90,8 @@ export default function ContractForm({ contract, clients, defaultClientId, onSuc
         if (insertError) throw insertError
       }
 
-      if (onSuccess) {
-        onSuccess()
-      } else {
-        router.push('/dashboard/contracts')
-        router.refresh()
-      }
+      router.push('/dashboard/contracts')
+      router.refresh()
     } catch (err: any) {
       setError(err.message || 'An error occurred')
     } finally {
@@ -192,7 +186,7 @@ export default function ContractForm({ contract, clients, defaultClientId, onSuc
         <Button
           type="button"
           variant="outline"
-          onClick={() => onCancel ? onCancel() : router.back()}
+          onClick={() => router.back()}
         >
           Cancel
         </Button>

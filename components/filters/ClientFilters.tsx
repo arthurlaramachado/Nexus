@@ -1,12 +1,12 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import Input from '@/components/ui/Input'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
 
-export default function ClientFilters() {
+function ClientFiltersContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [status, setStatus] = useState(searchParams.get('status') || '')
@@ -50,5 +50,13 @@ export default function ClientFilters() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function ClientFilters() {
+  return (
+    <Suspense fallback={<div className="bg-white p-4 rounded-lg shadow border border-gray-200">Loading filters...</div>}>
+      <ClientFiltersContent />
+    </Suspense>
   )
 }

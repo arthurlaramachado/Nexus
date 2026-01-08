@@ -41,9 +41,12 @@ export default async function ReportsPage() {
   const collaboratorWorkload = assignments?.reduce((acc: any, a: any) => {
     const collabId = a.collaborator_id
     if (!acc[collabId]) {
+      const roles = a.collaborators?.roles
+      const roleName = Array.isArray(roles) ? roles[0]?.name : roles?.name
+      
       acc[collabId] = {
         name: a.collaborators?.full_name,
-        role: a.collaborators?.roles?.name,
+        role: roleName,
         count: 0
       }
     }

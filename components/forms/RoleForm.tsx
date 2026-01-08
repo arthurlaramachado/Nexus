@@ -13,11 +13,9 @@ import { Role } from '@/types/database'
 
 interface RoleFormProps {
   role?: Role
-  onSuccess?: () => void
-  onCancel?: () => void
 }
 
-export default function RoleForm({ role, onSuccess, onCancel }: RoleFormProps) {
+export default function RoleForm({ role }: RoleFormProps) {
   const router = useRouter()
   const supabase = createClient()
   const [error, setError] = useState<string | null>(null)
@@ -64,12 +62,8 @@ export default function RoleForm({ role, onSuccess, onCancel }: RoleFormProps) {
         if (insertError) throw insertError
       }
 
-      if (onSuccess) {
-        onSuccess()
-      } else {
-        router.push('/dashboard/roles')
-        router.refresh()
-      }
+      router.push('/dashboard/roles')
+      router.refresh()
     } catch (err: any) {
       setError(err.message || 'An error occurred')
     } finally {
@@ -99,7 +93,7 @@ export default function RoleForm({ role, onSuccess, onCancel }: RoleFormProps) {
         <Button
           type="button"
           variant="outline"
-          onClick={() => onCancel ? onCancel() : router.back()}
+          onClick={() => router.back()}
         >
           Cancel
         </Button>

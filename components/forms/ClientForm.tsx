@@ -32,7 +32,13 @@ export default function ClientForm({ client, onSuccess, onCancel }: ClientFormPr
     formState: { errors },
   } = useForm<ClientFormData>({
     resolver: zodResolver(clientSchema),
-    defaultValues: client || {
+    defaultValues: client ? {
+      name: client.name,
+      status: client.status,
+      country: client.country || undefined,
+      city: client.city || undefined,
+      unique_identifier: client.unique_identifier || undefined,
+    } : {
       name: '',
       status: 'active',
       country: '',

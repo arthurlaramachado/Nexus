@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import Input from '@/components/ui/Input'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
@@ -11,7 +11,7 @@ interface AuditLogFiltersProps {
   tableNames: string[]
 }
 
-export default function AuditLogFilters({ users, tableNames }: AuditLogFiltersProps) {
+function AuditLogFiltersContent({ users, tableNames }: AuditLogFiltersProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [userId, setUserId] = useState(searchParams.get('user_id') || '')
@@ -90,6 +90,14 @@ export default function AuditLogFilters({ users, tableNames }: AuditLogFiltersPr
         </div>
       </div>
     </div>
+  )
+}
+
+export default function AuditLogFilters(props: AuditLogFiltersProps) {
+  return (
+    <Suspense fallback={<div className="bg-white p-4 rounded-lg shadow">Loading filters...</div>}>
+      <AuditLogFiltersContent {...props} />
+    </Suspense>
   )
 }
 

@@ -15,11 +15,9 @@ import { Collaborator } from '@/types/database'
 interface CollaboratorFormProps {
   collaborator?: Collaborator
   roles: Array<{ id: string; name: string }>
-  onSuccess?: () => void
-  onCancel?: () => void
 }
 
-export default function CollaboratorForm({ collaborator, roles, onSuccess, onCancel }: CollaboratorFormProps) {
+export default function CollaboratorForm({ collaborator, roles }: CollaboratorFormProps) {
   const router = useRouter()
   const supabase = createClient()
   const [error, setError] = useState<string | null>(null)
@@ -75,12 +73,8 @@ export default function CollaboratorForm({ collaborator, roles, onSuccess, onCan
         if (insertError) throw insertError
       }
 
-      if (onSuccess) {
-        onSuccess()
-      } else {
-        router.push('/dashboard/collaborators')
-        router.refresh()
-      }
+      router.push('/dashboard/collaborators')
+      router.refresh()
     } catch (err: any) {
       setError(err.message || 'An error occurred')
     } finally {
@@ -139,7 +133,7 @@ export default function CollaboratorForm({ collaborator, roles, onSuccess, onCan
         <Button
           type="button"
           variant="outline"
-          onClick={() => onCancel ? onCancel() : router.back()}
+          onClick={() => router.back()}
         >
           Cancel
         </Button>

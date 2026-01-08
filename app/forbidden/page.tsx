@@ -4,7 +4,11 @@ import { getUserCollaborator } from '@/lib/auth/helpers'
 
 export default async function ForbiddenPage() {
   const collaborator = await getUserCollaborator()
-  const role = collaborator?.role || 'Nenhum'
+  
+  // Handle roles potentially being an array or object
+  const roles = (collaborator as any)?.roles
+  const roleName = Array.isArray(roles) ? roles[0]?.name : roles?.name
+  const role = roleName || 'Nenhum'
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">

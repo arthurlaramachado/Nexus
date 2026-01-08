@@ -1,8 +1,12 @@
 import { createClient } from '@/lib/supabase/server'
+import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '@/components/ui/Table'
+import Badge from '@/components/ui/Badge'
 import AuditLogFilters from '@/components/filters/AuditLogFilters'
-import AuditLogsTable from '@/components/features/audit-logs/AuditLogsTable'
+import AuditChanges from '@/components/audit/AuditChanges'
 import {
   calculateTimeDifference,
+  formatTimeDifference,
+  getTimeDifferenceBadgeVariant,
 } from '@/lib/audit/calculations'
 
 export default async function AuditLogsPage({
@@ -122,7 +126,77 @@ export default async function AuditLogsPage({
       <AuditLogFilters users={filterUsers} tableNames={tableNames} />
 
       <div className="mt-6">
-        <AuditLogsTable logs={enrichedLogs} />
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableHeader>Date & Time</TableHeader>
+              <TableHeader>User</TableHeader>
+              <TableHeader>Table</TableHeader>
+              <TableHeader>Action</TableHeader>
+              <TableHeader>Record ID</TableHeader>
+              <TableHeader>Time Difference</TableHeader>
+              <TableHeader>Changes</TableHeader>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {enrichedLogs && enrichedLogs.length > 0 ? (
+              enrichedLogs.map((log: any) => (
+                <TableRow key={log.id}>
+                  <TableCell>
+                    {new Date(log.created_at).toLocaleString()}
+                  </TableCell>
+                  <TableCell>
+                    {log.collaborator?.full_name || log.user_id || 'System'}
+                  </TableCell>
+                  <TableCell>{log.table_name}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        log.action === 'insert'
+                          ? 'success'
+                          : log.action === 'update'
+                          ? 'info'
+                          : 'danger'
+                      }
+                    >
+                      {log.action}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="font-mono text-xs">
+                    {log.record_id.substring(0, 8)}...
+                  </TableCell>
+                  <TableCell>
+                    {log.timeDifference !== null ? (
+                      <div>
+                        <Badge variant={getTimeDifferenceBadgeVariant(log.timeDifference)}>
+                          {formatTimeDifference(log.timeDifference)}
+                        </Badge>
+                        {log.timeDifferenceField && (
+                          <div className="text-xs text-gray-500 mt-1">
+                            ({log.timeDifferenceField})
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-gray-400">-</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <div className="max-w-lg">
+                      <AuditChanges changes={log.changes} action={log.action} />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center text-gray-500 py-8">
+                  No audit logs found
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </div>
     </div>
   )

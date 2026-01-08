@@ -1,5 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
-import ContractAssignmentsTable from '@/components/features/contract-assignments/ContractAssignmentsTable'
+import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '@/components/ui/Table'
+import Badge from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
+import Link from 'next/link'
 
 export default async function ContractAssignmentsPage({
   searchParams,
@@ -13,7 +16,7 @@ export default async function ContractAssignmentsPage({
     .from('contract_assignments')
     .select(`
       *,
-      contracts (name, clients(name)),
+      contracts (name),
       collaborators (full_name)
     `)
     .order('start_date', { ascending: false })
@@ -27,41 +30,80 @@ export default async function ContractAssignmentsPage({
 
   const { data: assignments, error } = await query
 
-  // Fetch data for form
-  const { data: contracts } = await supabase
-    .from('contracts')
-    .select('id, name, client_id')
-    .eq('status', 'active')
-    .order('name')
-    
-  const { data: clients } = await supabase
-    .from('clients')
-    .select('id, name')
-    .eq('status', 'active')
-    .order('name')
-
-  const { data: collaborators } = await supabase
-    .from('collaborators')
-    .select(`
-      id, 
-      full_name, 
-      role_id,
-      roles (name)
-    `)
-    .eq('status', 'active')
-    .order('full_name')
-
   if (error) {
     return <div>Error loading assignments: {error.message}</div>
   }
 
   return (
-    <ContractAssignmentsTable
-      initialAssignments={assignments || []}
-      contracts={contracts || []}
-      clients={clients || []}
-      collaborators={collaborators || []}
-    />
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">Contract Assignments</h1>
+        <Link href="/dashboard/contract-assignments/new">
+          <Button>New Assignment</Button>
+        </Link>
+      </div>
+
+      <div>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableHeader>Contract</TableHeader>
+              <TableHeader>Collaborator</TableHeader>
+              <TableHeader>Role</TableHeader>
+              <TableHeader>Start Date</TableHeader>
+              <TableHeader>End Date</TableHeader>
+              <TableHeader>Allocation</TableHeader>
+              <TableHeader>Actions</TableHeader>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {assignments && assignments.length > 0 ? (
+              assignments.map((assignment: any) => (
+                <TableRow key={assignment.id}>
+                  <TableCell>
+                    <Link
+                      href={`/dashboard/contracts/${assignment.contract_id}`}
+                      className="text-indigo-600 hover:text-indigo-900"
+                    >
+                      {assignment.contracts?.name}
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    <Link
+                      href={`/dashboard/collaborators/${assignment.collaborator_id}`}
+                      className="text-indigo-600 hover:text-indigo-900"
+                    >
+                      {assignment.collaborators?.full_name}
+                    </Link>
+                  </TableCell>
+                  <TableCell>{assignment.role_on_contract || '-'}</TableCell>
+                  <TableCell>{new Date(assignment.start_date).toLocaleDateString()}</TableCell>
+                  <TableCell>
+                    {assignment.end_date ? new Date(assignment.end_date).toLocaleDateString() : (
+                      <Badge variant="success">Active</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>{assignment.allocation_percentage ? `${assignment.allocation_percentage}%` : '-'}</TableCell>
+                  <TableCell>
+                    <Link href={`/dashboard/contract-assignments/${assignment.id}/edit`}>
+                      <Button variant="outline" className="text-sm">
+                        Edit
+                      </Button>
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center text-gray-500 py-8">
+                  No assignments found
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
   )
 }
 

@@ -37,6 +37,9 @@ export interface Collaborator {
   organizations?: Organization
 }
 
+// Alias for UserProfile to match usage in utils
+export type UserProfile = Collaborator
+
 export interface Client {
   id: string
   organization_id: string
