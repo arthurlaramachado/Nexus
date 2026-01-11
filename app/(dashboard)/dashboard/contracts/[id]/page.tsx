@@ -5,6 +5,7 @@ import Button from '@/components/ui/Button'
 import Link from 'next/link'
 import Card from '@/components/ui/Card'
 import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '@/components/ui/Table'
+import { PencilIcon, UserPlusIcon } from '@heroicons/react/24/outline'
 
 export default async function ContractDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -36,7 +37,7 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-start mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">{contract.name}</h1>
           <div className="mt-2 flex gap-2">
@@ -55,121 +56,122 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
           </div>
         </div>
         <Link href={`/dashboard/contracts/${id}/edit`}>
-          <Button>Edit Contract</Button>
+          <Button variant="outline" size="sm" className="flex items-center gap-2">
+            <PencilIcon className="w-4 h-4" />
+            Edit Contract
+          </Button>
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <Card title="Contract Information">
-          <dl className="space-y-4">
-            <div>
-              <dt className="text-sm font-medium text-gray-500">Client</dt>
-              <dd className="mt-1 text-sm text-gray-900">
-                <Link
-                  href={`/dashboard/clients/${contract.client_id}`}
-                  className="text-indigo-600 hover:text-indigo-900"
-                >
-                  {(contract.clients as any)?.name || '-'}
-                </Link>
-              </dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-gray-500">Contract Type</dt>
-              <dd className="mt-1 text-sm text-gray-900">{contract.contract_type}</dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-gray-500">Start Date</dt>
-              <dd className="mt-1 text-sm text-gray-900">
-                {new Date(contract.start_date).toLocaleDateString()}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-gray-500">End Date</dt>
-              <dd className="mt-1 text-sm text-gray-900">
-                {contract.end_date ? new Date(contract.end_date).toLocaleDateString() : '-'}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-gray-500">Renewal Date</dt>
-              <dd className="mt-1 text-sm text-gray-900">
-                {contract.renewal_date ? new Date(contract.renewal_date).toLocaleDateString() : '-'}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-gray-500">Contract Value</dt>
-              <dd className="mt-1 text-sm text-gray-900">
-                {contract.contract_value
-                  ? new Intl.NumberFormat('en-US', {
-                      style: 'currency',
-                      currency: 'USD',
-                    }).format(contract.contract_value)
-                  : '-'}
-              </dd>
-            </div>
-          </dl>
-        </Card>
-      </div>
-
-      <Card title="Collaborators">
-        {transformedAssignments && transformedAssignments.length > 0 ? (
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableHeader>Name</TableHeader>
-                <TableHeader>Role</TableHeader>
-                <TableHeader>Start Date</TableHeader>
-                <TableHeader>End Date</TableHeader>
-                <TableHeader>Allocation</TableHeader>
-                <TableHeader>Actions</TableHeader>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {transformedAssignments.map((assignment: any) => (
-                <TableRow key={assignment.id}>
-                  <TableCell>
-                    <Link
-                      href={`/dashboard/collaborators/${assignment.collaborator_id}`}
-                      className="text-indigo-600 hover:text-indigo-900"
-                    >
-                      {assignment.collaborators?.full_name || '-'}
-                    </Link>
-                  </TableCell>
-                  <TableCell>
-                    {assignment.collaborators?.roles?.name || '-'}
-                  </TableCell>
-                  <TableCell>
-                    {new Date(assignment.start_date).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    {assignment.end_date
-                      ? new Date(assignment.end_date).toLocaleDateString()
-                      : 'Active'}
-                  </TableCell>
-                  <TableCell>
-                    {assignment.allocation_percentage
-                      ? `${assignment.allocation_percentage}%`
-                      : '-'}
-                  </TableCell>
-                  <TableCell>
-                    <Link href={`/dashboard/contract-assignments/${assignment.id}/edit`}>
-                      <Button variant="outline" className="text-sm">
-                        Edit
-                      </Button>
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <p className="text-gray-500">No collaborators assigned to this contract.</p>
-        )}
-        <div className="mt-4">
-          <Link href={`/dashboard/contract-assignments/new?contract_id=${id}`}>
-            <Button>Assign Collaborator</Button>
-          </Link>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="md:col-span-1">
+          <Card title="Contract Information">
+            <dl className="space-y-4">
+              <div>
+                <dt className="text-sm font-medium text-gray-500">Client</dt>
+                <dd className="mt-1 text-sm text-gray-900">
+                  <Link
+                    href={`/dashboard/clients/${contract.client_id}`}
+                    className="text-indigo-600 hover:text-indigo-900 font-semibold"
+                  >
+                    {(contract.clients as any)?.name || '-'}
+                  </Link>
+                </dd>
+              </div>
+              <div>
+                <dt className="text-sm font-medium text-gray-500">Dates</dt>
+                <dd className="mt-1 text-sm text-gray-900 space-y-1">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Start:</span>
+                    <span>{new Date(contract.start_date).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">End:</span>
+                    <span>{contract.end_date ? new Date(contract.end_date).toLocaleDateString() : 'N/A'}</span>
+                  </div>
+                </dd>
+              </div>
+              <div>
+                <dt className="text-sm font-medium text-gray-500">Value</dt>
+                <dd className="mt-1 text-lg font-bold text-gray-900">
+                  {contract.contract_value
+                    ? new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                      }).format(contract.contract_value)
+                    : '-'}
+                </dd>
+              </div>
+            </dl>
+          </Card>
         </div>
-      </Card>
+
+        <div className="md:col-span-2">
+          <Card 
+            title="Team Assignments" 
+            headerAction={
+              <Link href={`/dashboard/contract-assignments/new?contract_id=${id}`}>
+                <Button size="sm" className="flex items-center gap-2">
+                  <UserPlusIcon className="w-4 h-4" />
+                  Assign
+                </Button>
+              </Link>
+            }
+          >
+            {transformedAssignments && transformedAssignments.length > 0 ? (
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableHeader>Name</TableHeader>
+                    <TableHeader>Role</TableHeader>
+                    <TableHeader>Period</TableHeader>
+                    <TableHeader>Alloc.</TableHeader>
+                    <TableHeader>Actions</TableHeader>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {transformedAssignments.map((assignment: any) => (
+                    <TableRow key={assignment.id}>
+                      <TableCell>
+                        <Link
+                          href={`/dashboard/collaborators/${assignment.collaborator_id}`}
+                          className="text-indigo-600 hover:text-indigo-900 font-medium"
+                        >
+                          {assignment.collaborators?.full_name || '-'}
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="info" className="text-[10px] uppercase">
+                          {assignment.collaborators?.roles?.name || '-'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-xs text-gray-500">
+                        {new Date(assignment.start_date).toLocaleDateString()} - {assignment.end_date ? new Date(assignment.end_date).toLocaleDateString() : 'Present'}
+                      </TableCell>
+                      <TableCell className="font-semibold">
+                        {assignment.allocation_percentage
+                          ? `${assignment.allocation_percentage}%`
+                          : '-'}
+                      </TableCell>
+                      <TableCell>
+                        <Link href={`/dashboard/contract-assignments/${assignment.id}/edit`}>
+                          <Button variant="outline" size="sm" className="p-1.5">
+                            <PencilIcon className="w-3.5 h-3.5" />
+                          </Button>
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <div className="py-12 text-center">
+                <p className="text-gray-500 italic">No collaborators assigned yet.</p>
+              </div>
+            )}
+          </Card>
+        </div>
+      </div>
     </div>
   )
 }

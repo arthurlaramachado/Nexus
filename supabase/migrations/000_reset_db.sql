@@ -13,6 +13,7 @@ DROP TRIGGER IF EXISTS audit_contracts ON contracts;
 DROP TRIGGER IF EXISTS audit_assignments ON contract_assignments;
 DROP TRIGGER IF EXISTS audit_tags ON tags;
 DROP TRIGGER IF EXISTS audit_client_tags ON client_tags;
+DROP TRIGGER IF EXISTS audit_role_permissions ON role_permissions;
 
 DROP TRIGGER IF EXISTS update_orgs_modtime ON organizations;
 DROP TRIGGER IF EXISTS update_collabs_modtime ON collaborators;
@@ -24,6 +25,7 @@ DROP TRIGGER IF EXISTS update_assignments_modtime ON contract_assignments;
 DROP FUNCTION IF EXISTS handle_new_user CASCADE;
 DROP FUNCTION IF EXISTS generate_client_identifier CASCADE;
 DROP FUNCTION IF EXISTS is_org_member CASCADE;
+DROP FUNCTION IF EXISTS has_permission CASCADE;
 DROP FUNCTION IF EXISTS audit_trigger_function CASCADE;
 DROP FUNCTION IF EXISTS update_updated_at_column CASCADE;
 
@@ -34,6 +36,7 @@ DROP TABLE IF EXISTS contracts CASCADE;
 DROP TABLE IF EXISTS client_tags CASCADE;
 DROP TABLE IF EXISTS tags CASCADE;
 DROP TABLE IF EXISTS clients CASCADE;
+DROP TABLE IF EXISTS role_permissions CASCADE;
 DROP TABLE IF EXISTS collaborators CASCADE;
 DROP TABLE IF EXISTS roles CASCADE;
 DROP TABLE IF EXISTS organizations CASCADE;
@@ -47,4 +50,3 @@ DROP TYPE IF EXISTS audit_action CASCADE;
 
 -- 5. Drop Extensions (Optional, usually kept)
 -- DROP EXTENSION IF EXISTS "uuid-ossp";
-

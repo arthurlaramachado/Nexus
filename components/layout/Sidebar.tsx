@@ -7,10 +7,9 @@ import { getFilteredNavigation } from '@/lib/navigation'
 import { getUserRoleName, getUserCollaborator } from '@/lib/auth/helpers'
 
 export default async function Sidebar() {
-  const roleName = await getUserRoleName()
   const collaborator = await getUserCollaborator()
   const email = collaborator?.email || null
-  const navItems = getFilteredNavigation(roleName)
+  const navItems = await getFilteredNavigation()
 
   return (
     <div className="hidden lg:flex fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 flex-col shadow-sm z-50">

@@ -12,3 +12,4 @@ export default function PageLoader({ message = 'Loading...' }: PageLoaderProps) 
     </div>
   )
 }
+

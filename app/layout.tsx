@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import "./globals.css";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
 import { ToastProvider } from "@/components/ui/Toast";
+import { AppProvider } from "@/components/providers/AppProvider";
 
 export const metadata: Metadata = {
-  title: "Customer Success Management",
+  title: "Nexus",
   description: "Customer Success & Contract Management Application",
 };
 
@@ -16,9 +17,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ToastProvider>
-          <ErrorBoundary>{children}</ErrorBoundary>
-        </ToastProvider>
+        <AppProvider>
+          <ToastProvider>
+            <ErrorBoundary>{children}</ErrorBoundary>
+          </ToastProvider>
+        </AppProvider>
       </body>
     </html>
   );

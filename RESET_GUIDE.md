@@ -34,3 +34,4 @@ We have completely simplified the database schema to fix signup issues and provi
 *   **Trigger Safety**: The signup trigger now uses `SECURITY DEFINER` correctly and constraints are deferred to prevent "User not found" errors.
 *   **API-First Security**: Complex permission logic is moved to `lib/auth/helpers.ts` and API routes, keeping SQL policies simple (Organization Membership).
 
+

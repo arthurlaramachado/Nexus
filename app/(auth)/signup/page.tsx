@@ -84,7 +84,7 @@ export default function SignupPage() {
             Create your account
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Get started with NexusCS today
+            Get started with Nexus today
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSignup}>

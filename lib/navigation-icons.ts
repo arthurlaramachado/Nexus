@@ -17,7 +17,6 @@ export const navigationIconMap: Record<string, typeof HomeIcon> = {
   '/dashboard/contracts': DocumentTextIcon,
   '/dashboard/collaborators': UsersIcon,
   '/dashboard/roles': ShieldCheckIcon,
-  '/dashboard/contract-assignments': UserGroupIcon,
   '/dashboard/audit-logs': DocumentTextIcon,
   '/dashboard/reports': ChartBarIcon,
 }
@@ -25,3 +24,4 @@ export const navigationIconMap: Record<string, typeof HomeIcon> = {
 export function getIconForHref(href: string) {
   return navigationIconMap[href] || HomeIcon
 }
+

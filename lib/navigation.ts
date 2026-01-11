@@ -8,65 +8,59 @@ import {
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline'
 
+import { checkPermission } from '@/lib/auth/helpers'
+
 export interface NavItem {
   name: string
   href: string
   icon: any
-  roles?: string[] // Changed from UserRole enum to string[]
+  permission?: { table: string; type: 'read' | 'write' | 'delete' }
 }
 
 const navigation: NavItem[] = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-  { name: 'Clients', href: '/dashboard/clients', icon: BriefcaseIcon },
-  { name: 'Contracts', href: '/dashboard/contracts', icon: DocumentTextIcon },
-  { name: 'Collaborators', href: '/dashboard/collaborators', icon: UsersIcon },
+  { name: 'Clients', href: '/dashboard/clients', icon: BriefcaseIcon, permission: { table: 'clients', type: 'read' } },
+  { name: 'Contracts', href: '/dashboard/contracts', icon: DocumentTextIcon, permission: { table: 'contracts', type: 'read' } },
+  { name: 'Collaborators', href: '/dashboard/collaborators', icon: UsersIcon, permission: { table: 'collaborators', type: 'read' } },
   {
     name: 'Roles',
     href: '/dashboard/roles',
     icon: ShieldCheckIcon,
-    roles: ['Admin'], // Using string literal matching new DB role names
-  },
-  {
-    name: 'Contract Assignments',
-    href: '/dashboard/contract-assignments',
-    icon: UserGroupIcon,
+    permission: { table: 'roles', type: 'read' },
   },
   {
     name: 'Audit Logs',
     href: '/dashboard/audit-logs',
     icon: DocumentTextIcon,
-    roles: ['Admin', 'Manager'],
+    permission: { table: 'audit_logs', type: 'read' },
   },
   {
     name: 'Reports',
     href: '/dashboard/reports',
     icon: ChartBarIcon,
-    roles: ['Admin', 'Manager'],
+    permission: { table: 'contracts', type: 'read' },
   },
 ]
 
-export function getFilteredNavigation(userRole: string | null) {
-  if (!userRole) return []
+export async function getFilteredNavigation() {
+  const filtered = await Promise.all(
+    navigation.map(async (item) => {
+      if (!item.permission) return item
+      const hasPerm = await checkPermission(item.permission.table, item.permission.type)
+      return hasPerm ? item : null
+    })
+  )
   
-  return navigation.filter((item) => {
-    if (!item.roles) return true
-    // Case-insensitive match for robustness
-    return item.roles.some(r => r.toLowerCase() === userRole.toLowerCase())
-  })
+  return filtered.filter((item): item is NavItem => item !== null)
 }
 
 // Serializable version for passing to client components
 export interface SerializableNavItem {
   name: string
   href: string
-  roles?: string[]
 }
 
-export function getFilteredNavigationSerializable(userRole: string | null): SerializableNavItem[] {
-  if (!userRole) return []
-  
-  return navigation.filter((item) => {
-    if (!item.roles) return true
-    return item.roles.some(r => r.toLowerCase() === userRole.toLowerCase())
-  }).map(({ name, href, roles }) => ({ name, href, roles }))
+export async function getFilteredNavigationSerializable(): Promise<SerializableNavItem[]> {
+  const filtered = await getFilteredNavigation()
+  return filtered.map(({ name, href }) => ({ name, href }))
 }

@@ -3,12 +3,16 @@ import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '@
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Link from 'next/link'
+import { requirePermission, checkPermission } from '@/lib/auth/helpers'
+import { PencilIcon } from '@heroicons/react/24/outline'
 
 export default async function CollaboratorsPage({
   searchParams,
 }: {
   searchParams: Promise<{ status?: string; role_id?: string }>
 }) {
+  await requirePermission('collaborators', 'read')
+  const canWrite = await checkPermission('collaborators', 'write')
   const { status, role_id } = await searchParams
   const supabase = await createClient()
   
@@ -35,9 +39,11 @@ export default async function CollaboratorsPage({
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Collaborators</h1>
-        <Link href="/dashboard/collaborators/new">
-          <Button>New Collaborator</Button>
-        </Link>
+        {canWrite && (
+          <Link href="/dashboard/collaborators/new">
+            <Button>New Collaborator</Button>
+          </Link>
+        )}
       </div>
 
       <div>
@@ -75,11 +81,13 @@ export default async function CollaboratorsPage({
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Link href={`/dashboard/collaborators/${collaborator.id}/edit`}>
-                      <Button variant="outline" className="text-sm">
-                        Edit
-                      </Button>
-                    </Link>
+                    {canWrite && (
+                      <Link href={`/dashboard/collaborators/${collaborator.id}/edit`}>
+                        <Button variant="outline" size="icon">
+                          <PencilIcon className="w-4 h-4" />
+                        </Button>
+                      </Link>
+                    )}
                   </TableCell>
                 </TableRow>
               ))

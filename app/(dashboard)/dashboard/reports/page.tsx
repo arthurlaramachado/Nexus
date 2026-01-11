@@ -2,8 +2,10 @@ import { createClient } from '@/lib/supabase/server'
 import Card from '@/components/ui/Card'
 import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '@/components/ui/Table'
 import Badge from '@/components/ui/Badge'
+import { requirePermission } from '@/lib/auth/helpers'
 
 export default async function ReportsPage() {
+  await requirePermission('contracts', 'read')
   const supabase = await createClient()
 
   // 1. Contracts expiring in the next 90 days

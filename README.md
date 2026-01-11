@@ -1,4 +1,4 @@
-# NexusCS - Customer Success Management
+# Nexus - Customer Success Management
 
 A modern Customer Success Management (CSM) platform built with Next.js, Supabase, and Tailwind CSS.
 

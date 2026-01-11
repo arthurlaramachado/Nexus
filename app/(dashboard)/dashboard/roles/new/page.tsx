@@ -1,8 +1,8 @@
 import RoleForm from '@/components/forms/RoleForm'
-import { requireRole } from '@/lib/auth/helpers'
+import { requirePermission } from '@/lib/auth/helpers'
 
 export default async function NewRolePage() {
-  await requireRole(['admin', 'manager'])
+  await requirePermission('roles', 'write')
   
   return (
     <div>
@@ -11,4 +11,5 @@ export default async function NewRolePage() {
     </div>
   )
 }
+
 

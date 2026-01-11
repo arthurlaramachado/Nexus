@@ -1,16 +1,28 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState, Suspense } from 'react'
+import { useState, useEffect, useMemo, Suspense } from 'react'
+import { Country } from 'country-state-city'
 import Input from '@/components/ui/Input'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
+import Combobox from '@/components/ui/Combobox'
 
 function ClientFiltersContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [status, setStatus] = useState(searchParams.get('status') || '')
   const [country, setCountry] = useState(searchParams.get('country') || '')
+  const [countries, setCountries] = useState<any[]>([])
+
+  useEffect(() => {
+    setCountries(Country.getAllCountries())
+  }, [])
+
+  const countryOptions = useMemo(() => 
+    countries.map(c => ({ label: c.name, value: c.name })),
+    [countries]
+  )
 
   const handleFilter = () => {
     const params = new URLSearchParams()
@@ -37,12 +49,15 @@ function ClientFiltersContent() {
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </Select>
-        <Input
+        
+        <Combobox
           label="Country"
           value={country}
-          onChange={(e) => setCountry(e.target.value)}
-          placeholder="Filter by country"
+          onChange={setCountry}
+          options={countryOptions}
+          placeholder="Filter by country..."
         />
+
         {/* Tag filter omitted for simplicity in this iteration */}
         <div className="md:col-span-2 flex items-end gap-2">
           <Button onClick={handleFilter} className="w-full">Filter</Button>

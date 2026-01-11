@@ -72,3 +72,4 @@ Para verificar se as variáveis estão configuradas corretamente:
 3. Tente fazer login ou criar uma conta
 4. Se houver erros relacionados ao Supabase, verifique se as variáveis estão corretas
 
+

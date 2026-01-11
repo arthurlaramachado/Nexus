@@ -15,3 +15,4 @@ export async function getUserOrganizationId(): Promise<string | null> {
   return collaborator?.organization_id || null
 }
 
+

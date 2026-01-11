@@ -39,3 +39,4 @@ export function formatStatus(status: string): string {
 export function formatContractType(type: string): string {
   return formatStatus(type)
 }
+

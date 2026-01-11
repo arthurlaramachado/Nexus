@@ -25,3 +25,4 @@ export const CONTRACT_TYPE_LABELS = {
   churn: 'Churn',
   cut: 'Cut',
 } as const
+

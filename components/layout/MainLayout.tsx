@@ -5,9 +5,8 @@ import { getFilteredNavigationSerializable } from '@/lib/navigation'
 import { getUserRoleName, getUserCollaborator } from '@/lib/auth/helpers'
 
 export default async function MainLayout({ children }: { children: ReactNode }) {
-  const roleName = await getUserRoleName()
   const collaborator = await getUserCollaborator()
-  const navItems = getFilteredNavigationSerializable(roleName)
+  const navItems = await getFilteredNavigationSerializable()
   const userName = collaborator?.full_name || null
   const userEmail = collaborator?.email || null
 

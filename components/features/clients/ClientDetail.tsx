@@ -167,3 +167,4 @@ export default function ClientDetail({ client, contracts }: ClientDetailProps) {
   )
 }
 
+

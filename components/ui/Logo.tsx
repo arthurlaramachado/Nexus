@@ -15,7 +15,7 @@ export default function Logo({ className = '', size = 'md' }: LogoProps) {
       <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
         Nexus
       </span>
-      <span className="text-indigo-600">CS</span>
     </div>
   )
 }
+

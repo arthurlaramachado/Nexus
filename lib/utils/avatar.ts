@@ -23,3 +23,4 @@ export function getAvatarUrl(userId: string): string | null {
   // For now, return null to use initials
   return null
 }
+

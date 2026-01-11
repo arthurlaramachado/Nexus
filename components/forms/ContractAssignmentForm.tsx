@@ -114,8 +114,7 @@ export default function ContractAssignmentForm({
         if (insertError) throw insertError
       }
 
-      router.push('/dashboard/contract-assignments')
-      // Also invalidate contracts/collaborators pages if needed
+      router.push(`/dashboard/contracts/${data.contract_id}`)
       router.refresh()
     } catch (err: any) {
       console.error(err)

@@ -3,6 +3,7 @@ import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '@
 import Badge from '@/components/ui/Badge'
 import AuditLogFilters from '@/components/filters/AuditLogFilters'
 import AuditChanges from '@/components/audit/AuditChanges'
+import { requirePermission } from '@/lib/auth/helpers'
 import {
   calculateTimeDifference,
   formatTimeDifference,
@@ -20,6 +21,7 @@ export default async function AuditLogsPage({
     end_date?: string
   }>
 }) {
+  await requirePermission('audit_logs', 'read')
   const { user_id, table_name, record_id, start_date, end_date } = await searchParams
   const supabase = await createClient()
 

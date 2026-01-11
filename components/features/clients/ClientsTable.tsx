@@ -1,5 +1,6 @@
 'use client'
 
+import ClientFilters from '@/components/filters/ClientFilters'
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -9,6 +10,7 @@ import Button from '@/components/ui/Button'
 import Modal from '@/components/ui/Modal'
 import ClientForm from '@/components/forms/ClientForm'
 import { Client } from '@/types/database'
+import { PencilIcon } from '@heroicons/react/24/outline'
 
 interface ClientWithTags extends Client {
   client_tags?: {
@@ -47,6 +49,10 @@ export default function ClientsTable({ clients }: ClientsTableProps) {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Clients</h1>
         <Button onClick={handleCreate}>New Client</Button>
+      </div>
+
+      <div className="mb-6">
+        <ClientFilters />
       </div>
 
       <Modal
@@ -105,10 +111,10 @@ export default function ClientsTable({ clients }: ClientsTableProps) {
                   <TableCell>
                     <Button 
                       variant="outline" 
-                      className="text-sm py-1 px-3"
+                      size="icon"
                       onClick={() => handleEdit(client)}
                     >
-                      Edit
+                      <PencilIcon className="w-4 h-4" />
                     </Button>
                   </TableCell>
                 </TableRow>

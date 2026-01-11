@@ -1,12 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
-import ClientFilters from '@/components/filters/ClientFilters'
 import ClientsTable from '@/components/features/clients/ClientsTable'
+import { requirePermission } from '@/lib/auth/helpers'
 
 export default async function ClientsPage({
   searchParams,
 }: {
   searchParams: Promise<{ status?: string; country?: string }>
 }) {
+  await requirePermission('clients', 'read')
   const { status, country } = await searchParams
   const supabase = await createClient()
   
@@ -32,7 +33,6 @@ export default async function ClientsPage({
 
   return (
     <div>
-      <ClientFilters />
       <ClientsTable clients={clients || []} />
     </div>
   )

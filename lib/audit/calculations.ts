@@ -27,3 +27,4 @@ export function getTimeDifferenceBadgeVariant(days: number | null): 'success' | 
   return 'danger'
 }
 
+
