@@ -14,25 +14,23 @@ export const getUser = cache(async () => {
 /**
  * Fetches the current user's collaborator profile.
  */
-export const getUserCollaborator = cache(async (organizationId?: string): Promise<Collaborator | null> => {
+export const getUserCollaborator = cache(async (): Promise<Collaborator | null> => {
   const supabase = await createClient()
   const user = await getUser()
   
   if (!user) return null
   
-  let query = supabase
+  const { data, error } = await supabase
     .from('collaborators')
-    .select('*, roles(*), organizations(*)')
+    .select('*, roles(*)')
     .eq('user_id', user.id)
     .eq('status', 'active')
-
-  if (organizationId) {
-    query = query.eq('organization_id', organizationId)
-  }
-
-  const { data, error } = await query.limit(1).single()
+    .limit(1)
+    .maybeSingle()
   
-  if (error || !data) return null
+  if (error || !data) {
+    return null
+  }
   
   return data as Collaborator
 })
@@ -40,8 +38,8 @@ export const getUserCollaborator = cache(async (organizationId?: string): Promis
 /**
  * Helper to get the role name of the current user.
  */
-export const getUserRoleName = cache(async (organizationId?: string): Promise<string | null> => {
-  const collaborator = await getUserCollaborator(organizationId)
+export const getUserRoleName = cache(async (): Promise<string | null> => {
+  const collaborator = await getUserCollaborator()
   return collaborator?.roles?.name || null
 })
 
@@ -119,15 +117,3 @@ export async function requirePermission(tableName: string, permissionType: 'read
   }
 }
 
-export const getUserOrganizationId = cache(async (): Promise<string | null> => {
-  const collaborator = await getUserCollaborator()
-  return collaborator?.organization_id || null
-})
-
-export async function requireOrganization() {
-  const orgId = await getUserOrganizationId()
-  if (!orgId) {
-    redirect('/dashboard?error=no_organization')
-  }
-  return orgId
-}

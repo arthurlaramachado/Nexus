@@ -1,6 +1,14 @@
 -- =====================================================
 -- COMPLETE DATABASE SCHEMA WITH RBAC
 -- =====================================================
+-- This script creates the complete database schema with:
+-- - Global data (no organizations)
+-- - Role-Based Access Control (RBAC)
+-- - Invite system for collaborators
+-- - Audit logging
+-- 
+-- Run 000_reset_db.sql first to clean existing schema
+-- =====================================================
 
 -- 1. Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -14,22 +22,12 @@ CREATE TYPE audit_action AS ENUM ('insert', 'update', 'delete');
 
 -- 3. Create Tables
 
--- Organizations
-CREATE TABLE organizations (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
 -- Roles
 CREATE TABLE roles (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,
+  name TEXT NOT NULL UNIQUE,
   is_system_role BOOLEAN NOT NULL DEFAULT FALSE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  UNIQUE(organization_id, name)
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Role Permissions
@@ -48,16 +46,16 @@ CREATE TABLE role_permissions (
 -- Collaborators
 CREATE TABLE collaborators (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
   user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   role_id UUID NOT NULL REFERENCES roles(id) ON DELETE RESTRICT,
   full_name TEXT NOT NULL,
   email TEXT NOT NULL,
   status employment_status NOT NULL DEFAULT 'active',
+  invite_token TEXT,
+  expires_at TIMESTAMP WITH TIME ZONE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  UNIQUE(organization_id, email),
-  UNIQUE(organization_id, user_id)
+  UNIQUE(user_id)
 );
 
 -- Deferrable constraint for user_id
@@ -72,24 +70,20 @@ ALTER TABLE collaborators
 -- Clients
 CREATE TABLE clients (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
   status client_status NOT NULL DEFAULT 'active',
   country TEXT,
   city TEXT,
-  unique_identifier TEXT,
+  unique_identifier TEXT UNIQUE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  UNIQUE(organization_id, unique_identifier)
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Tags
 CREATE TABLE tags (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  UNIQUE(organization_id, name)
+  name TEXT NOT NULL UNIQUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Client Tags Junction
@@ -97,7 +91,6 @@ CREATE TABLE client_tags (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
   tag_id UUID NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
-  organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE, -- Denormalized for simpler RLS
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   UNIQUE(client_id, tag_id)
 );
@@ -105,7 +98,6 @@ CREATE TABLE client_tags (
 -- Contracts
 CREATE TABLE contracts (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
   client_id UUID NOT NULL REFERENCES clients(id) ON DELETE RESTRICT,
   name TEXT NOT NULL,
   contract_type contract_type NOT NULL,
@@ -121,7 +113,6 @@ CREATE TABLE contracts (
 -- Contract Assignments
 CREATE TABLE contract_assignments (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
   contract_id UUID NOT NULL REFERENCES contracts(id) ON DELETE CASCADE,
   collaborator_id UUID NOT NULL REFERENCES collaborators(id) ON DELETE CASCADE,
   role_on_contract TEXT,
@@ -137,7 +128,6 @@ CREATE TABLE contract_assignments (
 CREATE TABLE audit_logs (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
-  organization_id UUID REFERENCES organizations(id) ON DELETE SET NULL,
   table_name TEXT NOT NULL,
   record_id UUID NOT NULL,
   action audit_action NOT NULL,
@@ -146,14 +136,12 @@ CREATE TABLE audit_logs (
 );
 
 -- 4. Indexes
-CREATE INDEX idx_collab_org_user ON collaborators(organization_id, user_id);
 CREATE INDEX idx_collab_email ON collaborators(email);
-CREATE INDEX idx_clients_org ON clients(organization_id);
-CREATE INDEX idx_contracts_org ON contracts(organization_id);
+CREATE INDEX idx_collab_user_id ON collaborators(user_id);
+CREATE INDEX idx_collab_invite_token ON collaborators(invite_token);
 CREATE INDEX idx_contracts_client ON contracts(client_id);
 CREATE INDEX idx_assignments_contract ON contract_assignments(contract_id);
 CREATE INDEX idx_assignments_collab ON contract_assignments(collaborator_id);
-CREATE INDEX idx_tags_org ON tags(organization_id);
 CREATE INDEX idx_client_tags_client ON client_tags(client_id);
 CREATE INDEX idx_client_tags_tag ON client_tags(tag_id);
 
@@ -166,7 +154,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER update_orgs_modtime BEFORE UPDATE ON organizations FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_collabs_modtime BEFORE UPDATE ON collaborators FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_clients_modtime BEFORE UPDATE ON clients FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_contracts_modtime BEFORE UPDATE ON contracts FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -182,23 +169,11 @@ DECLARE
   field_name TEXT;
   old_val JSONB;
   new_val JSONB;
-  org_id UUID;
 BEGIN
-  IF (TG_OP = 'DELETE') THEN
-    old_data := to_jsonb(OLD);
-    IF old_data ? 'organization_id' THEN
-      org_id := (old_data->>'organization_id')::UUID;
-    END IF;
-  ELSE
-    new_data := to_jsonb(NEW);
-    IF new_data ? 'organization_id' THEN
-      org_id := (new_data->>'organization_id')::UUID;
-    END IF;
-  END IF;
-
   IF TG_OP = 'DELETE' THEN
-    INSERT INTO audit_logs (user_id, organization_id, table_name, record_id, action, changes)
-    VALUES (auth.uid(), org_id, TG_TABLE_NAME, (old_data->>'id')::UUID, 'delete', to_jsonb(OLD));
+    old_data := to_jsonb(OLD);
+    INSERT INTO audit_logs (user_id, table_name, record_id, action, changes)
+    VALUES (auth.uid(), TG_TABLE_NAME, (old_data->>'id')::UUID, 'delete', to_jsonb(OLD));
     RETURN OLD;
   ELSIF TG_OP = 'UPDATE' THEN
     old_data := to_jsonb(OLD);
@@ -212,20 +187,20 @@ BEGIN
     END LOOP;
     
     IF jsonb_array_length(changes) > 0 THEN
-      INSERT INTO audit_logs (user_id, organization_id, table_name, record_id, action, changes)
-      VALUES (auth.uid(), org_id, TG_TABLE_NAME, (new_data->>'id')::UUID, 'update', changes);
+      INSERT INTO audit_logs (user_id, table_name, record_id, action, changes)
+      VALUES (auth.uid(), TG_TABLE_NAME, (new_data->>'id')::UUID, 'update', changes);
     END IF;
     RETURN NEW;
   ELSIF TG_OP = 'INSERT' THEN
-    INSERT INTO audit_logs (user_id, organization_id, table_name, record_id, action, changes)
-    VALUES (auth.uid(), org_id, TG_TABLE_NAME, (new_data->>'id')::UUID, 'insert', to_jsonb(NEW));
+    new_data := to_jsonb(NEW);
+    INSERT INTO audit_logs (user_id, table_name, record_id, action, changes)
+    VALUES (auth.uid(), TG_TABLE_NAME, (new_data->>'id')::UUID, 'insert', to_jsonb(NEW));
     RETURN NEW;
   END IF;
   RETURN NULL;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-CREATE TRIGGER audit_orgs AFTER INSERT OR UPDATE OR DELETE ON organizations FOR EACH ROW EXECUTE FUNCTION audit_trigger_function();
 CREATE TRIGGER audit_roles AFTER INSERT OR UPDATE OR DELETE ON roles FOR EACH ROW EXECUTE FUNCTION audit_trigger_function();
 CREATE TRIGGER audit_collabs AFTER INSERT OR UPDATE OR DELETE ON collaborators FOR EACH ROW EXECUTE FUNCTION audit_trigger_function();
 CREATE TRIGGER audit_clients AFTER INSERT OR UPDATE OR DELETE ON clients FOR EACH ROW EXECUTE FUNCTION audit_trigger_function();
@@ -235,16 +210,6 @@ CREATE TRIGGER audit_tags AFTER INSERT OR UPDATE OR DELETE ON tags FOR EACH ROW 
 CREATE TRIGGER audit_client_tags AFTER INSERT OR UPDATE OR DELETE ON client_tags FOR EACH ROW EXECUTE FUNCTION audit_trigger_function();
 
 -- 7. RBAC and Permission Functions
-
-CREATE OR REPLACE FUNCTION is_org_member(org_id UUID)
-RETURNS BOOLEAN AS $$
-  SELECT EXISTS (
-    SELECT 1 FROM collaborators
-    WHERE user_id = auth.uid()
-    AND organization_id = org_id
-    AND status = 'active'
-  );
-$$ LANGUAGE sql SECURITY DEFINER STABLE;
 
 CREATE OR REPLACE FUNCTION has_permission(target_table_name TEXT, permission_type TEXT)
 RETURNS BOOLEAN AS $$
@@ -303,7 +268,7 @@ BEGIN
 
   IF user_role_id IS NULL THEN
     RETURN;
-  END IF;
+    END IF;
 
   -- If system role, return all tables with full access
   -- Note: table_names should match what's in the app
@@ -311,10 +276,10 @@ BEGIN
     RETURN QUERY 
     SELECT t.name, TRUE, TRUE, TRUE
     FROM (
-      SELECT unnest(ARRAY['organizations', 'roles', 'collaborators', 'clients', 'tags', 'contracts', 'contract_assignments', 'audit_logs']) as name
+      SELECT unnest(ARRAY['roles', 'collaborators', 'clients', 'tags', 'contracts', 'contract_assignments', 'audit_logs']) as name
     ) t;
     RETURN;
-  END IF;
+    END IF;
 
   RETURN QUERY
   SELECT rp.table_name, rp.can_read, rp.can_write, rp.can_delete
@@ -339,54 +304,8 @@ CREATE TRIGGER set_client_identifier
   FOR EACH ROW
   EXECUTE FUNCTION generate_client_identifier();
 
--- 9. Signup Trigger
-CREATE OR REPLACE FUNCTION handle_new_user()
-RETURNS TRIGGER 
-SECURITY DEFINER 
-SET search_path = public
-LANGUAGE plpgsql
-AS $$
-DECLARE
-  new_org_id UUID;
-  new_role_id UUID;
-  user_name TEXT;
-  user_email TEXT;
-  table_names TEXT[] := ARRAY['organizations', 'roles', 'collaborators', 'clients', 'tags', 'contracts', 'contract_assignments', 'audit_logs'];
-  tname TEXT;
-BEGIN
-  user_email := NEW.email;
-  user_name := COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(user_email, '@', 1));
+-- 9. RLS Policies
 
-  INSERT INTO organizations (name)
-  VALUES (user_email || '''s Organization')
-  RETURNING id INTO new_org_id;
-
-  INSERT INTO roles (organization_id, name, is_system_role)
-  VALUES (new_org_id, 'Admin', TRUE)
-  RETURNING id INTO new_role_id;
-
-  FOREACH tname IN ARRAY table_names LOOP
-    INSERT INTO role_permissions (role_id, table_name, can_read, can_write, can_delete)
-    VALUES (new_role_id, tname, TRUE, TRUE, TRUE);
-  END LOOP;
-
-  INSERT INTO collaborators (organization_id, user_id, role_id, full_name, email, status)
-  VALUES (new_org_id, NEW.id, new_role_id, user_name, user_email, 'active');
-
-  RETURN NEW;
-EXCEPTION WHEN OTHERS THEN
-  RAISE WARNING 'Signup Trigger Failed: %', SQLERRM;
-  RETURN NEW;
-END;
-$$;
-
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION handle_new_user();
-
--- 10. RLS Policies
-
-ALTER TABLE organizations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE roles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE role_permissions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE collaborators ENABLE ROW LEVEL SECURITY;
@@ -397,53 +316,72 @@ ALTER TABLE contracts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contract_assignments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
 
--- Organizations
-CREATE POLICY "Members view orgs" ON organizations FOR SELECT USING (is_org_member(id));
-CREATE POLICY "Service role insert orgs" ON organizations FOR INSERT WITH CHECK (true);
-
 -- Roles
-CREATE POLICY "Roles Select" ON roles FOR SELECT USING (has_permission('roles', 'read') AND is_org_member(organization_id));
-CREATE POLICY "Roles Insert" ON roles FOR INSERT WITH CHECK (has_permission('roles', 'write') AND is_org_member(organization_id));
-CREATE POLICY "Roles Update" ON roles FOR UPDATE USING (has_permission('roles', 'write') AND is_org_member(organization_id));
-CREATE POLICY "Roles Delete" ON roles FOR DELETE USING (has_permission('roles', 'delete') AND is_org_member(organization_id) AND is_system_role = FALSE);
+CREATE POLICY "Roles Select" ON roles FOR SELECT USING (has_permission('roles', 'read'));
+CREATE POLICY "Roles Insert" ON roles FOR INSERT WITH CHECK (has_permission('roles', 'write'));
+CREATE POLICY "Roles Update" ON roles FOR UPDATE USING (has_permission('roles', 'write'));
+CREATE POLICY "Roles Delete" ON roles FOR DELETE USING (has_permission('roles', 'delete') AND is_system_role = FALSE);
 
 -- Role Permissions
-CREATE POLICY "Permissions Select" ON role_permissions FOR SELECT USING (has_permission('roles', 'read'));
-CREATE POLICY "Permissions Manage" ON role_permissions FOR ALL USING (has_permission('roles', 'write'));
+CREATE POLICY "Permissions Select" ON role_permissions FOR SELECT USING (
+  EXISTS (
+    SELECT 1 FROM roles r 
+    WHERE r.id = role_permissions.role_id 
+    AND has_permission('roles', 'read')
+  )
+);
+CREATE POLICY "Permissions Manage" ON role_permissions FOR ALL USING (
+  EXISTS (
+    SELECT 1 FROM roles r 
+    WHERE r.id = role_permissions.role_id 
+    AND has_permission('roles', 'write')
+  )
+);
 
 -- Collaborators
-CREATE POLICY "Collabs Select" ON collaborators FOR SELECT USING (has_permission('collaborators', 'read') AND is_org_member(organization_id));
-CREATE POLICY "Collabs Insert" ON collaborators FOR INSERT WITH CHECK (has_permission('collaborators', 'write') OR auth.uid() IS NULL);
-CREATE POLICY "Collabs Update" ON collaborators FOR UPDATE USING (has_permission('collaborators', 'write') AND is_org_member(organization_id));
-CREATE POLICY "Collabs Delete" ON collaborators FOR DELETE USING (has_permission('collaborators', 'delete') AND is_org_member(organization_id));
+-- Allow reading invited collaborators by invite token (for invite validation - public access)
+CREATE POLICY "Allow invited collaborators to be read by invite token" ON collaborators FOR SELECT
+USING (
+  status = 'invited' 
+  AND invite_token IS NOT NULL 
+  AND (expires_at IS NULL OR expires_at > NOW())
+);
+-- Regular select policy for authenticated users with permissions
+CREATE POLICY "Collabs Select" ON collaborators FOR SELECT 
+  USING (has_permission('collaborators', 'read'));
+CREATE POLICY "Collabs Insert" ON collaborators FOR INSERT WITH CHECK (has_permission('collaborators', 'write'));
+CREATE POLICY "Collabs Update" ON collaborators FOR UPDATE USING (has_permission('collaborators', 'write'));
+CREATE POLICY "Collabs Delete" ON collaborators FOR DELETE USING (has_permission('collaborators', 'delete'));
 
 -- Clients
-CREATE POLICY "Clients Select" ON clients FOR SELECT USING (has_permission('clients', 'read') AND is_org_member(organization_id));
-CREATE POLICY "Clients Insert" ON clients FOR INSERT WITH CHECK (has_permission('clients', 'write') AND is_org_member(organization_id));
-CREATE POLICY "Clients Update" ON clients FOR UPDATE USING (has_permission('clients', 'write') AND is_org_member(organization_id));
-CREATE POLICY "Clients Delete" ON clients FOR DELETE USING (has_permission('clients', 'delete') AND is_org_member(organization_id));
+CREATE POLICY "Clients Select" ON clients FOR SELECT USING (has_permission('clients', 'read'));
+CREATE POLICY "Clients Insert" ON clients FOR INSERT WITH CHECK (has_permission('clients', 'write'));
+CREATE POLICY "Clients Update" ON clients FOR UPDATE USING (has_permission('clients', 'write'));
+CREATE POLICY "Clients Delete" ON clients FOR DELETE USING (has_permission('clients', 'delete'));
 
 -- Tags
-CREATE POLICY "Tags Select" ON tags FOR SELECT USING (has_permission('tags', 'read') AND is_org_member(organization_id));
-CREATE POLICY "Tags Insert" ON tags FOR INSERT WITH CHECK (has_permission('tags', 'write') AND is_org_member(organization_id));
-CREATE POLICY "Tags Update" ON tags FOR UPDATE USING (has_permission('tags', 'write') AND is_org_member(organization_id));
-CREATE POLICY "Tags Delete" ON tags FOR DELETE USING (has_permission('tags', 'delete') AND is_org_member(organization_id));
+CREATE POLICY "Tags Select" ON tags FOR SELECT USING (has_permission('tags', 'read'));
+CREATE POLICY "Tags Insert" ON tags FOR INSERT WITH CHECK (has_permission('tags', 'write'));
+CREATE POLICY "Tags Update" ON tags FOR UPDATE USING (has_permission('tags', 'write'));
+CREATE POLICY "Tags Delete" ON tags FOR DELETE USING (has_permission('tags', 'delete'));
 
 -- Client Tags
-CREATE POLICY "Client Tags Select" ON client_tags FOR SELECT USING (has_permission('clients', 'read') AND is_org_member(organization_id));
-CREATE POLICY "Client Tags Manage" ON client_tags FOR ALL USING (has_permission('clients', 'write') AND is_org_member(organization_id));
+CREATE POLICY "Client Tags Select" ON client_tags FOR SELECT USING (has_permission('clients', 'read'));
+CREATE POLICY "Client Tags Manage" ON client_tags FOR ALL USING (has_permission('clients', 'write'));
 
 -- Contracts
-CREATE POLICY "Contracts Select" ON contracts FOR SELECT USING (has_permission('contracts', 'read') AND is_org_member(organization_id));
-CREATE POLICY "Contracts Insert" ON contracts FOR INSERT WITH CHECK (has_permission('contracts', 'write') AND is_org_member(organization_id));
-CREATE POLICY "Contracts Update" ON contracts FOR UPDATE USING (has_permission('contracts', 'write') AND is_org_member(organization_id));
-CREATE POLICY "Contracts Delete" ON contracts FOR DELETE USING (has_permission('contracts', 'delete') AND is_org_member(organization_id));
+CREATE POLICY "Contracts Select" ON contracts FOR SELECT USING (has_permission('contracts', 'read'));
+CREATE POLICY "Contracts Insert" ON contracts FOR INSERT WITH CHECK (has_permission('contracts', 'write'));
+CREATE POLICY "Contracts Update" ON contracts FOR UPDATE USING (has_permission('contracts', 'write'));
+CREATE POLICY "Contracts Delete" ON contracts FOR DELETE USING (has_permission('contracts', 'delete'));
 
 -- Contract Assignments
-CREATE POLICY "Assignments Select" ON contract_assignments FOR SELECT USING (has_permission('contract_assignments', 'read') AND is_org_member(organization_id));
-CREATE POLICY "Assignments Insert" ON contract_assignments FOR INSERT WITH CHECK (has_permission('contract_assignments', 'write') AND is_org_member(organization_id));
-CREATE POLICY "Assignments Update" ON contract_assignments FOR UPDATE USING (has_permission('contract_assignments', 'write') AND is_org_member(organization_id));
-CREATE POLICY "Assignments Delete" ON contract_assignments FOR DELETE USING (has_permission('contract_assignments', 'delete') AND is_org_member(organization_id));
+CREATE POLICY "Assignments Select" ON contract_assignments FOR SELECT USING (has_permission('contract_assignments', 'read'));
+CREATE POLICY "Assignments Insert" ON contract_assignments FOR INSERT WITH CHECK (has_permission('contract_assignments', 'write'));
+CREATE POLICY "Assignments Update" ON contract_assignments FOR UPDATE USING (has_permission('contract_assignments', 'write'));
+CREATE POLICY "Assignments Delete" ON contract_assignments FOR DELETE USING (has_permission('contract_assignments', 'delete'));
 
 -- Audit Logs
-CREATE POLICY "Audit Logs Select" ON audit_logs FOR SELECT USING (has_permission('audit_logs', 'read') AND is_org_member(organization_id));
+CREATE POLICY "Audit Logs Select" ON audit_logs FOR SELECT USING (
+  has_permission('audit_logs', 'read')
+);

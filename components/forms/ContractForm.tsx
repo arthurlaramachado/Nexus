@@ -9,7 +9,6 @@ import Input from '@/components/ui/Input'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
 import { createClient } from '@/lib/supabase/client'
-import { getUserOrganizationId } from '@/lib/supabase/client-helpers'
 import { Contract, Client } from '@/types/database'
 
 interface ContractFormProps {
@@ -79,13 +78,10 @@ export default function ContractForm({ contract, clients, defaultClientId }: Con
 
         if (updateError) throw updateError
       } else {
-        // Create new contract with organization_id
-        const orgId = await getUserOrganizationId()
-        if (!orgId) throw new Error('User does not belong to an organization')
-        
+        // Create new contract
         const { error: insertError } = await supabase
           .from('contracts')
-          .insert({ ...contractData, organization_id: orgId })
+          .insert(contractData)
 
         if (insertError) throw insertError
       }

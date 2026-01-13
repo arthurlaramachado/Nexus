@@ -8,12 +8,10 @@ import { useState, useEffect } from 'react'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import { createClient } from '@/lib/supabase/client'
-import { getUserOrganizationId } from '@/lib/supabase/client-helpers'
 import { Role } from '@/types/database'
 import Checkbox from '@/components/ui/Checkbox'
 
 const TABLES = [
-  'organizations',
   'roles',
   'collaborators',
   'clients',
@@ -88,12 +86,9 @@ export default function RoleForm({ role }: RoleFormProps) {
 
         if (updateError) throw updateError
       } else {
-        const orgId = await getUserOrganizationId()
-        if (!orgId) throw new Error('User does not belong to an organization')
-        
         const { data: newRole, error: insertError } = await supabase
           .from('roles')
-          .insert({ ...roleData, organization_id: orgId })
+          .insert(roleData)
           .select()
           .single()
 

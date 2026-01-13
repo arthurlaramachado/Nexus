@@ -9,7 +9,6 @@ import Input from '@/components/ui/Input'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
 import { createClient } from '@/lib/supabase/client'
-import { getUserOrganizationId } from '@/lib/supabase/client-helpers'
 import { ContractAssignment } from '@/types/database'
 
 interface ContractAssignmentFormProps {
@@ -104,12 +103,9 @@ export default function ContractAssignmentForm({
 
         if (updateError) throw updateError
       } else {
-        const orgId = await getUserOrganizationId()
-        if (!orgId) throw new Error('User does not belong to an organization')
-        
         const { error: insertError } = await supabase
           .from('contract_assignments')
-          .insert({ ...assignmentData, organization_id: orgId })
+          .insert(assignmentData)
 
         if (insertError) throw insertError
       }

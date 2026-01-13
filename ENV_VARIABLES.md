@@ -22,6 +22,18 @@ NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 # Esta chave é segura para expor no navegador (é pública)
 # Exemplo: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# Chave service_role do Supabase (APENAS para scripts server-side)
+# ⚠️ NUNCA exponha esta chave no frontend!
+# Esta chave tem privilégios administrativos completos
+# Exemplo: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+# Senha do usuário Admin inicial (opcional, padrão: 'admin')
+# ⚠️ Em produção, SEMPRE defina uma senha forte!
+# Esta variável é usada pelo script de seed para criar/atualizar o admin
+ADMIN_PASSWORD=your_secure_admin_password
+# Nota: ADMIN_ENV também é aceito para compatibilidade
 ```
 
 ## Como Obter as Variáveis
@@ -42,6 +54,9 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 4. Na seção **Project API keys**, você encontrará:
    - **Project URL**: Use este valor para `NEXT_PUBLIC_SUPABASE_URL`
    - **anon public**: Use este valor para `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - **service_role** (secret): Use este valor para `SUPABASE_SERVICE_ROLE_KEY`
+     - ⚠️ Esta chave é SECRETA e só deve ser usada em scripts server-side
+     - ⚠️ NUNCA exponha esta chave no frontend ou no código do cliente
 
 ### 3. Criar o Arquivo .env.local
 
@@ -54,14 +69,20 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://abcdefghijklmnop.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFiY2RlZmdoaWprbG1ub3AiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTYxNjIzOTAyMiwiZXhwIjoxOTMxODE1MDIyfQ.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFiY2RlZmdoaWprbG1ub3AiLCJyb2xlIjoic2VydmljZV9yb2xlIiwiaWF0IjoxNjE2MjM5MDIyLCJleHAiOjE5MzE4MTUwMjJ9.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ADMIN_PASSWORD=YourSecurePassword123!
 ```
 
 ## Importante
 
 - ⚠️ **NUNCA** commite o arquivo `.env.local` no Git (ele já está no `.gitignore`)
 - ✅ A chave `anon public` é segura para usar no frontend (ela é pública por design)
+- ⚠️ A chave `service_role` é SECRETA e só deve ser usada em scripts server-side
 - ✅ O arquivo `.env.local` é carregado automaticamente pelo Next.js
 - ✅ Após criar o arquivo, reinicie o servidor de desenvolvimento (`npm run dev`)
+- ✅ Para scripts como `seed-admin.ts`, as variáveis são carregadas automaticamente do `.env.local`
+- ✅ No Vercel, configure `ADMIN_PASSWORD` nas variáveis de ambiente do projeto
+- ✅ O script `post-build.js` roda automaticamente após cada build no Vercel para garantir que o admin existe
 
 ## Verificação
 

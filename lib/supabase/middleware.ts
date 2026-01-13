@@ -35,19 +35,25 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
+  // Allow API routes to pass through without authentication check
+  if (request.nextUrl.pathname.startsWith('/api/')) {
+    return supabaseResponse
+  }
+
+  // Authentication check removed as login pages were deleted.
+  // We will reimplement this when we rebuild the auth system.
+  /*
   if (
     !user &&
-    !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/signup') &&
-    !request.nextUrl.pathname.startsWith('/auth/callback') &&
     !request.nextUrl.pathname.startsWith('/forbidden') &&
     !request.nextUrl.pathname.startsWith('/not-found')
   ) {
     // no user, potentially respond by redirecting the user to the login page
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    return NextResponse.redirect(url)
+    // const url = request.nextUrl.clone()
+    // url.pathname = '/login'
+    // return NextResponse.redirect(url)
   }
+  */
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
   // creating a new response object with NextResponse.next() make sure to:
@@ -64,4 +70,3 @@ export async function updateSession(request: NextRequest) {
 
   return supabaseResponse
 }
-

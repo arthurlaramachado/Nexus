@@ -6,16 +6,8 @@ export type ContractType = 'new_deal' | 'renewed' | 'upsell' | 'downsell' | 'not
 export type ContractStatus = 'active' | 'paused' | 'inactive'
 export type AuditAction = 'insert' | 'update' | 'delete'
 
-export interface Organization {
-  id: string
-  name: string
-  created_at: string
-  updated_at: string
-}
-
 export interface Role {
   id: string
-  organization_id: string
   name: string
   is_system_role: boolean
   created_at: string
@@ -23,18 +15,18 @@ export interface Role {
 
 export interface Collaborator {
   id: string
-  organization_id: string
   user_id: string | null // Nullable for invites not yet accepted
   role_id: string
   full_name: string
   email: string
   status: EmploymentStatus
+  invite_token: string | null
+  expires_at: string | null
   created_at: string
   updated_at: string
   
   // Relations (often fetched via joins)
   roles?: Role
-  organizations?: Organization
 }
 
 // Alias for UserProfile to match usage in utils
@@ -42,7 +34,6 @@ export type UserProfile = Collaborator
 
 export interface Client {
   id: string
-  organization_id: string
   name: string
   status: ClientStatus
   country: string | null
@@ -55,7 +46,6 @@ export interface Client {
 
 export interface Contract {
   id: string
-  organization_id: string
   client_id: string
   name: string
   contract_type: ContractType
@@ -73,7 +63,6 @@ export interface Contract {
 
 export interface ContractAssignment {
   id: string
-  organization_id: string
   contract_id: string
   collaborator_id: string
   role_on_contract: string | null
@@ -91,7 +80,6 @@ export interface ContractAssignment {
 export interface AuditLog {
   id: string
   user_id: string | null
-  organization_id: string | null
   table_name: string
   record_id: string
   action: AuditAction

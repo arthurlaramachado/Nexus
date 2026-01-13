@@ -1,11 +1,11 @@
 -- =====================================================
 -- RESET DATABASE - Clean Everything
 -- =====================================================
+-- This script drops all database objects to allow a clean rebuild
+-- Run this before running 001_create_db.sql for a fresh start
 
 -- 1. Drop Triggers
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 DROP TRIGGER IF EXISTS set_client_identifier ON clients;
-DROP TRIGGER IF EXISTS audit_orgs ON organizations;
 DROP TRIGGER IF EXISTS audit_roles ON roles;
 DROP TRIGGER IF EXISTS audit_collabs ON collaborators;
 DROP TRIGGER IF EXISTS audit_clients ON clients;
@@ -14,20 +14,17 @@ DROP TRIGGER IF EXISTS audit_assignments ON contract_assignments;
 DROP TRIGGER IF EXISTS audit_tags ON tags;
 DROP TRIGGER IF EXISTS audit_client_tags ON client_tags;
 DROP TRIGGER IF EXISTS audit_role_permissions ON role_permissions;
-
-DROP TRIGGER IF EXISTS update_orgs_modtime ON organizations;
 DROP TRIGGER IF EXISTS update_collabs_modtime ON collaborators;
 DROP TRIGGER IF EXISTS update_clients_modtime ON clients;
 DROP TRIGGER IF EXISTS update_contracts_modtime ON contracts;
 DROP TRIGGER IF EXISTS update_assignments_modtime ON contract_assignments;
 
 -- 2. Drop Functions
-DROP FUNCTION IF EXISTS handle_new_user CASCADE;
-DROP FUNCTION IF EXISTS generate_client_identifier CASCADE;
-DROP FUNCTION IF EXISTS is_org_member CASCADE;
-DROP FUNCTION IF EXISTS has_permission CASCADE;
-DROP FUNCTION IF EXISTS audit_trigger_function CASCADE;
-DROP FUNCTION IF EXISTS update_updated_at_column CASCADE;
+DROP FUNCTION IF EXISTS generate_client_identifier() CASCADE;
+DROP FUNCTION IF EXISTS has_permission(TEXT, TEXT) CASCADE;
+DROP FUNCTION IF EXISTS get_user_permissions() CASCADE;
+DROP FUNCTION IF EXISTS audit_trigger_function() CASCADE;
+DROP FUNCTION IF EXISTS update_updated_at_column() CASCADE;
 
 -- 3. Drop Tables (Reverse Order of Dependencies)
 DROP TABLE IF EXISTS audit_logs CASCADE;
@@ -39,7 +36,6 @@ DROP TABLE IF EXISTS clients CASCADE;
 DROP TABLE IF EXISTS role_permissions CASCADE;
 DROP TABLE IF EXISTS collaborators CASCADE;
 DROP TABLE IF EXISTS roles CASCADE;
-DROP TABLE IF EXISTS organizations CASCADE;
 
 -- 4. Drop Types
 DROP TYPE IF EXISTS client_status CASCADE;

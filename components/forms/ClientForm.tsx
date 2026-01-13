@@ -8,7 +8,6 @@ import Input from '@/components/ui/Input'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
 import { createClient } from '@/lib/supabase/client'
-import { getUserOrganizationId } from '@/lib/supabase/client-helpers'
 import { Client } from '@/types/database'
 import LocationSelector from '@/components/forms/LocationSelector'
 import TagInput from '@/components/forms/TagInput'
@@ -69,9 +68,6 @@ export default function ClientForm({ client, onSuccess, onCancel }: ClientFormPr
   }, [client, supabase])
 
   const { submit, loading } = useFormSubmission(async (data: ClientFormData) => {
-    const orgId = await getUserOrganizationId()
-    if (!orgId) throw new Error('User does not belong to an organization')
-
     let clientId = client?.id
 
     if (client) {
@@ -91,10 +87,7 @@ export default function ClientForm({ client, onSuccess, onCancel }: ClientFormPr
       // Create
       const { data: newClient, error } = await supabase
         .from('clients')
-        .insert({
-          ...data,
-          organization_id: orgId,
-        })
+        .insert(data)
         .select()
         .single()
       
@@ -110,11 +103,9 @@ export default function ClientForm({ client, onSuccess, onCancel }: ClientFormPr
       }
 
       if (selectedTags.length > 0) {
-        // We need organization_id for client_tags too as per schema
         const tagsToInsert = selectedTags.map(tag => ({
           client_id: clientId,
           tag_id: tag.id,
-          organization_id: orgId
         }))
         
         const { error: tagError } = await supabase

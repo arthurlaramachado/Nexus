@@ -118,7 +118,6 @@ export default async function AuditLogsPage({
     'roles',
     'collaborators',
     'contract_assignments',
-    'organizations',
   ]
 
   return (

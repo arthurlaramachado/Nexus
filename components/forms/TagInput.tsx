@@ -78,31 +78,22 @@ export default function TagInput({ selectedTags, onChange }: TagInputProps) {
       } else {
         // Create new tag
         try {
-          // Fetch user's org id first
-          const { data: { user } } = await supabase.auth.getUser()
-          if (user) {
-            const { data: collab } = await supabase
-              .from('collaborators')
-              .select('organization_id')
-              .eq('user_id', user.id)
-              .single()
-            
-            if (collab) {
-              const { data: newTag, error } = await supabase
-                .from('tags')
-                .insert({ 
-                  name: inputValue.trim(), 
-                  organization_id: collab.organization_id 
-                })
-                .select()
-                .single()
-              
-              if (newTag) {
-                const updatedAllTags = [...allTags, newTag].sort((a, b) => a.name.localeCompare(b.name))
-                setAllTags(updatedAllTags)
-                onChange([...selectedTags, newTag])
-              }
-            }
+          const { data: newTag, error } = await supabase
+            .from('tags')
+            .insert({ 
+              name: inputValue.trim()
+            })
+            .select()
+            .single()
+          
+          if (newTag) {
+            const updatedAllTags = [...allTags, newTag].sort((a, b) => a.name.localeCompare(b.name))
+            setAllTags(updatedAllTags)
+            onChange([...selectedTags, newTag])
+          }
+          
+          if (error) {
+            console.error('Error creating tag:', error)
           }
         } catch (error) {
           console.error('Error creating tag:', error)

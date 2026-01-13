@@ -4,11 +4,11 @@ A modern Customer Success Management (CSM) platform built with Next.js, Supabase
 
 ## Features
 
-- **Multi-tenancy:** Organization-based isolation. Users belong to organizations.
+- **Global Data:** All data is global, filtered by role-based permissions.
 - **Client Management:** Track client details, status, and industry.
 - **Contract Tracking:** Manage contracts, renewals, and values.
 - **Team Collaboration:** Assign collaborators to contracts with specific roles.
-- **Role-Based Access Control (RBAC):** Flexible role system defined per organization (e.g., Admin, Manager, CSM).
+- **Role-Based Access Control (RBAC):** Flexible role system with global permissions (e.g., Admin, Manager, CSM).
 - **Audit Logging:** Immutable history of all changes for compliance.
 
 ## Tech Stack
@@ -45,10 +45,9 @@ A modern Customer Success Management (CSM) platform built with Next.js, Supabase
 
 ## Architecture
 
-- **Organizations:** The root entity. All data is scoped to an organization.
-- **Collaborators:** Users are linked to organizations via the `collaborators` table.
-- **Roles:** Defined within an organization to control permissions (e.g., 'Admin').
-- **Security:** Row Level Security (RLS) ensures users can only access data belonging to their organization.
+- **Collaborators:** Users are linked to roles via the `collaborators` table.
+- **Roles:** Global roles that control permissions (e.g., 'Admin').
+- **Security:** Row Level Security (RLS) ensures users can only access data based on their role permissions.
 
 ## License
 

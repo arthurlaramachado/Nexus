@@ -9,7 +9,6 @@ import Input from '@/components/ui/Input'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
 import { createClient } from '@/lib/supabase/client'
-import { getUserOrganizationId } from '@/lib/supabase/client-helpers'
 import { Collaborator } from '@/types/database'
 
 interface CollaboratorFormProps {
@@ -62,13 +61,10 @@ export default function CollaboratorForm({ collaborator, roles }: CollaboratorFo
 
         if (updateError) throw updateError
       } else {
-        // Create new collaborator with organization_id
-        const orgId = await getUserOrganizationId()
-        if (!orgId) throw new Error('User does not belong to an organization')
-        
+        // Create new collaborator
         const { error: insertError } = await supabase
           .from('collaborators')
-          .insert({ ...collaboratorData, organization_id: orgId })
+          .insert(collaboratorData)
 
         if (insertError) throw insertError
       }
@@ -122,7 +118,6 @@ export default function CollaboratorForm({ collaborator, roles }: CollaboratorFo
         error={errors.employment_status?.message}
       >
         <option value="active">Active</option>
-        <option value="invited">Invited</option>
         <option value="inactive">Inactive</option>
       </Select>
 
