@@ -1,14 +1,20 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
+import { requirePermission, checkPermission } from '@/lib/auth/helpers'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Link from 'next/link'
 import Card from '@/components/ui/Card'
 import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '@/components/ui/Table'
-import { PencilIcon, UserPlusIcon } from '@heroicons/react/24/outline'
+import { PencilIcon, UserPlusIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
+import ContractLogsList from '@/components/contracts/ContractLogsList'
+import ContractDetailClient from './ContractDetailClient'
 
 export default async function ContractDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+  await requirePermission('contracts', 'read')
+  const canWrite = await checkPermission('contracts', 'write')
+  
   const supabase = await createClient()
   
   const { data: contract, error: contractError } = await supabase
@@ -21,11 +27,28 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
     notFound()
   }
 
+  // Fetch previous contract separately if it exists
+  let previousContract = null
+  if (contract.previous_contract_id) {
+    const { data: prev } = await supabase
+      .from('contracts')
+      .select('id, name')
+      .eq('id', contract.previous_contract_id)
+      .single()
+    previousContract = prev
+  }
+
   const { data: assignments } = await supabase
     .from('contract_assignments')
     .select('*, collaborators(*, roles!collaborators_role_id_fkey(*))')
     .eq('contract_id', id)
     .order('start_date', { ascending: false })
+
+  const { data: logs } = await supabase
+    .from('contract_logs')
+    .select('*')
+    .eq('contract_id', id)
+    .order('created_at', { ascending: false })
 
   const transformedAssignments = (assignments || []).map((a: any) => ({
     ...a,
@@ -35,32 +58,55 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
     } : null
   }))
 
+  const getTerminationReasonLabel = (reason: string | null) => {
+    switch (reason) {
+      case 'NOT_RENEWED':
+        return 'Not Renewed'
+      case 'CHURN':
+        return 'Churn'
+      case 'CUT':
+        return 'Cut'
+      case 'RENEWED':
+        return 'Renewed'
+      default:
+        return reason
+    }
+  }
+
   return (
     <div>
       <div className="flex justify-between items-start mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">{contract.name}</h1>
-          <div className="mt-2 flex gap-2">
+          <div className="mt-2 flex gap-2 items-center">
             <Badge
               variant={
-                contract.status === 'active'
+                contract.status === 'ACTIVE'
                   ? 'success'
-                  : contract.status === 'paused'
-                  ? 'warning'
                   : 'default'
               }
             >
               {contract.status}
             </Badge>
-            <Badge variant="info">{contract.contract_type}</Badge>
+            {contract.termination_reason && (
+              <Badge variant="warning">
+                {getTerminationReasonLabel(contract.termination_reason)}
+              </Badge>
+            )}
+            {previousContract && (
+              <Link
+                href={`/dashboard/contracts/${previousContract.id}`}
+                className="text-sm text-indigo-600 hover:text-indigo-900 flex items-center gap-1"
+              >
+                <ArrowLeftIcon className="w-4 h-4" />
+                Previous Contract: {previousContract.name}
+              </Link>
+            )}
           </div>
         </div>
-        <Link href={`/dashboard/contracts/${id}/edit`}>
-          <Button variant="outline" size="sm" className="flex items-center gap-2">
-            <PencilIcon className="w-4 h-4" />
-            Edit Contract
-          </Button>
-        </Link>
+        <div className="flex gap-2">
+          <ContractDetailClient contract={contract} canWrite={canWrite} />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -89,16 +135,22 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
                     <span className="text-gray-500">End:</span>
                     <span>{contract.end_date ? new Date(contract.end_date).toLocaleDateString() : 'N/A'}</span>
                   </div>
+                  {contract.renewal_date && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Renewal:</span>
+                      <span>{new Date(contract.renewal_date).toLocaleDateString()}</span>
+                    </div>
+                  )}
                 </dd>
               </div>
               <div>
                 <dt className="text-sm font-medium text-gray-500">Value</dt>
                 <dd className="mt-1 text-lg font-bold text-gray-900">
-                  {contract.contract_value
+                  {contract.current_value
                     ? new Intl.NumberFormat('en-US', {
                         style: 'currency',
                         currency: 'USD',
-                      }).format(contract.contract_value)
+                      }).format(contract.current_value)
                     : '-'}
                 </dd>
               </div>
@@ -110,12 +162,14 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
           <Card 
             title="Team Assignments" 
             headerAction={
-              <Link href={`/dashboard/contract-assignments/new?contract_id=${id}`}>
-                <Button size="sm" className="flex items-center gap-2">
-                  <UserPlusIcon className="w-4 h-4" />
-                  Assign
-                </Button>
-              </Link>
+              canWrite && (
+                <Link href={`/dashboard/contract-assignments/new?contract_id=${id}`}>
+                  <Button size="sm" className="flex items-center gap-2">
+                    <UserPlusIcon className="w-4 h-4" />
+                    Assign
+                  </Button>
+                </Link>
+              )
             }
           >
             {transformedAssignments && transformedAssignments.length > 0 ? (
@@ -126,7 +180,7 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
                     <TableHeader>Role</TableHeader>
                     <TableHeader>Period</TableHeader>
                     <TableHeader>Alloc.</TableHeader>
-                    <TableHeader>Actions</TableHeader>
+                    {canWrite && <TableHeader>Actions</TableHeader>}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -153,13 +207,15 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
                           ? `${assignment.allocation_percentage}%`
                           : '-'}
                       </TableCell>
-                      <TableCell>
-                        <Link href={`/dashboard/contract-assignments/${assignment.id}/edit`}>
-                          <Button variant="outline" size="sm" className="p-1.5">
-                            <PencilIcon className="w-3.5 h-3.5" />
-                          </Button>
-                        </Link>
-                      </TableCell>
+                      {canWrite && (
+                        <TableCell>
+                          <Link href={`/dashboard/contract-assignments/${assignment.id}/edit`}>
+                            <Button variant="outline" size="sm" className="p-1.5">
+                              <PencilIcon className="w-3.5 h-3.5" />
+                            </Button>
+                          </Link>
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))}
                 </TableBody>
@@ -171,6 +227,13 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
             )}
           </Card>
         </div>
+      </div>
+
+      {/* Contract Logs Section */}
+      <div className="mb-6">
+        <Card title="Contract History">
+          <ContractLogsList logs={logs || []} />
+        </Card>
       </div>
     </div>
   )

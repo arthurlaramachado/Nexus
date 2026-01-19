@@ -2,8 +2,9 @@
 
 export type EmploymentStatus = 'active' | 'invited' | 'inactive'
 export type ClientStatus = 'active' | 'inactive'
-export type ContractType = 'new_deal' | 'renewed' | 'upsell' | 'downsell' | 'not_renewed' | 'churn' | 'cut'
-export type ContractStatus = 'active' | 'paused' | 'inactive'
+export type ContractStatus = 'ACTIVE' | 'ENDED'
+export type TerminationReason = 'NOT_RENEWED' | 'CHURN' | 'CUT' | 'RENEWED'
+export type ContractLogAction = 'UPSELL' | 'DOWNSELL' | 'CHURN' | 'CUT' | 'NOT_RENEWED' | 'RENEWAL_EXIT' | 'RENEWAL_ENTRY'
 export type AuditAction = 'insert' | 'update' | 'delete'
 
 export interface Role {
@@ -48,17 +49,19 @@ export interface Contract {
   id: string
   client_id: string
   name: string
-  contract_type: ContractType
   status: ContractStatus
+  termination_reason: TerminationReason | null
+  previous_contract_id: string | null
   start_date: string
   end_date: string | null
   renewal_date: string | null
-  contract_value: number | null
+  current_value: number | null
   created_at: string
   updated_at: string
 
   // Relations
   clients?: Client
+  previous_contract?: Contract
 }
 
 export interface ContractAssignment {
@@ -75,6 +78,20 @@ export interface ContractAssignment {
   // Relations
   contracts?: Contract
   collaborators?: Collaborator
+}
+
+export interface ContractLog {
+  id: string
+  contract_id: string
+  action_type: ContractLogAction
+  old_value: number | null
+  new_value: number | null
+  delta_value: number
+  created_at: string
+  created_by: string | null
+
+  // Relations
+  contracts?: Contract
 }
 
 export interface AuditLog {

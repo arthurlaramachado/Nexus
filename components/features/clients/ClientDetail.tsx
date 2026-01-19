@@ -103,8 +103,8 @@ export default function ClientDetail({ client, contracts }: ClientDetailProps) {
             <TableHead>
               <TableRow>
                 <TableHeader>Name</TableHeader>
-                <TableHeader>Type</TableHeader>
                 <TableHeader>Status</TableHeader>
+                <TableHeader>Termination Reason</TableHeader>
                 <TableHeader>Start Date</TableHeader>
                 <TableHeader>End Date</TableHeader>
                 <TableHeader>Value</TableHeader>
@@ -122,26 +122,36 @@ export default function ClientDetail({ client, contracts }: ClientDetailProps) {
                       {contract.name}
                     </Link>
                   </TableCell>
-                  <TableCell>{contract.contract_type}</TableCell>
                   <TableCell>
                     <Badge
                       variant={
-                        contract.status === 'active'
+                        contract.status === 'ACTIVE'
                           ? 'success'
-                          : contract.status === 'paused'
-                          ? 'warning'
                           : 'default'
                       }
                     >
                       {contract.status}
                     </Badge>
                   </TableCell>
+                  <TableCell>
+                    {contract.termination_reason ? (
+                      <Badge variant="warning">
+                        {contract.termination_reason === 'NOT_RENEWED' ? 'Not Renewed' :
+                         contract.termination_reason === 'CHURN' ? 'Churn' :
+                         contract.termination_reason === 'CUT' ? 'Cut' :
+                         contract.termination_reason === 'RENEWED' ? 'Renewed' :
+                         contract.termination_reason}
+                      </Badge>
+                    ) : (
+                      '-'
+                    )}
+                  </TableCell>
                   <TableCell>{formatDate(contract.start_date)}</TableCell>
                   <TableCell>
                     {contract.end_date ? formatDate(contract.end_date) : '-'}
                   </TableCell>
                   <TableCell>
-                    {formatCurrency(contract.contract_value)}
+                    {formatCurrency(contract.current_value)}
                   </TableCell>
                   <TableCell>
                     <Link href={`/dashboard/contracts/${contract.id}`}>

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 
-export function useContracts(filters: { status?: string; contract_type?: string; client_id?: string } = {}) {
+export function useContracts(filters: { status?: string; client_id?: string } = {}) {
   const supabase = createClient()
 
   return useQuery({
@@ -13,7 +13,6 @@ export function useContracts(filters: { status?: string; contract_type?: string;
         .order('created_at', { ascending: false })
 
       if (filters.status) query = query.eq('status', filters.status)
-      if (filters.contract_type) query = query.eq('contract_type', filters.contract_type)
       if (filters.client_id) query = query.eq('client_id', filters.client_id)
 
       const { data, error } = await query

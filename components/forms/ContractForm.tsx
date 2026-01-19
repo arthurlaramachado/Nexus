@@ -10,6 +10,7 @@ import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
 import { createClient } from '@/lib/supabase/client'
 import { Contract, Client } from '@/types/database'
+import { updateContractValue } from '@/lib/contracts/actions'
 
 interface ContractFormProps {
   contract?: Contract
@@ -39,22 +40,24 @@ export default function ContractForm({ contract, clients, defaultClientId }: Con
       ? {
           client_id: contract.client_id,
           name: contract.name,
-          contract_type: contract.contract_type,
           status: contract.status,
+          termination_reason: contract.termination_reason || null,
+          previous_contract_id: contract.previous_contract_id || null,
           start_date: formatDateForInput(contract.start_date),
           end_date: formatDateForInput(contract.end_date),
           renewal_date: formatDateForInput(contract.renewal_date),
-          contract_value: contract.contract_value?.toString() || '',
+          current_value: contract.current_value?.toString() || '',
         }
       : {
           client_id: defaultClientId || '',
           name: '',
-          contract_type: 'new_deal',
-          status: 'active',
+          status: 'ACTIVE',
+          termination_reason: null,
+          previous_contract_id: null,
           start_date: '',
           end_date: '',
           renewal_date: '',
-          contract_value: '',
+          current_value: '',
         },
   })
 
@@ -63,30 +66,70 @@ export default function ContractForm({ contract, clients, defaultClientId }: Con
     setLoading(true)
 
     try {
-      const contractData = {
-        ...data,
-        contract_value: data.contract_value || null,
-        end_date: data.end_date || null,
-        renewal_date: data.renewal_date || null,
-      }
+      const currentValue = data.current_value ? parseFloat(data.current_value) : null
+      const oldValue = contract?.current_value || null
 
-      if (contract) {
-        const { error: updateError } = await supabase
-          .from('contracts')
-          .update(contractData)
-          .eq('id', contract.id)
+      // If editing an ACTIVE contract and value changed, use updateContractValue (handles Upsell/Downsell)
+      if (contract && contract.status === 'ACTIVE' && data.status === 'ACTIVE') {
+        const valueChanged = oldValue !== currentValue
+        
+        if (valueChanged) {
+          // Use server action for value updates (handles logging)
+          await updateContractValue(contract.id, {
+            current_value: currentValue,
+            name: data.name,
+            start_date: data.start_date,
+            end_date: data.end_date || null,
+            renewal_date: data.renewal_date || null,
+          })
+        } else {
+          // Regular update without value change
+          const contractData = {
+            name: data.name,
+            start_date: data.start_date,
+            end_date: data.end_date || null,
+            renewal_date: data.renewal_date || null,
+            current_value: currentValue,
+          }
 
-        if (updateError) throw updateError
+          const { error: updateError } = await supabase
+            .from('contracts')
+            .update(contractData)
+            .eq('id', contract.id)
+
+          if (updateError) throw updateError
+        }
       } else {
-        // Create new contract
-        const { error: insertError } = await supabase
-          .from('contracts')
-          .insert(contractData)
+        // Create new contract or update ENDED contract
+        const contractData = {
+          client_id: data.client_id,
+          name: data.name,
+          status: data.status,
+          termination_reason: data.termination_reason || null,
+          previous_contract_id: data.previous_contract_id || null,
+          start_date: data.start_date,
+          end_date: data.end_date || null,
+          renewal_date: data.renewal_date || null,
+          current_value: currentValue,
+        }
 
-        if (insertError) throw insertError
+        if (contract) {
+          const { error: updateError } = await supabase
+            .from('contracts')
+            .update(contractData)
+            .eq('id', contract.id)
+
+          if (updateError) throw updateError
+        } else {
+          const { error: insertError } = await supabase
+            .from('contracts')
+            .insert(contractData)
+
+          if (insertError) throw insertError
+        }
       }
 
-      router.push('/dashboard/contracts')
+      router.push(contract ? `/dashboard/contracts/${contract.id}` : '/dashboard/contracts')
       router.refresh()
     } catch (err: any) {
       setError(err.message || 'An error occurred')
@@ -123,28 +166,28 @@ export default function ContractForm({ contract, clients, defaultClientId }: Con
       />
 
       <Select
-        label="Contract Type *"
-        {...register('contract_type')}
-        error={errors.contract_type?.message}
-      >
-        <option value="new_deal">New Deal</option>
-        <option value="renewed">Renewed</option>
-        <option value="upsell">Upsell</option>
-        <option value="downsell">Downsell</option>
-        <option value="not_renewed">Not Renewed</option>
-        <option value="churn">Churn</option>
-        <option value="cut">Cut</option>
-      </Select>
-
-      <Select
         label="Status *"
         {...register('status')}
         error={errors.status?.message}
       >
-        <option value="active">Active</option>
-        <option value="paused">Paused</option>
-        <option value="inactive">Inactive</option>
+        <option value="ACTIVE">Active</option>
+        <option value="ENDED">Ended</option>
       </Select>
+
+      {/* Show termination_reason only when status is ENDED */}
+      {contract?.status === 'ENDED' && (
+        <Select
+          label="Termination Reason"
+          {...register('termination_reason')}
+          error={errors.termination_reason?.message}
+        >
+          <option value="">None</option>
+          <option value="NOT_RENEWED">Not Renewed</option>
+          <option value="CHURN">Churn</option>
+          <option value="CUT">Cut</option>
+          <option value="RENEWED">Renewed</option>
+        </Select>
+      )}
 
       <Input
         label="Start Date *"
@@ -171,8 +214,8 @@ export default function ContractForm({ contract, clients, defaultClientId }: Con
         label="Contract Value"
         type="number"
         step="0.01"
-        {...register('contract_value')}
-        error={errors.contract_value?.message}
+        {...register('current_value')}
+        error={errors.current_value?.message}
       />
 
       <div className="flex gap-4">

@@ -15,8 +15,8 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- 2. Create Enums
 CREATE TYPE client_status AS ENUM ('active', 'inactive');
-CREATE TYPE contract_type AS ENUM ('new_deal', 'renewed', 'upsell', 'downsell', 'not_renewed', 'churn', 'cut');
-CREATE TYPE contract_status AS ENUM ('active', 'paused', 'inactive');
+CREATE TYPE contract_status AS ENUM ('ACTIVE', 'ENDED');
+CREATE TYPE termination_reason AS ENUM ('NOT_RENEWED', 'CHURN', 'CUT', 'RENEWED');
 CREATE TYPE employment_status AS ENUM ('active', 'invited', 'inactive');
 CREATE TYPE audit_action AS ENUM ('insert', 'update', 'delete');
 
@@ -100,15 +100,37 @@ CREATE TABLE contracts (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   client_id UUID NOT NULL REFERENCES clients(id) ON DELETE RESTRICT,
   name TEXT NOT NULL,
-  contract_type contract_type NOT NULL,
-  status contract_status NOT NULL DEFAULT 'active',
+  status contract_status NOT NULL DEFAULT 'ACTIVE',
+  termination_reason termination_reason,
+  previous_contract_id UUID REFERENCES contracts(id) ON DELETE SET NULL,
   start_date DATE NOT NULL,
   end_date DATE,
   renewal_date DATE,
-  contract_value DECIMAL(15, 2),
+  current_value DECIMAL(15, 2),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  CONSTRAINT check_active_no_termination CHECK (
+    (status = 'ACTIVE' AND termination_reason IS NULL) OR 
+    (status = 'ENDED')
+  )
 );
+
+-- Contract Logs
+CREATE TABLE contract_logs (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  contract_id UUID NOT NULL REFERENCES contracts(id) ON DELETE CASCADE,
+  action_type TEXT NOT NULL CHECK (action_type IN ('UPSELL', 'DOWNSELL', 'CHURN', 'CUT', 'NOT_RENEWED', 'RENEWAL_EXIT', 'RENEWAL_ENTRY')),
+  old_value DECIMAL(15, 2),
+  new_value DECIMAL(15, 2),
+  delta_value DECIMAL(15, 2) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL
+);
+
+CREATE INDEX idx_contract_logs_contract ON contract_logs(contract_id);
+CREATE INDEX idx_contract_logs_action ON contract_logs(action_type);
+CREATE INDEX idx_contract_logs_created ON contract_logs(created_at);
+CREATE INDEX idx_contracts_previous ON contracts(previous_contract_id);
 
 -- Contract Assignments
 CREATE TABLE contract_assignments (
@@ -205,11 +227,40 @@ CREATE TRIGGER audit_roles AFTER INSERT OR UPDATE OR DELETE ON roles FOR EACH RO
 CREATE TRIGGER audit_collabs AFTER INSERT OR UPDATE OR DELETE ON collaborators FOR EACH ROW EXECUTE FUNCTION audit_trigger_function();
 CREATE TRIGGER audit_clients AFTER INSERT OR UPDATE OR DELETE ON clients FOR EACH ROW EXECUTE FUNCTION audit_trigger_function();
 CREATE TRIGGER audit_contracts AFTER INSERT OR UPDATE OR DELETE ON contracts FOR EACH ROW EXECUTE FUNCTION audit_trigger_function();
+CREATE TRIGGER audit_contract_logs AFTER INSERT OR UPDATE OR DELETE ON contract_logs FOR EACH ROW EXECUTE FUNCTION audit_trigger_function();
 CREATE TRIGGER audit_assignments AFTER INSERT OR UPDATE OR DELETE ON contract_assignments FOR EACH ROW EXECUTE FUNCTION audit_trigger_function();
+
+-- Contract State Validation Function
+CREATE OR REPLACE FUNCTION validate_contract_state()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Ensure ACTIVE contracts don't have termination_reason
+  IF NEW.status = 'ACTIVE' AND NEW.termination_reason IS NOT NULL THEN
+    RAISE EXCEPTION 'ACTIVE contracts cannot have a termination_reason';
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER validate_contract_state_trigger BEFORE INSERT OR UPDATE ON contracts FOR EACH ROW EXECUTE FUNCTION validate_contract_state();
 CREATE TRIGGER audit_tags AFTER INSERT OR UPDATE OR DELETE ON tags FOR EACH ROW EXECUTE FUNCTION audit_trigger_function();
 CREATE TRIGGER audit_client_tags AFTER INSERT OR UPDATE OR DELETE ON client_tags FOR EACH ROW EXECUTE FUNCTION audit_trigger_function();
 
--- 7. RBAC and Permission Functions
+-- 7. Contract State Validation Function
+CREATE OR REPLACE FUNCTION validate_contract_state()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Ensure ACTIVE contracts don't have termination_reason
+  IF NEW.status = 'ACTIVE' AND NEW.termination_reason IS NOT NULL THEN
+    RAISE EXCEPTION 'ACTIVE contracts cannot have a termination_reason';
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 8. RBAC and Permission Functions
 
 CREATE OR REPLACE FUNCTION has_permission(target_table_name TEXT, permission_type TEXT)
 RETURNS BOOLEAN AS $$
@@ -288,7 +339,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER STABLE SET search_path = public;
 
--- 8. Client Identifier Trigger
+-- 9. Client Identifier Trigger
 CREATE OR REPLACE FUNCTION generate_client_identifier()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -304,7 +355,7 @@ CREATE TRIGGER set_client_identifier
   FOR EACH ROW
   EXECUTE FUNCTION generate_client_identifier();
 
--- 9. RLS Policies
+-- 10. RLS Policies
 
 ALTER TABLE roles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE role_permissions ENABLE ROW LEVEL SECURITY;
@@ -313,6 +364,7 @@ ALTER TABLE clients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tags ENABLE ROW LEVEL SECURITY;
 ALTER TABLE client_tags ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contracts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE contract_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contract_assignments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
 
@@ -375,6 +427,32 @@ CREATE POLICY "Contracts Insert" ON contracts FOR INSERT WITH CHECK (has_permiss
 CREATE POLICY "Contracts Update" ON contracts FOR UPDATE USING (has_permission('contracts', 'write'));
 CREATE POLICY "Contracts Delete" ON contracts FOR DELETE USING (has_permission('contracts', 'delete'));
 
+-- Contract Logs
+CREATE POLICY "Contract Logs Select" ON contract_logs FOR SELECT 
+USING (
+  EXISTS (
+    SELECT 1 FROM contracts c
+    WHERE c.id = contract_logs.contract_id
+    AND has_permission('contracts', 'read')
+  )
+);
+CREATE POLICY "Contract Logs Insert" ON contract_logs FOR INSERT 
+WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM contracts c
+    WHERE c.id = contract_logs.contract_id
+    AND has_permission('contracts', 'write')
+  )
+);
+CREATE POLICY "Contract Logs Manage" ON contract_logs FOR ALL 
+USING (
+  EXISTS (
+    SELECT 1 FROM contracts c
+    WHERE c.id = contract_logs.contract_id
+    AND has_permission('contracts', 'write')
+  )
+);
+
 -- Contract Assignments
 CREATE POLICY "Assignments Select" ON contract_assignments FOR SELECT USING (has_permission('contract_assignments', 'read'));
 CREATE POLICY "Assignments Insert" ON contract_assignments FOR INSERT WITH CHECK (has_permission('contract_assignments', 'write'));
@@ -386,7 +464,7 @@ CREATE POLICY "Audit Logs Select" ON audit_logs FOR SELECT USING (
   has_permission('audit_logs', 'read')
 );
 
--- 10. Seed Initial Admin User
+-- 11. Seed Initial Admin User
 -- This creates the initial Admin role and Collaborator.
 -- Note: The auth user must be created separately via the seed-admin.ts script or Supabase Dashboard.
 -- The collaborator is created with user_id = NULL initially, and will be linked when the auth user is created.

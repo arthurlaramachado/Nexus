@@ -32,7 +32,7 @@ export default function CollaboratorForm({ collaborator, roles }: CollaboratorFo
       full_name: collaborator.full_name,
       email: collaborator.email,
       role_id: collaborator.role_id,
-      employment_status: collaborator.status,
+      employment_status: collaborator.status === 'invited' ? 'active' : collaborator.status,
     } : {
       full_name: '',
       email: '',

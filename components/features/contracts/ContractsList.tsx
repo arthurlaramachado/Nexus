@@ -11,10 +11,9 @@ import { PencilSquareIcon } from '@heroicons/react/24/outline'
 export default function ContractsList({ canWrite }: { canWrite: boolean }) {
   const searchParams = useSearchParams()
   const status = searchParams.get('status') || undefined
-  const contract_type = searchParams.get('contract_type') || undefined
   const client_id = searchParams.get('client_id') || undefined
 
-  const { data: contracts, isLoading } = useContracts({ status, contract_type, client_id })
+  const { data: contracts, isLoading } = useContracts({ status, client_id })
 
   if (isLoading && !contracts) {
     return <div className="animate-pulse space-y-4">
@@ -28,8 +27,8 @@ export default function ContractsList({ canWrite }: { canWrite: boolean }) {
         <TableRow>
           <TableHeader>Name</TableHeader>
           <TableHeader>Client</TableHeader>
-          <TableHeader>Type</TableHeader>
           <TableHeader>Status</TableHeader>
+          <TableHeader>Termination Reason</TableHeader>
           <TableHeader>Start Date</TableHeader>
           <TableHeader>End Date</TableHeader>
           <TableHeader>Value</TableHeader>
@@ -56,30 +55,40 @@ export default function ContractsList({ canWrite }: { canWrite: boolean }) {
                   {contract.clients?.name || '-'}
                 </Link>
               </TableCell>
-              <TableCell>{contract.contract_type}</TableCell>
               <TableCell>
                 <Badge
                   variant={
-                    contract.status === 'active'
+                    contract.status === 'ACTIVE'
                       ? 'success'
-                      : contract.status === 'paused'
-                      ? 'warning'
                       : 'default'
                   }
                 >
                   {contract.status}
                 </Badge>
               </TableCell>
+              <TableCell>
+                {contract.termination_reason ? (
+                  <Badge variant="warning">
+                    {contract.termination_reason === 'NOT_RENEWED' ? 'Not Renewed' :
+                     contract.termination_reason === 'CHURN' ? 'Churn' :
+                     contract.termination_reason === 'CUT' ? 'Cut' :
+                     contract.termination_reason === 'RENEWED' ? 'Renewed' :
+                     contract.termination_reason}
+                  </Badge>
+                ) : (
+                  '-'
+                )}
+              </TableCell>
               <TableCell>{new Date(contract.start_date).toLocaleDateString()}</TableCell>
               <TableCell>
                 {contract.end_date ? new Date(contract.end_date).toLocaleDateString() : '-'}
               </TableCell>
               <TableCell>
-                {contract.contract_value
+                {contract.current_value
                   ? new Intl.NumberFormat('en-US', {
                       style: 'currency',
                       currency: 'USD',
-                    }).format(contract.contract_value)
+                    }).format(contract.current_value)
                   : '-'}
               </TableCell>
               <TableCell className="text-right">
