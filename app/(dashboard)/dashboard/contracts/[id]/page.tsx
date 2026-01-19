@@ -44,10 +44,19 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
     .eq('contract_id', id)
     .order('start_date', { ascending: false })
 
-  const { data: logs } = await supabase
+  // Fetch contract logs (financial changes)
+  const { data: contractLogs } = await supabase
     .from('contract_logs')
     .select('*')
     .eq('contract_id', id)
+    .order('created_at', { ascending: false })
+
+  // Fetch audit logs (all changes to the contract)
+  const { data: auditLogs } = await supabase
+    .from('audit_logs')
+    .select('*')
+    .eq('table_name', 'contracts')
+    .eq('record_id', id)
     .order('created_at', { ascending: false })
 
   const transformedAssignments = (assignments || []).map((a: any) => ({
@@ -232,7 +241,7 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
       {/* Contract Logs Section */}
       <div className="mb-6">
         <Card title="Contract History">
-          <ContractLogsList logs={logs || []} />
+          <ContractLogsList contractLogs={contractLogs || []} auditLogs={auditLogs || []} />
         </Card>
       </div>
     </div>

@@ -10,7 +10,8 @@ import Modal from '@/components/ui/Modal'
 import ClientForm from '@/components/forms/ClientForm'
 import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '@/components/ui/Table'
 import { formatDate, formatCurrency } from '@/lib/utils/formatting'
-import { Client, Contract } from '@/types/database'
+import { Client, Contract, AuditLog } from '@/types/database'
+import AuditHistoryList from '@/components/audit/AuditHistoryList'
 
 interface ClientWithTags extends Client {
   client_tags?: {
@@ -24,9 +25,10 @@ interface ClientWithTags extends Client {
 interface ClientDetailProps {
   client: ClientWithTags
   contracts: Contract[]
+  auditLogs: AuditLog[]
 }
 
-export default function ClientDetail({ client, contracts }: ClientDetailProps) {
+export default function ClientDetail({ client, contracts, auditLogs }: ClientDetailProps) {
   const router = useRouter()
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -172,6 +174,10 @@ export default function ClientDetail({ client, contracts }: ClientDetailProps) {
             <Button>Add Contract</Button>
           </Link>
         </div>
+      </Card>
+
+      <Card title="Change History">
+        <AuditHistoryList auditLogs={auditLogs} />
       </Card>
     </div>
   )

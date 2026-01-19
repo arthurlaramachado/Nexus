@@ -5,6 +5,7 @@ import Button from '@/components/ui/Button'
 import Link from 'next/link'
 import Card from '@/components/ui/Card'
 import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '@/components/ui/Table'
+import AuditHistoryList from '@/components/audit/AuditHistoryList'
 
 export default async function CollaboratorDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -25,6 +26,14 @@ export default async function CollaboratorDetailPage({ params }: { params: Promi
     .select('*, contracts(*, clients(name))')
     .eq('collaborator_id', id)
     .order('start_date', { ascending: false })
+
+  // Fetch audit logs for this collaborator
+  const { data: auditLogs } = await supabase
+    .from('audit_logs')
+    .select('*')
+    .eq('table_name', 'collaborators')
+    .eq('record_id', id)
+    .order('created_at', { ascending: false })
 
   return (
     <div>
@@ -127,6 +136,10 @@ export default async function CollaboratorDetailPage({ params }: { params: Promi
             <Button>Assign to Contract</Button>
           </Link>
         </div>
+      </Card>
+
+      <Card title="Change History">
+        <AuditHistoryList auditLogs={auditLogs || []} />
       </Card>
     </div>
   )

@@ -22,5 +22,13 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
     .eq('client_id', id)
     .order('created_at', { ascending: false })
 
-  return <ClientDetail client={client} contracts={contracts || []} />
+  // Fetch audit logs for this client
+  const { data: auditLogs } = await supabase
+    .from('audit_logs')
+    .select('*')
+    .eq('table_name', 'clients')
+    .eq('record_id', id)
+    .order('created_at', { ascending: false })
+
+  return <ClientDetail client={client} contracts={contracts || []} auditLogs={auditLogs || []} />
 }
