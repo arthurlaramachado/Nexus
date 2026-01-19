@@ -1,10 +1,13 @@
 'use client'
 
+import { useState } from 'react'
 import { ContractLog, AuditLog } from '@/types/database'
 import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '@/components/ui/Table'
 import Badge from '@/components/ui/Badge'
-import AuditChanges from '@/components/audit/AuditChanges'
+import Button from '@/components/ui/Button'
+import ChangesModal from '@/components/audit/ChangesModal'
 import { formatCurrency, formatDateTime } from '@/lib/utils/formatting'
+import { EyeIcon } from '@heroicons/react/24/outline'
 
 interface ContractLogsListProps {
   contractLogs: ContractLog[]
@@ -20,6 +23,7 @@ type CombinedLog = {
 }
 
 export default function ContractLogsList({ contractLogs, auditLogs }: ContractLogsListProps) {
+  const [selectedAuditLog, setSelectedAuditLog] = useState<AuditLog | null>(null)
   // Helper to check if two timestamps are close (within 5 seconds)
   const areCloseInTime = (date1: string, date2: string, thresholdSeconds: number = 5) => {
     const diff = Math.abs(new Date(date1).getTime() - new Date(date2).getTime())
@@ -152,6 +156,16 @@ export default function ContractLogsList({ contractLogs, auditLogs }: ContractLo
     }
   }
 
+  const getChangesCount = (log: AuditLog): number => {
+    if (Array.isArray(log.changes)) {
+      return log.changes.filter((c: any) => c && c.field).length
+    } else if (log.changes && typeof log.changes === 'object') {
+      const systemFields = ['id', 'created_at', 'updated_at']
+      return Object.keys(log.changes).filter(key => !systemFields.includes(key)).length
+    }
+    return 0
+  }
+
   if (combinedLogs.length === 0) {
     return (
       <div className="text-center text-gray-500 py-8">
@@ -161,6 +175,7 @@ export default function ContractLogsList({ contractLogs, auditLogs }: ContractLo
   }
 
   return (
+    <>
     <Table>
       <TableHead>
         <TableRow>
@@ -170,6 +185,7 @@ export default function ContractLogsList({ contractLogs, auditLogs }: ContractLo
           <TableHeader>Old Value</TableHeader>
           <TableHeader>New Value</TableHeader>
           <TableHeader>Delta</TableHeader>
+          <TableHeader className="text-right">Actions</TableHeader>
         </TableRow>
       </TableHead>
       <TableBody>
@@ -192,7 +208,9 @@ export default function ContractLogsList({ contractLogs, auditLogs }: ContractLo
                 </TableCell>
                 <TableCell>
                   {isMerged && log.auditLog ? (
-                    <AuditChanges changes={log.auditLog.changes} action={log.auditLog.action} />
+                    <span className="text-sm text-gray-600">
+                      {getChangesCount(log.auditLog)} {getChangesCount(log.auditLog) === 1 ? 'field' : 'fields'} changed
+                    </span>
                   ) : (
                     <span className="text-sm text-gray-500">Financial change</span>
                   )}
@@ -209,6 +227,19 @@ export default function ContractLogsList({ contractLogs, auditLogs }: ContractLo
                   >
                     {formatCurrency(cl.delta_value)}
                   </span>
+                </TableCell>
+                <TableCell className="text-right">
+                  {isMerged && log.auditLog && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSelectedAuditLog(log.auditLog!)}
+                      className="flex items-center gap-1"
+                    >
+                      <EyeIcon className="w-3.5 h-3.5" />
+                      View
+                    </Button>
+                  )}
                 </TableCell>
               </TableRow>
             )
@@ -231,7 +262,9 @@ export default function ContractLogsList({ contractLogs, auditLogs }: ContractLo
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <AuditChanges changes={al.changes} action={al.action} />
+                  <span className="text-sm text-gray-600">
+                    {getChangesCount(al)} {getChangesCount(al) === 1 ? 'field' : 'fields'} changed
+                  </span>
                 </TableCell>
                 <TableCell>
                   {valueChange ? formatCurrency(valueChange.old || valueChange.old_value) : '-'}
@@ -258,6 +291,17 @@ export default function ContractLogsList({ contractLogs, auditLogs }: ContractLo
                     '-'
                   )}
                 </TableCell>
+                <TableCell className="text-right">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedAuditLog(al)}
+                    className="flex items-center gap-1"
+                  >
+                    <EyeIcon className="w-3.5 h-3.5" />
+                    View
+                  </Button>
+                </TableCell>
               </TableRow>
             )
           }
@@ -265,5 +309,16 @@ export default function ContractLogsList({ contractLogs, auditLogs }: ContractLo
         })}
       </TableBody>
     </Table>
+
+    {selectedAuditLog && (
+      <ChangesModal
+        isOpen={!!selectedAuditLog}
+        onClose={() => setSelectedAuditLog(null)}
+        changes={selectedAuditLog.changes}
+        action={selectedAuditLog.action}
+        title={`Change Details - ${formatDateTime(selectedAuditLog.created_at)}`}
+      />
+    )}
+    </>
   )
 }
