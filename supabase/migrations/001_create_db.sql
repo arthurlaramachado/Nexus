@@ -247,21 +247,7 @@ CREATE TRIGGER validate_contract_state_trigger BEFORE INSERT OR UPDATE ON contra
 CREATE TRIGGER audit_tags AFTER INSERT OR UPDATE OR DELETE ON tags FOR EACH ROW EXECUTE FUNCTION audit_trigger_function();
 CREATE TRIGGER audit_client_tags AFTER INSERT OR UPDATE OR DELETE ON client_tags FOR EACH ROW EXECUTE FUNCTION audit_trigger_function();
 
--- 7. Contract State Validation Function
-CREATE OR REPLACE FUNCTION validate_contract_state()
-RETURNS TRIGGER AS $$
-BEGIN
-  -- Ensure ACTIVE contracts don't have termination_reason
-  IF NEW.status = 'ACTIVE' AND NEW.termination_reason IS NOT NULL THEN
-    RAISE EXCEPTION 'ACTIVE contracts cannot have a termination_reason';
-  END IF;
-  
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- 8. RBAC and Permission Functions
-
+-- 7. RBAC and Permission Functions
 CREATE OR REPLACE FUNCTION has_permission(target_table_name TEXT, permission_type TEXT)
 RETURNS BOOLEAN AS $$
 DECLARE
