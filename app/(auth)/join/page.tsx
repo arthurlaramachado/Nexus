@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { completeSignup, validateInviteToken } from '@/lib/invites/actions'
 import Button from '@/components/ui/Button'
@@ -8,7 +8,7 @@ import Input from '@/components/ui/Input'
 import Logo from '@/components/ui/Logo'
 import { createClient } from '@/lib/supabase/client'
 
-export default function JoinPage() {
+function JoinForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const token = searchParams.get('token')
@@ -168,5 +168,20 @@ export default function JoinPage() {
         </form>
       </div>
     </div>
+  )
+}
+
+export default function JoinPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <Logo className="h-12 w-auto mx-auto" />
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <JoinForm />
+    </Suspense>
   )
 }

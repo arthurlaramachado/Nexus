@@ -18,9 +18,11 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 const adminPassword = process.env.ADMIN_PASSWORD || process.env.ADMIN_ENV
 
 if (!supabaseUrl || !supabaseServiceKey) {
-  console.error('❌ Missing Supabase environment variables')
-  console.error('Required: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY')
-  process.exit(1)
+  console.warn('⚠️  Missing Supabase environment variables')
+  console.warn('⚠️  Required: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY')
+  console.warn('⚠️  Skipping admin seed. This is expected in local builds.')
+  console.warn('⚠️  Make sure these are set in Vercel environment variables for production.')
+  process.exit(0) // Exit gracefully, don't fail the build
 }
 
 if (!adminPassword) {
