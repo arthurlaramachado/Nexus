@@ -2,13 +2,16 @@ import Logo from '@/components/ui/Logo'
 import NavItem from '@/components/layout/NavItem'
 import Avatar from '@/components/ui/Avatar'
 import SignOutButton from '@/components/auth/SignOutButton'
-import { getFilteredNavigation } from '@/lib/navigation'
-import { getUserCollaborator } from '@/lib/auth/helpers'
+import { NavItem as NavItemType } from '@/lib/navigation'
+import { Collaborator } from '@/types/database'
 
-export default async function Sidebar() {
-  const collaborator = await getUserCollaborator()
+interface SidebarProps {
+  collaborator: Collaborator | null
+  navItems: NavItemType[]
+}
+
+export default function Sidebar({ collaborator, navItems }: SidebarProps) {
   const email = collaborator?.email || null
-  const navItems = await getFilteredNavigation()
 
   return (
     <div className="hidden lg:flex fixed left-0 top-0 h-full w-64 bg-[#1A1A2E] flex-col z-50">

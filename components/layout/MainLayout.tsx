@@ -1,20 +1,27 @@
 import { ReactNode } from 'react'
 import Sidebar from '@/components/layout/Sidebar'
 import MobileLayout from '@/components/layout/MobileLayout'
-import { getFilteredNavigationSerializable } from '@/lib/navigation'
+import { getFilteredNavigation } from '@/lib/navigation'
 import { getUserCollaborator } from '@/lib/auth/helpers'
 
 export default async function MainLayout({ children }: { children: ReactNode }) {
-  const collaborator = await getUserCollaborator()
-  const navItems = await getFilteredNavigationSerializable()
+  const [collaborator, navItems] = await Promise.all([
+    getUserCollaborator(),
+    getFilteredNavigation(),
+  ])
+
   const userName = collaborator?.full_name || null
   const userEmail = collaborator?.email || null
+  const serializableNavItems = navItems.map(({ name, href }) => ({ name, href }))
 
   return (
     <div className="min-h-screen bg-[#F7F7F8]">
-      <Sidebar />
-      <MobileLayout
+      <Sidebar
+        collaborator={collaborator}
         navItems={navItems}
+      />
+      <MobileLayout
+        navItems={serializableNavItems}
         userName={userName}
         userEmail={userEmail}
       />

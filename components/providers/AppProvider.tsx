@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Collaborator, Role } from '@/types/database'
 
@@ -22,14 +22,22 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined)
 
+/**
+ * AppProvider manages client-side auth state.
+ *
+ * It does NOT fetch on mount — all auth/permission data is resolved server-side
+ * (via requireAuth/checkPermission in server components). This provider only
+ * re-fetches when auth state changes (login/logout) to keep client state in sync.
+ */
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any>(null)
   const [collaborator, setCollaborator] = useState<(Collaborator & { roles: Role }) | null>(null)
   const [permissions, setPermissions] = useState<Permission[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const supabase = createClient()
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
+    setLoading(true)
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
@@ -41,15 +49,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
       setUser(user)
 
-      // Fetch collaborator with role and permissions in a single roundtrip if possible
-      // But for simplicity and speed, let's fetch them in parallel
       const [collabRes, permRes] = await Promise.all([
         supabase
           .from('collaborators')
           .select('*, roles(*)')
           .eq('user_id', user.id)
           .single(),
-        supabase.rpc('get_user_permissions') // I'll create this RPC for better performance
+        supabase.rpc('get_user_permissions'),
       ])
 
       if (collabRes.data) {
@@ -58,36 +64,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
       if (permRes.data) {
         setPermissions(permRes.data)
-      } else {
-        // Fallback: if RPC fails, we might need to fetch via regular query if RLS allows
-        const { data: fallbackPerms } = await supabase
-          .from('role_permissions')
-          .select('*')
-          .eq('role_id', collabRes.data?.role_id)
-        
-        if (fallbackPerms) setPermissions(fallbackPerms)
       }
     } catch (err) {
       console.error('Error fetching app state:', err)
     } finally {
       setLoading(false)
     }
-  }
+  }, [supabase])
 
   useEffect(() => {
-    fetchData()
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      fetchData()
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        fetchData()
+      } else {
+        setUser(null)
+        setCollaborator(null)
+        setPermissions([])
+      }
     })
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [fetchData, supabase.auth])
 
-  const hasPermission = (tableName: string, type: 'read' | 'write' | 'delete') => {
+  const hasPermission = useCallback((tableName: string, type: 'read' | 'write' | 'delete') => {
     if (!collaborator) return false
     if (collaborator.roles?.is_system_role) return true
-    
+
     const perm = permissions.find(p => p.table_name === tableName)
     if (!perm) return false
 
@@ -95,17 +97,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (type === 'write') return perm.can_write
     if (type === 'delete') return perm.can_delete
     return false
-  }
+  }, [collaborator, permissions])
 
   return (
-    <AppContext.Provider 
-      value={{ 
-        user, 
-        collaborator, 
-        permissions, 
-        loading, 
+    <AppContext.Provider
+      value={{
+        user,
+        collaborator,
+        permissions,
+        loading,
         hasPermission,
-        refresh: fetchData 
+        refresh: fetchData,
       }}
     >
       {children}
