@@ -131,13 +131,13 @@ export default function RoleForm({ role }: RoleFormProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-4xl">
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+        <div className="bg-[#FEE2E2] border border-[#EF4444]/20 text-[#991B1B] px-4 py-3 rounded">
           {error}
         </div>
       )}
 
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900">General Information</h2>
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-[#E4E4E8]">
+        <h2 className="text-lg font-semibold mb-4 text-[#1A1A2E]">General Information</h2>
         <Input
           label="Role Name *"
           {...register('name')}
@@ -146,25 +146,25 @@ export default function RoleForm({ role }: RoleFormProps) {
         />
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Table Permissions</h2>
-          <p className="text-sm text-gray-500 mt-1">Select the access level for each module.</p>
+      <div className="bg-white rounded-lg shadow-sm border border-[#E4E4E8] overflow-hidden">
+        <div className="p-6 border-b border-[#E4E4E8]">
+          <h2 className="text-lg font-semibold text-[#1A1A2E]">Table Permissions</h2>
+          <p className="text-sm text-[#9898A3] mt-1">Select the access level for each module.</p>
         </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-[#E4E4E8]">
+            <thead className="bg-[#F7F7F8]">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Module / Table</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Read</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Write</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Delete</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#9898A3] uppercase tracking-wider">Module / Table</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-[#9898A3] uppercase tracking-wider">Read</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-[#9898A3] uppercase tracking-wider">Write</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-[#9898A3] uppercase tracking-wider">Delete</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-[#E4E4E8]">
               {TABLES.map((table) => (
                 <tr key={table}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 capitalize">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#1A1A2E] capitalize">
                     {table.replace('_', ' ')}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">

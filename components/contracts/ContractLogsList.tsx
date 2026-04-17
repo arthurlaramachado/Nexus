@@ -168,7 +168,7 @@ export default function ContractLogsList({ contractLogs, auditLogs }: ContractLo
 
   if (combinedLogs.length === 0) {
     return (
-      <div className="text-center text-gray-500 py-8">
+      <div className="text-center text-[#9898A3] py-8">
         No contract history found
       </div>
     )
@@ -198,7 +198,7 @@ export default function ContractLogsList({ contractLogs, auditLogs }: ContractLo
             
             return (
               <TableRow key={log.id}>
-                <TableCell className="text-sm text-gray-600">
+                <TableCell className="text-sm text-[#6B6B78]">
                   {formatDateTime(cl.created_at)}
                 </TableCell>
                 <TableCell>
@@ -208,11 +208,11 @@ export default function ContractLogsList({ contractLogs, auditLogs }: ContractLo
                 </TableCell>
                 <TableCell>
                   {isMerged && log.auditLog ? (
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-[#6B6B78]">
                       {getChangesCount(log.auditLog)} {getChangesCount(log.auditLog) === 1 ? 'field' : 'fields'} changed
                     </span>
                   ) : (
-                    <span className="text-sm text-gray-500">Financial change</span>
+                    <span className="text-sm text-[#9898A3]">Financial change</span>
                   )}
                 </TableCell>
                 <TableCell>{formatCurrency(cl.old_value)}</TableCell>
@@ -222,7 +222,7 @@ export default function ContractLogsList({ contractLogs, auditLogs }: ContractLo
                     className={
                       cl.delta_value >= 0
                         ? 'text-green-600 font-medium'
-                        : 'text-red-600 font-medium'
+                        : 'text-[#991B1B] font-medium'
                     }
                   >
                     {formatCurrency(cl.delta_value)}
@@ -253,7 +253,7 @@ export default function ContractLogsList({ contractLogs, auditLogs }: ContractLo
             
             return (
               <TableRow key={log.id}>
-                <TableCell className="text-sm text-gray-600">
+                <TableCell className="text-sm text-[#6B6B78]">
                   {formatDateTime(al.created_at)}
                 </TableCell>
                 <TableCell>
@@ -262,7 +262,7 @@ export default function ContractLogsList({ contractLogs, auditLogs }: ContractLo
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-[#6B6B78]">
                     {getChangesCount(al)} {getChangesCount(al) === 1 ? 'field' : 'fields'} changed
                   </span>
                 </TableCell>
@@ -279,7 +279,7 @@ export default function ContractLogsList({ contractLogs, auditLogs }: ContractLo
                         (parseFloat(valueChange.new || valueChange.new_value || '0') - 
                          parseFloat(valueChange.old || valueChange.old_value || '0')) >= 0
                           ? 'text-green-600 font-medium'
-                          : 'text-red-600 font-medium'
+                          : 'text-[#991B1B] font-medium'
                       }
                     >
                       {formatCurrency(

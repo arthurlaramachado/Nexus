@@ -39,16 +39,16 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-[#F7F7F8] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="flex flex-col items-center">
           <Logo className="h-12 w-auto" />
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-[#1A1A2E]">
             Sign in to your account
           </h2>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-          <div className="rounded-md shadow-sm -space-y-px">
+        <form className="mt-8 space-y-6 bg-white rounded-xl border border-[#E4E4E8] shadow-[var(--shadow-card)] p-8" onSubmit={handleLogin}>
+          <div className="rounded-md -space-y-px">
             <div className="mb-4">
               <Input
                 label="Email address"
@@ -72,7 +72,7 @@ function LoginForm() {
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm">
+            <div className="bg-[#FEE2E2] border border-[#EF4444]/20 text-[#991B1B] px-4 py-3 rounded-lg text-sm">
               {error}
             </div>
           )}
@@ -95,10 +95,10 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-[#F7F7F8]">
         <div className="text-center">
           <Logo className="h-12 w-auto mx-auto" />
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <p className="mt-4 text-[#6B6B78]">Loading...</p>
         </div>
       </div>
     }>

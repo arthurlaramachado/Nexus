@@ -17,7 +17,7 @@ export default function ContractsList({ canWrite }: { canWrite: boolean }) {
 
   if (isLoading && !contracts) {
     return <div className="animate-pulse space-y-4">
-      <div className="h-64 bg-gray-200 rounded"></div>
+      <div className="h-64 bg-[#E4E4E8] rounded-xl"></div>
     </div>
   }
 
@@ -42,7 +42,7 @@ export default function ContractsList({ canWrite }: { canWrite: boolean }) {
               <TableCell>
                 <Link
                   href={`/dashboard/contracts/${contract.id}`}
-                  className="text-indigo-600 hover:text-indigo-900"
+                  className="text-[#3B82F6] hover:text-[#2563EB] font-medium"
                 >
                   {contract.name}
                 </Link>
@@ -50,19 +50,13 @@ export default function ContractsList({ canWrite }: { canWrite: boolean }) {
               <TableCell>
                 <Link
                   href={`/dashboard/clients/${contract.client_id}`}
-                  className="text-indigo-600 hover:text-indigo-900"
+                  className="text-[#3B82F6] hover:text-[#2563EB]"
                 >
                   {contract.clients?.name || '-'}
                 </Link>
               </TableCell>
               <TableCell>
-                <Badge
-                  variant={
-                    contract.status === 'ACTIVE'
-                      ? 'success'
-                      : 'default'
-                  }
-                >
+                <Badge variant={contract.status === 'ACTIVE' ? 'active' : 'ended'}>
                   {contract.status}
                 </Badge>
               </TableCell>
@@ -83,7 +77,7 @@ export default function ContractsList({ canWrite }: { canWrite: boolean }) {
               <TableCell>
                 {contract.end_date ? new Date(contract.end_date).toLocaleDateString() : '-'}
               </TableCell>
-              <TableCell>
+              <TableCell className="font-medium">
                 {contract.current_value
                   ? new Intl.NumberFormat('en-US', {
                       style: 'currency',
@@ -94,7 +88,7 @@ export default function ContractsList({ canWrite }: { canWrite: boolean }) {
               <TableCell className="text-right">
                 {canWrite && (
                   <Link href={`/dashboard/contracts/${contract.id}/edit`}>
-                    <Button variant="outline" size="sm" className="p-2" title="Edit Contract">
+                    <Button variant="ghost" size="sm" className="p-2" title="Edit Contract">
                       <PencilSquareIcon className="w-4 h-4" />
                     </Button>
                   </Link>
@@ -104,7 +98,7 @@ export default function ContractsList({ canWrite }: { canWrite: boolean }) {
           ))
         ) : (
           <TableRow>
-            <TableCell colSpan={8} className="text-center text-gray-500 py-8">
+            <TableCell colSpan={8} className="text-center text-[#9898A3] py-8">
               No contracts found
             </TableCell>
           </TableRow>

@@ -43,7 +43,7 @@ export default function AuditHistoryList({ auditLogs }: AuditHistoryListProps) {
 
   if (auditLogs.length === 0) {
     return (
-      <div className="text-center text-gray-500 py-8">
+      <div className="text-center text-[#9898A3] py-8">
         No history found
       </div>
     )
@@ -75,7 +75,7 @@ export default function AuditHistoryList({ auditLogs }: AuditHistoryListProps) {
             const changesCount = getChangesCount(log)
             return (
               <TableRow key={log.id}>
-                <TableCell className="text-sm text-gray-600">
+                <TableCell className="text-sm text-[#6B6B78]">
                   {formatDateTime(log.created_at)}
                 </TableCell>
                 <TableCell>
@@ -83,7 +83,7 @@ export default function AuditHistoryList({ auditLogs }: AuditHistoryListProps) {
                     {getActionLabel(log.action)}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-sm text-gray-600">
+                <TableCell className="text-sm text-[#6B6B78]">
                   {changesCount} {changesCount === 1 ? 'field' : 'fields'} changed
                 </TableCell>
                 <TableCell className="text-right">

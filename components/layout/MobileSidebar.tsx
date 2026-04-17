@@ -23,7 +23,6 @@ export default function MobileSidebar({
   userName,
   userEmail,
 }: MobileSidebarProps) {
-  // Close on escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -34,7 +33,6 @@ export default function MobileSidebar({
     return () => document.removeEventListener('keydown', handleEscape)
   }, [isOpen, onClose])
 
-  // Prevent body scroll when sidebar is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden'
@@ -51,7 +49,7 @@ export default function MobileSidebar({
       {/* Backdrop */}
       <div
         className={`
-          lg:hidden fixed inset-0 bg-black/50 z-40 transition-opacity duration-300 ease-in-out
+          lg:hidden fixed inset-0 bg-[#1A1A2E]/40 backdrop-blur-sm z-40 transition-opacity duration-300
           ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}
         `}
         onClick={onClose}
@@ -61,18 +59,18 @@ export default function MobileSidebar({
       {/* Sidebar */}
       <div
         className={`
-          lg:hidden fixed left-0 top-0 h-full w-72 bg-white border-r border-gray-200 flex flex-col shadow-2xl z-50
-          transform transition-transform duration-300 cubic-bezier(0.4, 0, 0.2, 1)
+          lg:hidden fixed left-0 top-0 h-full w-72 bg-[#1A1A2E] flex flex-col shadow-2xl z-50
+          transform transition-transform duration-300
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
         {/* Logo at top */}
-        <div className="h-16 flex items-center justify-center border-b border-gray-200 px-4">
-          <Logo size="lg" />
+        <div className="h-16 flex items-center px-4 py-5">
+          <Logo size="lg" variant="dark" />
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto py-4 px-3">
+        <nav className="flex-1 overflow-y-auto py-2 px-3">
           <div className="space-y-1">
             {navItems.map((item) => {
               const Icon = getIconForHref(item.href)
@@ -81,7 +79,7 @@ export default function MobileSidebar({
                   key={item.href}
                   href={item.href}
                   label={item.name}
-                  icon={<Icon className="w-5 h-5 flex-shrink-0" />}
+                  icon={<Icon className="w-4 h-4 flex-shrink-0" />}
                   onClick={onClose}
                 />
               )
@@ -90,7 +88,7 @@ export default function MobileSidebar({
         </nav>
 
         {/* User profile at bottom */}
-        <div className="border-t border-gray-200 p-4 bg-gray-50">
+        <div className="border-t border-white/8 p-4">
           <div className="flex items-center gap-3 mb-3">
             <Avatar
               name={userName}
@@ -98,11 +96,11 @@ export default function MobileSidebar({
               size="md"
             />
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-gray-900 truncate">
+              <div className="text-sm font-medium text-white truncate">
                 {userName || 'User'}
               </div>
               {userEmail && (
-                <div className="text-xs text-gray-500 truncate">
+                <div className="text-xs text-[#A8A8BB] truncate">
                   {userEmail}
                 </div>
               )}

@@ -14,9 +14,9 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
   const { id } = await params
   await requirePermission('contracts', 'read')
   const canWrite = await checkPermission('contracts', 'write')
-  
+
   const supabase = await createClient()
-  
+
   const { data: contract, error: contractError } = await supabase
     .from('contracts')
     .select('*, clients(*)')
@@ -86,7 +86,12 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
     <div>
       <div className="flex justify-between items-start mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{contract.name}</h1>
+          <div className="text-[13px] text-[#6B6B78] mb-2">
+            <Link href="/dashboard/contracts" className="hover:text-[#3B82F6]">Contracts</Link>
+            <span className="mx-1">/</span>
+            <span>{contract.name}</span>
+          </div>
+          <h1 className="text-2xl font-semibold text-[#1A1A2E] tracking-tight">{contract.name}</h1>
           <div className="mt-2 flex gap-2 items-center">
             <Badge
               variant={
@@ -105,7 +110,7 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
             {previousContract && (
               <Link
                 href={`/dashboard/contracts/${previousContract.id}`}
-                className="text-sm text-indigo-600 hover:text-indigo-900 flex items-center gap-1"
+                className="text-sm text-[#3B82F6] hover:text-[#2563EB] flex items-center gap-1"
               >
                 <ArrowLeftIcon className="w-4 h-4" />
                 Previous Contract: {previousContract.name}
@@ -123,38 +128,38 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
           <Card title="Contract Information">
             <dl className="space-y-4">
               <div>
-                <dt className="text-sm font-medium text-gray-500">Client</dt>
-                <dd className="mt-1 text-sm text-gray-900">
+                <dt className="text-sm font-medium text-[#9898A3]">Client</dt>
+                <dd className="mt-1 text-sm text-[#1A1A2E]">
                   <Link
                     href={`/dashboard/clients/${contract.client_id}`}
-                    className="text-indigo-600 hover:text-indigo-900 font-semibold"
+                    className="text-[#3B82F6] hover:text-[#2563EB] font-semibold"
                   >
                     {(contract.clients as any)?.name || '-'}
                   </Link>
                 </dd>
               </div>
               <div>
-                <dt className="text-sm font-medium text-gray-500">Dates</dt>
-                <dd className="mt-1 text-sm text-gray-900 space-y-1">
+                <dt className="text-sm font-medium text-[#9898A3]">Dates</dt>
+                <dd className="mt-1 text-sm text-[#1A1A2E] space-y-1">
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Start:</span>
+                    <span className="text-[#9898A3]">Start:</span>
                     <span>{new Date(contract.start_date).toLocaleDateString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500">End:</span>
+                    <span className="text-[#9898A3]">End:</span>
                     <span>{contract.end_date ? new Date(contract.end_date).toLocaleDateString() : 'N/A'}</span>
                   </div>
                   {contract.renewal_date && (
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Renewal:</span>
+                      <span className="text-[#9898A3]">Renewal:</span>
                       <span>{new Date(contract.renewal_date).toLocaleDateString()}</span>
                     </div>
                   )}
                 </dd>
               </div>
               <div>
-                <dt className="text-sm font-medium text-gray-500">Value</dt>
-                <dd className="mt-1 text-lg font-bold text-gray-900">
+                <dt className="text-sm font-medium text-[#9898A3]">Value</dt>
+                <dd className="mt-1 text-lg font-bold text-[#1A1A2E]">
                   {contract.current_value
                     ? new Intl.NumberFormat('en-US', {
                         style: 'currency',
@@ -168,8 +173,8 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
         </div>
 
         <div className="md:col-span-2">
-          <Card 
-            title="Team Assignments" 
+          <Card
+            title="Team Assignments"
             headerAction={
               canWrite && (
                 <Link href={`/dashboard/contract-assignments/new?contract_id=${id}`}>
@@ -198,7 +203,7 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
                       <TableCell>
                         <Link
                           href={`/dashboard/collaborators/${assignment.collaborator_id}`}
-                          className="text-indigo-600 hover:text-indigo-900 font-medium"
+                          className="text-[#3B82F6] hover:text-[#2563EB] font-medium"
                         >
                           {assignment.collaborators?.full_name || '-'}
                         </Link>
@@ -208,7 +213,7 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
                           {assignment.collaborators?.roles?.name || '-'}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-xs text-gray-500">
+                      <TableCell className="text-xs text-[#9898A3]">
                         {new Date(assignment.start_date).toLocaleDateString()} - {assignment.end_date ? new Date(assignment.end_date).toLocaleDateString() : 'Present'}
                       </TableCell>
                       <TableCell className="font-semibold">
@@ -231,7 +236,7 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
               </Table>
             ) : (
               <div className="py-12 text-center">
-                <p className="text-gray-500 italic">No collaborators assigned yet.</p>
+                <p className="text-[#9898A3] italic">No collaborators assigned yet.</p>
               </div>
             )}
           </Card>
@@ -247,4 +252,3 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
     </div>
   )
 }
-

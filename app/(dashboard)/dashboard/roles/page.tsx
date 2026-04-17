@@ -12,20 +12,20 @@ export default async function RolesPage() {
   const canDelete = await checkPermission('roles', 'delete')
 
   const supabase = await createClient()
-  
+
   const { data: roles, error } = await supabase
     .from('roles')
     .select('*')
     .order('name')
 
   if (error) {
-    return <div>Error loading roles: {error.message}</div>
+    return <div className="bg-[#FEE2E2] border border-[#EF4444]/20 text-[#991B1B] rounded-lg px-4 py-3">Error loading roles: {error.message}</div>
   }
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Roles</h1>
+        <h1 className="text-2xl font-semibold text-[#1A1A2E] tracking-tight">Roles</h1>
         {canWrite && (
           <Link href="/dashboard/roles/new">
             <Button>New Role</Button>
@@ -46,12 +46,12 @@ export default async function RolesPage() {
             {roles && roles.length > 0 ? (
               roles.map((role: any) => (
                 <TableRow key={role.id}>
-                  <TableCell className="font-medium text-gray-900">{role.name}</TableCell>
+                  <TableCell className="font-medium text-[#1A1A2E]">{role.name}</TableCell>
                   <TableCell>
                     {role.is_system_role ? (
-                      <Badge variant="info">System</Badge>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#1A1A2E] text-white">System</span>
                     ) : (
-                      <Badge variant="default">Custom</Badge>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#F1F1F4] text-[#6B6B78]">Custom</span>
                     )}
                   </TableCell>
                   <TableCell>
@@ -64,9 +64,9 @@ export default async function RolesPage() {
                         </Link>
                       )}
                       {canDelete && !role.is_system_role && (
-                        <Button 
-                          variant="outline" 
-                          size="icon" 
+                        <Button
+                          variant="outline"
+                          size="icon"
                           className="text-red-600 hover:text-red-700 hover:bg-red-50"
                         >
                           <TrashIcon className="w-4 h-4" />
@@ -78,7 +78,7 @@ export default async function RolesPage() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={3} className="text-center text-gray-500 py-8">
+                <TableCell colSpan={3} className="text-center text-[#9898A3] py-8">
                   No roles found
                 </TableCell>
               </TableRow>

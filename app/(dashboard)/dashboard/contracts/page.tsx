@@ -34,13 +34,13 @@ export default async function ContractsPage({
   const { data: contracts, error } = await query
 
   if (error) {
-    return <div>Error loading contracts: {error.message}</div>
+    return <div className="bg-[#FEE2E2] border border-[#EF4444]/20 text-[#991B1B] rounded-lg px-4 py-3">Error loading contracts: {error.message}</div>
   }
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Contracts</h1>
+        <h1 className="text-2xl font-semibold text-[#1A1A2E] tracking-tight">Contracts</h1>
         {canWrite && (
           <Link href="/dashboard/contracts/new">
             <Button>New Contract</Button>
@@ -69,7 +69,7 @@ export default async function ContractsPage({
                   <TableCell>
                     <Link
                       href={`/dashboard/contracts/${contract.id}`}
-                      className="text-indigo-600 hover:text-indigo-900"
+                      className="text-[#3B82F6] hover:text-[#2563EB]"
                     >
                       {contract.name}
                     </Link>
@@ -77,7 +77,7 @@ export default async function ContractsPage({
                   <TableCell>
                     <Link
                       href={`/dashboard/clients/${contract.client_id}`}
-                      className="text-indigo-600 hover:text-indigo-900"
+                      className="text-[#3B82F6] hover:text-[#2563EB]"
                     >
                       {contract.clients?.name || '-'}
                     </Link>
@@ -121,7 +121,7 @@ export default async function ContractsPage({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={8} className="text-center text-gray-500 py-8">
+                <TableCell colSpan={8} className="text-center text-[#9898A3] py-8">
                   No contracts found
                 </TableCell>
               </TableRow>

@@ -150,7 +150,7 @@ export default function ClientForm({ client, onSuccess, onCancel }: ClientFormPr
         onChange={setSelectedTags}
       />
 
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+      <div className="flex justify-end gap-3 pt-4 border-t border-[#E4E4E8]">
         <Button
           type="button"
           variant="outline"

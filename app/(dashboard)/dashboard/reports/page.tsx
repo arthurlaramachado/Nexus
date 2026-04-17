@@ -11,7 +11,7 @@ export default async function ReportsPage() {
   // 1. Contracts expiring in the next 90 days
   const ninetyDaysFromNow = new Date()
   ninetyDaysFromNow.setDate(ninetyDaysFromNow.getDate() + 90)
-  
+
   const { data: expiringContracts } = await supabase
     .from('contracts')
     .select('*, clients(name)')
@@ -25,7 +25,7 @@ export default async function ReportsPage() {
   const { count: totalClients } = await supabase
     .from('clients')
     .select('*', { count: 'exact', head: true })
-  
+
   const { count: inactiveClients } = await supabase
     .from('clients')
     .select('*', { count: 'exact', head: true })
@@ -39,13 +39,13 @@ export default async function ReportsPage() {
   const { data: assignments } = await supabase
     .from('contract_assignments')
     .select('collaborator_id, collaborators(full_name, roles(name))')
-  
+
   const collaboratorWorkload = assignments?.reduce((acc: any, a: any) => {
     const collabId = a.collaborator_id
     if (!acc[collabId]) {
       const roles = a.collaborators?.roles
       const roleName = Array.isArray(roles) ? roles[0]?.name : roles?.name
-      
+
       acc[collabId] = {
         name: a.collaborators?.full_name,
         role: roleName,
@@ -62,7 +62,7 @@ export default async function ReportsPage() {
   const { data: renewalStats } = await supabase
     .from('contracts')
     .select('type')
-  
+
   const renewalCounts = renewalStats?.reduce((acc: any, c: any) => {
     acc[c.type] = (acc[c.type] || 0) + 1
     return acc
@@ -70,27 +70,27 @@ export default async function ReportsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Reports & Analytics</h1>
+      <h1 className="text-2xl font-semibold text-[#1A1A2E] tracking-tight mb-6">Reports & Analytics</h1>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card title="Churn Rate">
-          <div className="text-4xl font-bold text-gray-900">{churnRate.toFixed(1)}%</div>
-          <p className="text-sm text-gray-500 mt-2">Inactive vs Total Clients</p>
+          <div className="text-4xl font-bold text-[#1A1A2E]">{churnRate.toFixed(1)}%</div>
+          <p className="text-[13px] text-[#6B6B78] mt-2">Inactive vs Total Clients</p>
         </Card>
-        
+
         <Card title="Active Contracts Expiring Soon">
-          <div className="text-4xl font-bold text-gray-900">{expiringContracts?.length || 0}</div>
-          <p className="text-sm text-gray-500 mt-2">Next 90 Days</p>
+          <div className="text-4xl font-bold text-[#1A1A2E]">{expiringContracts?.length || 0}</div>
+          <p className="text-[13px] text-[#6B6B78] mt-2">Next 90 Days</p>
         </Card>
 
         <Card title="Total Active Clients">
-          <div className="text-4xl font-bold text-gray-900">{totalClients ? totalClients - (inactiveClients || 0) : 0}</div>
-          <p className="text-sm text-gray-500 mt-2">Currently Active</p>
+          <div className="text-4xl font-bold text-[#1A1A2E]">{totalClients ? totalClients - (inactiveClients || 0) : 0}</div>
+          <p className="text-[13px] text-[#6B6B78] mt-2">Currently Active</p>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Expiring Contracts Table */}
         <Card title="Expiring Contracts (Next 90 Days)">
           {expiringContracts && expiringContracts.length > 0 ? (
@@ -108,7 +108,7 @@ export default async function ReportsPage() {
                     <TableCell>{contract.clients?.name}</TableCell>
                     <TableCell>{contract.name}</TableCell>
                     <TableCell>
-                      <span className="text-red-600 font-medium">
+                      <span className="text-[#991B1B] font-medium">
                         {new Date(contract.end_date).toLocaleDateString()}
                       </span>
                     </TableCell>
@@ -117,7 +117,7 @@ export default async function ReportsPage() {
               </TableBody>
             </Table>
           ) : (
-            <p className="text-gray-500">No contracts expiring soon.</p>
+            <p className="text-[#9898A3]">No contracts expiring soon.</p>
           )}
         </Card>
 
@@ -145,7 +145,7 @@ export default async function ReportsPage() {
               </TableBody>
             </Table>
           ) : (
-            <p className="text-gray-500">No active assignments data.</p>
+            <p className="text-[#9898A3]">No active assignments data.</p>
           )}
         </Card>
       </div>

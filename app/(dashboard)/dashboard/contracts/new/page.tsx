@@ -12,7 +12,7 @@ export default async function NewContractPage({
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">New Contract</h1>
+      <h1 className="text-2xl font-semibold text-[#1A1A2E] tracking-tight mb-6">New Contract</h1>
       <ContractForm clients={clients || []} defaultClientId={client_id} />
     </div>
   )

@@ -50,12 +50,12 @@ export default async function AuditLogsPage({
   const { data: auditLogs, error } = await query
 
   if (error) {
-    return <div>Error loading audit logs: {error.message}</div>
+    return <div className="bg-[#FEE2E2] border border-[#EF4444]/20 text-[#991B1B] rounded-lg px-4 py-3">Error loading audit logs: {error.message}</div>
   }
 
   // Fetch collaborators for user names manually since we can't join easily on user_id if it's nullable or complex
   const userIds = [...new Set((auditLogs || []).map((log: any) => log.user_id).filter(Boolean))]
-  
+
   // We need to find the collaborator record for these user_ids
   // Since user_id is unique per org in collaborators, this works fine in context
   const { data: collaboratorsMap } = userIds.length > 0
@@ -120,9 +120,22 @@ export default async function AuditLogsPage({
     'contract_assignments',
   ]
 
+  const getActionBadgeClasses = (action: string) => {
+    switch (action) {
+      case 'insert':
+        return 'bg-[#DCFCE7] text-[#15803D]'
+      case 'update':
+        return 'bg-[#DBEAFE] text-[#1D4ED8]'
+      case 'delete':
+        return 'bg-[#FEE2E2] text-[#991B1B]'
+      default:
+        return ''
+    }
+  }
+
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Audit Logs</h1>
+      <h1 className="text-2xl font-semibold text-[#1A1A2E] tracking-tight mb-6">Audit Logs</h1>
 
       <AuditLogFilters users={filterUsers} tableNames={tableNames} />
 
@@ -151,17 +164,9 @@ export default async function AuditLogsPage({
                   </TableCell>
                   <TableCell>{log.table_name}</TableCell>
                   <TableCell>
-                    <Badge
-                      variant={
-                        log.action === 'insert'
-                          ? 'success'
-                          : log.action === 'update'
-                          ? 'info'
-                          : 'danger'
-                      }
-                    >
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getActionBadgeClasses(log.action)}`}>
                       {log.action}
-                    </Badge>
+                    </span>
                   </TableCell>
                   <TableCell className="font-mono text-xs">
                     {log.record_id.substring(0, 8)}...
@@ -173,13 +178,13 @@ export default async function AuditLogsPage({
                           {formatTimeDifference(log.timeDifference)}
                         </Badge>
                         {log.timeDifferenceField && (
-                          <div className="text-xs text-gray-500 mt-1">
+                          <div className="text-xs text-[#9898A3] mt-1">
                             ({log.timeDifferenceField})
                           </div>
                         )}
                       </div>
                     ) : (
-                      <span className="text-gray-400">-</span>
+                      <span className="text-[#9898A3]">-</span>
                     )}
                   </TableCell>
                   <TableCell>
@@ -191,7 +196,7 @@ export default async function AuditLogsPage({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={7} className="text-center text-gray-500 py-8">
+                <TableCell colSpan={7} className="text-center text-[#9898A3] py-8">
                   No audit logs found
                 </TableCell>
               </TableRow>

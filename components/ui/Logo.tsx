@@ -1,21 +1,23 @@
 interface LogoProps {
   className?: string
   size?: 'sm' | 'md' | 'lg'
+  variant?: 'dark' | 'light'
 }
 
 const sizeClasses = {
-  sm: 'text-lg',
-  md: 'text-xl',
-  lg: 'text-2xl',
+  sm: 'text-base',
+  md: 'text-lg',
+  lg: 'text-xl',
 }
 
-export default function Logo({ className = '', size = 'md' }: LogoProps) {
+export default function Logo({ className = '', size = 'md', variant = 'dark' }: LogoProps) {
+  const variantClass = variant === 'dark' ? 'text-white' : 'text-[#1A1A2E]'
+
   return (
     <div className={`font-bold ${sizeClasses[size]} ${className}`}>
-      <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+      <span className={variantClass}>
         Nexus
       </span>
     </div>
   )
 }
-

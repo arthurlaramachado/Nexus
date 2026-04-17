@@ -11,19 +11,19 @@ export default async function ForbiddenPage() {
   const role = roleName || 'Nenhum'
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-[#F7F7F8]">
       <div className="max-w-md w-full text-center">
-        <h1 className="text-6xl font-bold text-gray-900 mb-4">403</h1>
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Acesso Negado</h2>
-        <p className="text-gray-600 mb-4">
+        <h1 className="text-6xl font-bold text-[#1A1A2E] mb-4">403</h1>
+        <h2 className="text-2xl font-bold text-[#1A1A2E] mb-4">Acesso Negado</h2>
+        <p className="text-[#6B6B78] mb-4">
           Você não tem permissão para acessar esta página.
         </p>
-        <div className="bg-gray-100 p-4 rounded-lg mb-6">
-          <p className="text-sm text-gray-700">
+        <div className="bg-[#F0F0F2] p-4 rounded-lg mb-6">
+          <p className="text-sm text-[#3A3A47]">
             <span className="font-medium">Seu role atual:</span> {role}
           </p>
           {role === 'contributor' && (
-            <p className="text-xs text-gray-600 mt-2">
+            <p className="text-xs text-[#6B6B78] mt-2">
               Esta página requer permissões de Admin ou Manager.
               Entre em contato com um administrador para atualizar suas permissões.
             </p>

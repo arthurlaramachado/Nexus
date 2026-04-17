@@ -38,7 +38,7 @@ function ClientFiltersContent() {
   }
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
+    <div className="bg-white p-4 rounded-lg shadow border border-[#E4E4E8]">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Select
           label="Status"
@@ -70,7 +70,7 @@ function ClientFiltersContent() {
 
 export default function ClientFilters() {
   return (
-    <Suspense fallback={<div className="bg-white p-4 rounded-lg shadow border border-gray-200">Loading filters...</div>}>
+    <Suspense fallback={<div className="bg-white p-4 rounded-lg shadow border border-[#E4E4E8]">Loading filters...</div>}>
       <ClientFiltersContent />
     </Suspense>
   )

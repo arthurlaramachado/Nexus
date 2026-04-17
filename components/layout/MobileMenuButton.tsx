@@ -9,12 +9,12 @@ export default function MobileMenuButton({ onClick, isOpen }: MobileMenuButtonPr
   return (
     <button
       onClick={onClick}
-      className="lg:hidden fixed top-4 left-4 z-[60] p-2.5 rounded-lg bg-white border-2 border-gray-200 shadow-lg hover:bg-gray-50 hover:border-indigo-300 transition-all"
+      className="lg:hidden fixed top-4 left-4 z-[60] p-2.5 rounded-lg bg-[#1A1A2E] shadow-lg hover:bg-[#12122A] transition-colors"
       aria-label="Toggle menu"
       aria-expanded={isOpen}
     >
       <svg
-        className="w-6 h-6 text-gray-700"
+        className="w-5 h-5 text-white"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"

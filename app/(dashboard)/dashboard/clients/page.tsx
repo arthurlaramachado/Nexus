@@ -28,7 +28,7 @@ export default async function ClientsPage({
   const { data: clients, error } = await query
 
   if (error) {
-    return <div>Error loading clients: {error.message}</div>
+    return <div className="bg-[#FEE2E2] border border-[#EF4444]/20 text-[#991B1B] rounded-lg px-4 py-3">Error loading clients: {error.message}</div>
   }
 
   return (

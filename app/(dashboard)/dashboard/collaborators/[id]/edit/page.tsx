@@ -19,7 +19,7 @@ export default async function EditCollaboratorPage({ params }: { params: Promise
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Edit Collaborator</h1>
+      <h1 className="text-2xl font-semibold text-[#1A1A2E] tracking-tight mb-6">Edit Collaborator</h1>
       <CollaboratorForm collaborator={collaborator} roles={roles || []} />
     </div>
   )

@@ -136,23 +136,23 @@ export default function AuditChanges({ changes, action }: AuditChangesProps) {
   }
   
   if (changeArray.length === 0) {
-    return <span className="text-gray-500 text-sm">No changes recorded</span>
+    return <span className="text-[#9898A3] text-sm">No changes recorded</span>
   }
   
   return (
     <details className="cursor-pointer group">
-      <summary className="text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
+      <summary className="text-sm font-medium text-[#3B82F6] hover:text-[#2563EB] transition-colors">
         {changeArray.length} {changeArray.length === 1 ? 'field' : 'fields'} changed
-        <span className="ml-2 text-gray-400 group-open:hidden">▼</span>
-        <span className="ml-2 text-gray-400 hidden group-open:inline">▲</span>
+        <span className="ml-2 text-[#9898A3] group-open:hidden">▼</span>
+        <span className="ml-2 text-[#9898A3] hidden group-open:inline">▲</span>
       </summary>
       <div className="mt-3 space-y-2">
         {changeArray.map((change, idx) => (
           <div
             key={idx}
-            className="bg-gray-50 border border-gray-200 rounded-lg p-3 hover:bg-gray-100 transition-colors"
+            className="bg-[#F7F7F8] border border-[#E4E4E8] rounded-lg p-3 hover:bg-[#F0F0F2] transition-colors"
           >
-            <div className="font-semibold text-sm text-gray-900 mb-2">
+            <div className="font-semibold text-sm text-[#1A1A2E] mb-2">
               {getFieldLabel(change.field)}
             </div>
             <div className="space-y-1.5">
@@ -161,7 +161,7 @@ export default function AuditChanges({ changes, action }: AuditChangesProps) {
                   <span className="text-xs font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded">
                     Old
                   </span>
-                  <span className="text-sm text-gray-700 line-through flex-1 break-words">
+                  <span className="text-sm text-[#3A3A47] line-through flex-1 break-words">
                     {formatValue(change.old, change.field)}
                   </span>
                 </div>
@@ -171,13 +171,13 @@ export default function AuditChanges({ changes, action }: AuditChangesProps) {
                   <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded">
                     {change.old !== undefined ? 'New' : 'Value'}
                   </span>
-                  <span className="text-sm text-gray-900 font-medium flex-1 break-words">
+                  <span className="text-sm text-[#1A1A2E] font-medium flex-1 break-words">
                     {formatValue(change.new, change.field)}
                   </span>
                 </div>
               )}
               {change.old === undefined && change.new === undefined && (
-                <span className="text-sm text-gray-500">No value</span>
+                <span className="text-sm text-[#9898A3]">No value</span>
               )}
             </div>
           </div>

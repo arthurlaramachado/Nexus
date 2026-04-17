@@ -120,16 +120,16 @@ export default function TagInput({ selectedTags, onChange }: TagInputProps) {
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">Tags / Categories</label>
+      <label className="block text-sm font-medium text-[#3A3A47]">Tags / Categories</label>
       <div className="relative">
-        <div className="flex flex-wrap gap-2 p-2 border border-gray-300 rounded-md bg-white focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-indigo-500 min-h-[42px]">
+        <div className="flex flex-wrap gap-2 p-2 border border-[#E4E4E8] rounded-lg bg-white focus-within:ring-2 focus-within:ring-[#9898A3] focus-within:border-[#9898A3] min-h-[42px]">
           {selectedTags.map(tag => (
-            <span key={tag.id} className="inline-flex items-center px-2 py-1 rounded text-sm bg-indigo-100 text-indigo-700">
+            <span key={tag.id} className="inline-flex items-center px-2 py-1 rounded-full text-sm bg-[#F1F1F4] text-[#6B6B78]">
               {tag.name}
               <button
                 type="button"
                 onClick={() => removeTag(tag.id)}
-                className="ml-1 text-indigo-500 hover:text-indigo-900"
+                className="ml-1 text-[#3B82F6] hover:text-[#1A1A2E]"
               >
                 ×
               </button>
@@ -146,12 +146,12 @@ export default function TagInput({ selectedTags, onChange }: TagInputProps) {
         </div>
         
         {suggestions.length > 0 && (
-          <div className="absolute top-full left-0 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10 max-h-60 overflow-auto">
+          <div className="absolute top-full left-0 w-full mt-1 bg-white border border-[#E4E4E8] rounded-xl shadow-[var(--shadow-dropdown)] z-10 max-h-60 overflow-auto p-1">
             {suggestions.map(tag => (
               <button
                 key={tag.id}
                 type="button"
-                className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-50"
+                className="block w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-[#F7F7F8]"
                 onClick={() => addTag(tag)}
               >
                 {tag.name}

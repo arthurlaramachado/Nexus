@@ -46,11 +46,11 @@ export default function NewCollaboratorPage({ roles }: { roles: any[] }) {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Invite Collaborator</h1>
+      <h1 className="text-2xl font-semibold text-[#1A1A2E] tracking-tight mb-6">Invite Collaborator</h1>
       
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          <div className="bg-[#FEE2E2] border border-[#EF4444]/20 text-[#991B1B] rounded-lg px-4 py-3">
             {error}
           </div>
         )}

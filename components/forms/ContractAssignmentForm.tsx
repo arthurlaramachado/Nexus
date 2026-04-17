@@ -123,7 +123,7 @@ export default function ContractAssignmentForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+        <div className="bg-[#FEE2E2] border border-[#EF4444]/20 text-[#991B1B] px-4 py-3 rounded">
           {error}
         </div>
       )}
@@ -174,8 +174,8 @@ export default function ContractAssignmentForm({
       </Select>
 
       {selectedCollaborator && selectedCollaborator.roles && (
-        <div className="bg-gray-50 p-4 rounded-md">
-          <p className="text-sm text-gray-600">
+        <div className="bg-[#F7F7F8] p-4 rounded-md">
+          <p className="text-sm text-[#6B6B78]">
             <span className="font-medium">Current Role:</span>{' '}
             {selectedCollaborator.roles.name}
           </p>

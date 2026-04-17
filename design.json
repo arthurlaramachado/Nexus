@@ -1,0 +1,623 @@
+{
+    "meta": {
+      "project": "Nexus",
+      "version": "1.0.0",
+      "reference": "Tiimi – Contract Dashboard (Dribbble)",
+      "author": "Design Engineering",
+      "date": "2026-04-17"
+    },
+  
+    "designPrinciples": {
+      "vibe": "Enterprise-grade yet approachable. A serious B2B SaaS tool that respects the user's intelligence — data-dense without feeling cramped, professional without being cold.",
+      "principles": [
+        "Clarity first: every pixel earns its place. No decoration that doesn't carry information.",
+        "Structured hierarchy: the eye always knows where to go next — page title → KPI summary → data table → actions.",
+        "Subtle depth: the UI uses only two elevation levels — flat surface (sidebar/content) and floating layer (cards, modals, dropdowns). No heavy shadows.",
+        "Restrained color: chromatic color is reserved for status signals and CTAs only. Everything else lives in a neutral gray scale.",
+        "Confident whitespace: generous internal padding inside cards and rows creates breathing room in high-density views."
+      ]
+    },
+  
+    "colors": {
+      "primary": {
+        "brand": "#F0C14B",
+        "brandDark": "#D4A72C",
+        "comment": "Golden yellow used for the logo mark and the primary CTA button background."
+      },
+      "cta": {
+        "actionBg": "#1A1A2E",
+        "actionBgHover": "#12122A",
+        "actionText": "#FFFFFF",
+        "comment": "Dark navy used as the primary action button (Create Contract). Text is pure white."
+      },
+      "neutral": {
+        "white": "#FFFFFF",
+        "gray50": "#F7F7F8",
+        "gray100": "#F0F0F2",
+        "gray200": "#E4E4E8",
+        "gray300": "#CBCBD1",
+        "gray400": "#9898A3",
+        "gray500": "#6B6B78",
+        "gray700": "#3A3A47",
+        "gray900": "#1A1A2E"
+      },
+      "backgrounds": {
+        "page": "#F7F7F8",
+        "sidebar": "#1A1A2E",
+        "sidebarDark": "#12122A",
+        "card": "#FFFFFF",
+        "tableRowHover": "#F0F0F2",
+        "tableHeader": "#F7F7F8"
+      },
+      "text": {
+        "primary": "#1A1A2E",
+        "secondary": "#6B6B78",
+        "tertiary": "#9898A3",
+        "onDark": "#FFFFFF",
+        "onDarkMuted": "#A8A8BB",
+        "link": "#3B82F6"
+      },
+      "status": {
+        "activeBackground": "#DCFCE7",
+        "activeText": "#15803D",
+        "activeDot": "#22C55E",
+        "nearExpireBackground": "#FEF9C3",
+        "nearExpireText": "#854D0E",
+        "expiredBackground": "#FEE2E2",
+        "expiredText": "#991B1B",
+        "draftBackground": "#E0E7FF",
+        "draftText": "#3730A3",
+        "endedBackground": "#F1F1F4",
+        "endedText": "#6B6B78"
+      },
+      "semantic": {
+        "positive": "#22C55E",
+        "positiveLight": "#DCFCE7",
+        "negative": "#EF4444",
+        "negativeLight": "#FEE2E2",
+        "warning": "#F59E0B",
+        "warningLight": "#FEF9C3",
+        "info": "#3B82F6",
+        "infoLight": "#DBEAFE"
+      },
+      "border": {
+        "default": "#E4E4E8",
+        "subtle": "#F0F0F2",
+        "strong": "#CBCBD1"
+      }
+    },
+  
+    "typography": {
+      "fontFamily": {
+        "primary": "'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+        "mono": "'JetBrains Mono', 'Fira Code', 'Courier New', monospace",
+        "comment": "Inter is the reference design's closest match. System fonts as fallback."
+      },
+      "scale": {
+        "h1": {
+          "size": "24px",
+          "weight": "600",
+          "lineHeight": "1.3",
+          "letterSpacing": "-0.02em",
+          "usage": "Page title (e.g. 'Contract', 'Clients')"
+        },
+        "h2": {
+          "size": "18px",
+          "weight": "600",
+          "lineHeight": "1.4",
+          "letterSpacing": "-0.01em",
+          "usage": "Section titles inside detail pages (e.g. 'Contract Information', 'Team Assignments')"
+        },
+        "h3": {
+          "size": "15px",
+          "weight": "600",
+          "lineHeight": "1.4",
+          "usage": "Card titles, KPI card labels"
+        },
+        "subtitle": {
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "1.5",
+          "color": "text.secondary",
+          "usage": "Supporting text under KPI numbers, helper text in forms"
+        },
+        "body": {
+          "size": "14px",
+          "weight": "400",
+          "lineHeight": "1.6",
+          "usage": "Table cell content, form inputs, body text"
+        },
+        "bodySmall": {
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "1.5",
+          "usage": "Secondary table data, metadata, timestamps"
+        },
+        "label": {
+          "size": "12px",
+          "weight": "500",
+          "lineHeight": "1",
+          "letterSpacing": "0.01em",
+          "usage": "Status badges, column headers, filter labels"
+        },
+        "kpiNumber": {
+          "size": "36px",
+          "weight": "700",
+          "lineHeight": "1.1",
+          "letterSpacing": "-0.03em",
+          "usage": "The large counter number inside KPI cards"
+        },
+        "navItem": {
+          "size": "13px",
+          "weight": "500",
+          "lineHeight": "1",
+          "usage": "Sidebar navigation items"
+        }
+      }
+    },
+  
+    "borders": {
+      "radius": {
+        "xs": "4px",
+        "sm": "6px",
+        "md": "8px",
+        "lg": "12px",
+        "xl": "16px",
+        "pill": "9999px",
+        "usageGuide": {
+          "badges": "pill",
+          "buttons": "md",
+          "cards": "lg",
+          "inputs": "md",
+          "dropdowns": "lg",
+          "modals": "xl",
+          "tableRows": "0"
+        }
+      },
+      "width": {
+        "default": "1px",
+        "subtle": "0.5px"
+      },
+      "color": {
+        "default": "#E4E4E8",
+        "subtle": "#F0F0F2"
+      },
+      "shadows": {
+        "card": "0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04)",
+        "dropdown": "0 8px 24px rgba(0, 0, 0, 0.10), 0 2px 6px rgba(0, 0, 0, 0.06)",
+        "modal": "0 20px 48px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08)",
+        "tableHover": "none",
+        "sidebarItem": "none",
+        "comment": "Shadows are deliberately subtle. The most prominent shadow is reserved for modals and dropdowns only."
+      }
+    },
+  
+    "spacing": {
+      "xs": "4px",
+      "sm": "8px",
+      "md": "12px",
+      "lg": "16px",
+      "xl": "24px",
+      "xxl": "32px",
+      "sidebar": {
+        "width": "256px",
+        "itemPaddingY": "10px",
+        "itemPaddingX": "16px",
+        "sectionGap": "4px"
+      },
+      "page": {
+        "paddingX": "32px",
+        "paddingY": "24px",
+        "contentMaxWidth": "none"
+      },
+      "table": {
+        "cellPaddingX": "16px",
+        "cellPaddingY": "12px",
+        "headerPaddingY": "10px"
+      },
+      "card": {
+        "padding": "20px 24px"
+      }
+    },
+  
+    "components": {
+      "buttons": {
+        "primary": {
+          "background": "#1A1A2E",
+          "backgroundHover": "#12122A",
+          "text": "#FFFFFF",
+          "fontSize": "14px",
+          "fontWeight": "500",
+          "paddingY": "9px",
+          "paddingX": "16px",
+          "borderRadius": "8px",
+          "border": "none",
+          "iconGap": "6px",
+          "transition": "background 0.15s ease",
+          "example": "+ New Client, + New Role, + Invite"
+        },
+        "secondary": {
+          "background": "#FFFFFF",
+          "backgroundHover": "#F7F7F8",
+          "text": "#1A1A2E",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "paddingY": "7px",
+          "paddingX": "12px",
+          "borderRadius": "8px",
+          "border": "1px solid #E4E4E8",
+          "transition": "background 0.15s ease"
+        },
+        "ghost": {
+          "background": "transparent",
+          "backgroundHover": "#F0F0F2",
+          "text": "#6B6B78",
+          "fontSize": "13px",
+          "fontWeight": "400",
+          "paddingY": "6px",
+          "paddingX": "10px",
+          "borderRadius": "6px",
+          "border": "none",
+          "usage": "Edit icon actions in tables"
+        },
+        "danger": {
+          "background": "#FEE2E2",
+          "backgroundHover": "#FCA5A5",
+          "text": "#991B1B",
+          "fontSize": "14px",
+          "fontWeight": "500",
+          "paddingY": "9px",
+          "paddingX": "16px",
+          "borderRadius": "8px",
+          "border": "none"
+        }
+      },
+      "badges": {
+        "active": {
+          "background": "#DCFCE7",
+          "text": "#15803D",
+          "dotColor": "#22C55E",
+          "hasDot": true
+        },
+        "nearExpire": {
+          "background": "#FEF9C3",
+          "text": "#854D0E",
+          "hasDot": false
+        },
+        "expired": {
+          "background": "#FEE2E2",
+          "text": "#991B1B",
+          "hasDot": false
+        },
+        "draft": {
+          "background": "#E0E7FF",
+          "text": "#3730A3",
+          "hasDot": false
+        },
+        "ended": {
+          "background": "#F1F1F4",
+          "text": "#6B6B78",
+          "hasDot": false
+        },
+        "inactive": {
+          "background": "#F1F1F4",
+          "text": "#9898A3",
+          "hasDot": false
+        },
+        "sharedStyle": {
+          "fontSize": "12px",
+          "fontWeight": "500",
+          "paddingY": "3px",
+          "paddingX": "8px",
+          "borderRadius": "9999px",
+          "display": "inline-flex",
+          "alignItems": "center",
+          "gap": "4px"
+        }
+      },
+      "cards": {
+        "kpi": {
+          "background": "#FFFFFF",
+          "border": "1px solid #E4E4E8",
+          "borderRadius": "12px",
+          "padding": "20px 24px",
+          "boxShadow": "0 1px 3px rgba(0,0,0,0.06)",
+          "iconSize": "20px",
+          "iconColor": "#6B6B78",
+          "labelFontSize": "13px",
+          "labelColor": "#6B6B78",
+          "numberFontSize": "36px",
+          "numberWeight": "700",
+          "numberColor": "#1A1A2E",
+          "deltaPositiveColor": "#22C55E",
+          "deltaNegativeColor": "#EF4444",
+          "deltaFontSize": "12px"
+        },
+        "detail": {
+          "background": "#FFFFFF",
+          "border": "1px solid #E4E4E8",
+          "borderRadius": "12px",
+          "padding": "20px 24px",
+          "boxShadow": "0 1px 3px rgba(0,0,0,0.06)"
+        },
+        "dropdown": {
+          "background": "#FFFFFF",
+          "border": "1px solid #E4E4E8",
+          "borderRadius": "12px",
+          "padding": "8px",
+          "boxShadow": "0 8px 24px rgba(0,0,0,0.10)",
+          "itemPaddingY": "10px",
+          "itemPaddingX": "12px",
+          "itemBorderRadius": "8px",
+          "itemHoverBackground": "#F7F7F8"
+        }
+      },
+      "table": {
+        "background": "#FFFFFF",
+        "border": "1px solid #E4E4E8",
+        "borderRadius": "12px",
+        "headerBackground": "#F7F7F8",
+        "headerText": "#6B6B78",
+        "headerFontSize": "12px",
+        "headerFontWeight": "500",
+        "rowBorderColor": "#F0F0F2",
+        "rowHoverBackground": "#F7F7F8",
+        "cellFontSize": "14px",
+        "cellColor": "#1A1A2E",
+        "cellSecondaryColor": "#6B6B78",
+        "checkboxAccent": "#1A1A2E"
+      },
+      "sidebar": {
+        "background": "#1A1A2E",
+        "width": "256px",
+        "logoArea": {
+          "paddingY": "20px",
+          "paddingX": "16px"
+        },
+        "navItem": {
+          "textColor": "#A8A8BB",
+          "activeBackground": "rgba(255,255,255,0.08)",
+          "activeText": "#FFFFFF",
+          "hoverBackground": "rgba(255,255,255,0.05)",
+          "borderRadius": "8px",
+          "paddingY": "10px",
+          "paddingX": "12px",
+          "iconSize": "16px",
+          "iconGap": "10px",
+          "activeIndicator": "3px left border, color #F0C14B"
+        },
+        "userCard": {
+          "borderTop": "1px solid rgba(255,255,255,0.08)",
+          "paddingY": "16px",
+          "paddingX": "16px",
+          "avatarSize": "32px",
+          "nameColor": "#FFFFFF",
+          "emailColor": "#A8A8BB",
+          "signOutColor": "#A8A8BB",
+          "signOutHoverColor": "#FFFFFF"
+        }
+      },
+      "inputs": {
+        "background": "#FFFFFF",
+        "border": "1px solid #E4E4E8",
+        "borderFocus": "1px solid #9898A3",
+        "borderRadius": "8px",
+        "fontSize": "14px",
+        "paddingY": "8px",
+        "paddingX": "12px",
+        "placeholderColor": "#9898A3",
+        "height": "36px"
+      },
+      "filterBar": {
+        "background": "#FFFFFF",
+        "border": "1px solid #E4E4E8",
+        "borderRadius": "8px",
+        "height": "36px",
+        "fontSize": "13px",
+        "gap": "8px",
+        "paddingX": "12px"
+      },
+      "tabs": {
+        "activeBackground": "#1A1A2E",
+        "activeText": "#FFFFFF",
+        "inactiveBackground": "transparent",
+        "inactiveText": "#6B6B78",
+        "borderRadius": "8px",
+        "fontSize": "13px",
+        "fontWeight": "500",
+        "paddingY": "6px",
+        "paddingX": "14px"
+      },
+      "avatar": {
+        "sizes": {
+          "sm": "24px",
+          "md": "32px",
+          "lg": "40px"
+        },
+        "borderRadius": "50%",
+        "fallbackBackground": "#E4E4E8",
+        "fallbackText": "#6B6B78"
+      }
+    },
+  
+    "pageLayouts": {
+      "mainLayout": {
+        "description": "Layout raiz com sidebar fixa e área de conteúdo scrollável.",
+        "sidebar": {
+          "background": "#1A1A2E",
+          "width": "256px",
+          "position": "fixed, full height",
+          "logo": "Texto 'Nexus' em branco, peso 700, tamanho 20px. Abaixo, ícone opcional.",
+          "navItems": "Lista vertical com ícone + label. Item ativo: fundo rgba branco 8%, texto branco, borda esquerda 3px amarelo #F0C14B.",
+          "userCard": "No rodapé: avatar 32px + nome/email em coluna + botão Sign Out. Separado por border-top sutil."
+        },
+        "content": {
+          "background": "#F7F7F8",
+          "marginLeft": "256px",
+          "padding": "32px",
+          "minHeight": "100vh"
+        },
+        "mobile": "Sidebar vira drawer deslizante da esquerda, acionado por botão hamburger no topo."
+      },
+  
+      "dashboard": {
+        "path": "/dashboard",
+        "pageTitle": {
+          "text": "Dashboard",
+          "fontSize": "h1 (24px)",
+          "fontWeight": "600",
+          "color": "#1A1A2E",
+          "marginBottom": "24px"
+        },
+        "kpiGrid": {
+          "layout": "grid 3 colunas, gap 16px",
+          "cards": {
+            "background": "#FFFFFF",
+            "border": "1px solid #E4E4E8",
+            "borderRadius": "12px",
+            "padding": "20px 24px",
+            "icon": "Ícone de contexto no canto superior esquerdo, cor indigo/purple #6366F1, tamanho 20px",
+            "label": "13px, #6B6B78, peso 400",
+            "number": "36px, #1A1A2E, peso 700",
+            "link": "'View all →' em 12px, cor #3B82F6, alinhado abaixo do número"
+          }
+        }
+      },
+  
+      "clientsList": {
+        "path": "/dashboard/clients",
+        "pageTitle": "Clients — h1 24px, peso 600, cor #1A1A2E",
+        "topBar": {
+          "background": "transparente",
+          "layout": "flex, space-between, alinhado ao centro, marginBottom 16px",
+          "left": "Filtros: dropdowns de Status e Country — altura 36px, border #E4E4E8, borderRadius 8px, fontSize 13px",
+          "right": "Botão primário '+ New Client' — bg #1A1A2E, text #FFF, borderRadius 8px"
+        },
+        "table": {
+          "containerBackground": "#FFFFFF",
+          "containerBorder": "1px solid #E4E4E8",
+          "containerBorderRadius": "12px",
+          "overflow": "hidden",
+          "header": "bg #F7F7F8, texto 12px uppercase-like peso 500, cor #6B6B78, padding 10px 16px",
+          "rows": "border-bottom 1px #F0F0F2, hover bg #F7F7F8, padding 12px 16px",
+          "columns": {
+            "Name": "link azul #3B82F6, peso 500",
+            "Status": "badge pill (active=verde, inactive=cinza)",
+            "Country": "texto normal #1A1A2E",
+            "City": "texto normal #1A1A2E",
+            "Tags": "badges cinza pills: bg #F1F1F4, text #6B6B78, borderRadius pill",
+            "Actions": "ícone lápis ghost button, cor #9898A3, hover #1A1A2E"
+          }
+        },
+        "modal": "ClientForm abre como modal centralizado com overlay #1A1A2E 40% opacity, card bg #FFF, borderRadius 16px, shadow modal, padding 32px"
+      },
+  
+      "clientDetail": {
+        "path": "/dashboard/clients/[id]",
+        "header": {
+          "layout": "flex space-between, marginBottom 24px",
+          "left": "Nome do cliente h1 + badge de status inline",
+          "right": "Botão secondary 'Edit Client'"
+        },
+        "sections": {
+          "clientInfo": {
+            "card": "bg #FFF, border #E4E4E8, borderRadius 12px, padding 20px 24px",
+            "title": "h2 18px peso 600, marginBottom 16px, cor #1A1A2E",
+            "fields": "grid 2 colunas, label 13px #6B6B78 + value 14px #1A1A2E"
+          },
+          "contracts": {
+            "card": "mesma estrutura, título 'Contracts' h2 + botão ghost '+ Add Contract' no header do card",
+            "table": "tabela interna sem borda externa, rows com border-bottom #F0F0F2",
+            "actionIcon": "ícone olho ghost, cor #9898A3"
+          },
+          "auditHistory": {
+            "card": "mesma estrutura, título 'Change History'",
+            "rows": "layout: data + ator + ação + descrição, fontSize 13px, cor #6B6B78"
+          }
+        }
+      },
+  
+      "contractsList": {
+        "path": "/dashboard/contracts",
+        "structure": "Idêntico a clientsList. Filtros: Status, Type, Client (dropdowns). Colunas: Name (link), Client (link), Type, Status (badge), Start, End, Value (moeda, peso 500), Actions."
+      },
+  
+      "contractDetail": {
+        "path": "/dashboard/contracts/[id]",
+        "header": {
+          "breadcrumb": "'← Previous: [Nome]' em 13px cor #6B6B78, clickável",
+          "title": "h1 + status badge inline",
+          "actions": "Dropdown 'Actions ▾' — botão secondary com seta, abre menu com: Modify, Renew, End (este último em vermelho #991B1B)"
+        },
+        "bodyGrid": "grid 2 colunas (40% info / 60% assignments), gap 16px",
+        "contractInfo": "card com fields: Client (link), Start/End/Renewal dates, Value em verde bold",
+        "teamAssignments": "card com tabela interna: Name (avatar + nome), Role (badge colorido), Period, %. Botão ghost '+ Assign' no header do card.",
+        "contractHistory": "card full-width abaixo do grid, lista cronológica invertida: data + tipo de log (badge) + descrição + delta de valor"
+      },
+  
+      "collaboratorsList": {
+        "path": "/dashboard/collaborators",
+        "tabs": {
+          "style": "Tabs inline no topo da área de conteúdo (não page-level). Tab ativa: bg #1A1A2E, text #FFF. Inativa: text #6B6B78.",
+          "active": "tabela com Name (avatar+link), Email, Role (badge), Status (badge), Actions (edit)",
+          "pending": "tabela com Email, Role, Expires (countdown — vermelho se <24h), Link (botão copy)"
+        },
+        "topBarRight": "Botão primário '+ Invite'"
+      },
+  
+      "collaboratorDetail": {
+        "path": "/dashboard/collaborators/[id]",
+        "structure": "Espelha clientDetail: header com nome + status + role + Edit button, depois card de info, card de assignments e card de change history."
+      },
+  
+      "reports": {
+        "path": "/dashboard/reports",
+        "kpiRow": "Grid 3 colunas, mesma estética dos cards do Dashboard. KPIs: Churn Rate (%, vermelho se alto), Expiring Soon (count, amarelo), Active Clients (count, verde).",
+        "tables": {
+          "layout": "Duas tabelas lado a lado em grid 2 colunas abaixo dos KPIs (gap 16px)",
+          "expiringContracts": "card com título 'Expiring Contracts (90 days)', tabela Client | Contract | End Date. End Date com dot colorido: verde >60d, amarelo 30-60d, vermelho <30d.",
+          "collaboratorWorkload": "card com título 'Top Collaborator Workload', tabela Collaborator (avatar+nome) | Role | Assignments (count com barra de progresso relativa ao máximo)"
+        }
+      },
+  
+      "auditLogs": {
+        "path": "/dashboard/audit-logs",
+        "filterBar": {
+          "layout": "flex, gap 8px, marginBottom 16px",
+          "filters": "User (dropdown), Table (dropdown), Record ID (text input), From Date, To Date — todos altura 36px, estilo filterBar"
+        },
+        "table": {
+          "columns": "Date | User | Table | Action (badge colorido) | Record ID (monospace 12px, truncado 8 chars) | Changes (expandível com ícone ▸)",
+          "expandedRow": {
+            "background": "#F7F7F8",
+            "padding": "12px 16px 12px 48px",
+            "oldValue": "texto riscado, cor #991B1B",
+            "newValue": "texto bold, cor #15803D"
+          }
+        },
+        "actionBadges": {
+          "insert": "bg #DCFCE7, text #15803D",
+          "update": "bg #DBEAFE, text #1D4ED8",
+          "delete": "bg #FEE2E2, text #991B1B"
+        }
+      },
+  
+      "roles": {
+        "path": "/dashboard/roles",
+        "topBarRight": "Botão primário '+ New Role'",
+        "table": {
+          "columns": "Name | System Role (badge: 'System' bg #1A1A2E text #FFF; 'Custom' bg #F1F1F4 text #6B6B78) | Actions",
+          "systemRoles": "Actions desabilitados (ícones cinza, cursor not-allowed)",
+          "customRoles": "Edit (ícone lápis) + Delete (ícone lixo, cor vermelho hover)"
+        },
+        "roleForm": "Modal com: campo Name (input), toggle is_system (disabled para criação), e grade de checkboxes por tabela (read / write / delete) em layout de tabela interna"
+      },
+  
+      "modals": {
+        "overlay": "bg rgba(26,26,46,0.4), backdrop-filter blur(2px)",
+        "container": "bg #FFFFFF, borderRadius 16px, shadow modal, maxWidth 480px (forms) ou 560px (complex), padding 32px",
+        "header": "h2 20px peso 600 + botão X ghost no canto superior direito",
+        "footer": "flex justify-end gap-8px: botão Cancel (secondary) + botão de ação (primary ou danger)"
+      }
+    }
+  }

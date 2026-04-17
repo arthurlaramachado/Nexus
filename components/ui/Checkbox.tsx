@@ -22,12 +22,12 @@ export default function Checkbox({
       <label className="flex items-center gap-2 cursor-pointer group">
         <input
           type="checkbox"
-          className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+          className="w-4 h-4 rounded border-[#E4E4E8] text-[#1A1A2E] focus:ring-[#1A1A2E] cursor-pointer"
           onChange={handleChange}
           {...props}
         />
         {label && (
-          <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+          <span className="text-sm font-medium text-[#3A3A47] group-hover:text-[#1A1A2E]">
             {label}
           </span>
         )}

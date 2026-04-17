@@ -47,8 +47,8 @@ export default function ClientsTable({ clients }: ClientsTableProps) {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Clients</h1>
-        <Button onClick={handleCreate}>New Client</Button>
+        <h1 className="text-2xl font-semibold text-[#1A1A2E] tracking-tight">Clients</h1>
+        <Button onClick={handleCreate}>+ New Client</Button>
       </div>
 
       <div className="mb-6">
@@ -86,13 +86,13 @@ export default function ClientsTable({ clients }: ClientsTableProps) {
                   <TableCell>
                     <Link
                       href={`/dashboard/clients/${client.id}`}
-                      className="text-indigo-600 hover:text-indigo-900"
+                      className="text-[#3B82F6] hover:text-[#2563EB] font-medium"
                     >
                       {client.name}
                     </Link>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={client.status === 'active' ? 'success' : 'default'}>
+                    <Badge variant={client.status === 'active' ? 'active' : 'inactive'}>
                       {client.status}
                     </Badge>
                   </TableCell>
@@ -101,7 +101,7 @@ export default function ClientsTable({ clients }: ClientsTableProps) {
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
                       {client.client_tags?.map((ct: any, idx: number) => (
-                        <span key={idx} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                        <span key={idx} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#F1F1F4] text-[#6B6B78]">
                           {ct.tags?.name}
                         </span>
                       ))}
@@ -109,8 +109,8 @@ export default function ClientsTable({ clients }: ClientsTableProps) {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="ghost"
                       size="icon"
                       onClick={() => handleEdit(client)}
                     >
@@ -121,7 +121,7 @@ export default function ClientsTable({ clients }: ClientsTableProps) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-gray-500 py-8">
+                <TableCell colSpan={6} className="text-center text-[#9898A3] py-8">
                   No clients found
                 </TableCell>
               </TableRow>
@@ -132,4 +132,3 @@ export default function ClientsTable({ clients }: ClientsTableProps) {
     </div>
   )
 }
-

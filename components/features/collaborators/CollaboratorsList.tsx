@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '@/components/ui/Table'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
@@ -38,7 +37,6 @@ export default function CollaboratorsList({ initialCollaborators, canWrite }: Co
   const copyInviteLink = async (token: string) => {
     const url = getInviteUrl(token)
     await navigator.clipboard.writeText(url)
-    // Optional: Show toast
     alert('Link copied to clipboard!')
   }
 
@@ -46,9 +44,9 @@ export default function CollaboratorsList({ initialCollaborators, canWrite }: Co
     const expires = new Date(expiresAt)
     const now = new Date()
     const diff = expires.getTime() - now.getTime()
-    
+
     if (diff <= 0) return 'Expired'
-    
+
     const minutes = Math.floor(diff / 60000)
     return `${minutes} min`
   }
@@ -79,7 +77,7 @@ export default function CollaboratorsList({ initialCollaborators, canWrite }: Co
                     <TableCell>
                       <Link
                         href={`/dashboard/collaborators/${collaborator.id}`}
-                        className="text-indigo-600 hover:text-indigo-900"
+                        className="text-[#3B82F6] hover:text-[#2563EB] font-medium"
                       >
                         {collaborator.full_name}
                       </Link>
@@ -91,12 +89,12 @@ export default function CollaboratorsList({ initialCollaborators, canWrite }: Co
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="success">Active</Badge>
+                      <Badge variant="active">Active</Badge>
                     </TableCell>
                     <TableCell>
                       {canWrite && (
                         <Link href={`/dashboard/collaborators/${collaborator.id}/edit`}>
-                          <Button variant="outline" size="icon">
+                          <Button variant="ghost" size="icon">
                             <PencilIcon className="w-4 h-4" />
                           </Button>
                         </Link>
@@ -106,7 +104,7 @@ export default function CollaboratorsList({ initialCollaborators, canWrite }: Co
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-gray-500 py-8">
+                  <TableCell colSpan={5} className="text-center text-[#9898A3] py-8">
                     No active collaborators found
                   </TableCell>
                 </TableRow>
@@ -137,8 +135,8 @@ export default function CollaboratorsList({ initialCollaborators, canWrite }: Co
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1 text-sm">
-                          <ClockIcon className="w-4 h-4 text-gray-400" />
-                          <span className={isExpired ? 'text-red-600' : 'text-gray-600'}>
+                          <ClockIcon className="w-4 h-4 text-[#9898A3]" />
+                          <span className={isExpired ? 'text-[#991B1B]' : 'text-[#6B6B78]'}>
                             {getTimeRemaining(collaborator.expires_at)}
                           </span>
                         </div>
@@ -146,11 +144,11 @@ export default function CollaboratorsList({ initialCollaborators, canWrite }: Co
                       <TableCell>
                         {!isExpired ? (
                           <div className="flex items-center gap-2">
-                            <code className="px-2 py-1 bg-gray-100 rounded text-xs border">
+                            <code className="px-2 py-1 bg-[#F7F7F8] rounded-lg text-xs border border-[#E4E4E8] font-mono">
                               {getInviteUrl(collaborator.invite_token)}
                             </code>
                             <Button
-                              variant="outline"
+                              variant="ghost"
                               size="sm"
                               className="p-1.5"
                               onClick={() => copyInviteLink(collaborator.invite_token)}
@@ -160,7 +158,7 @@ export default function CollaboratorsList({ initialCollaborators, canWrite }: Co
                             </Button>
                           </div>
                         ) : (
-                          <span className="text-gray-400 text-sm italic">Link expired</span>
+                          <span className="text-[#9898A3] text-sm italic">Link expired</span>
                         )}
                       </TableCell>
                     </TableRow>
@@ -168,7 +166,7 @@ export default function CollaboratorsList({ initialCollaborators, canWrite }: Co
                 })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center text-gray-500 py-8">
+                  <TableCell colSpan={4} className="text-center text-[#9898A3] py-8">
                     No pending invites
                   </TableCell>
                 </TableRow>

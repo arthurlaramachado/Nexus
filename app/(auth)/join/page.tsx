@@ -84,18 +84,18 @@ function JoinForm() {
 
   if (step === 'validating') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-gray-500">Validating invite...</div>
+      <div className="min-h-screen flex items-center justify-center bg-[#F7F7F8]">
+        <div className="text-[#9898A3]">Validating invite...</div>
       </div>
     )
   }
 
   if (step === 'error') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="max-w-md w-full bg-white p-8 rounded-lg shadow text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-4">Invalid Invite</h2>
-          <p className="text-gray-600 mb-6">{error}</p>
+      <div className="min-h-screen flex items-center justify-center bg-[#F7F7F8]">
+        <div className="max-w-md w-full bg-white p-8 rounded-xl border border-[#E4E4E8] shadow-[var(--shadow-card)] text-center">
+          <h2 className="text-xl font-bold text-[#991B1B] mb-4">Invalid Invite</h2>
+          <p className="text-[#6B6B78] mb-6">{error}</p>
           <Button onClick={() => router.push('/login')}>Go to Login</Button>
         </div>
       </div>
@@ -103,20 +103,20 @@ function JoinForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-[#F7F7F8] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="flex flex-col items-center">
           <Logo className="h-12 w-auto" />
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-[#1A1A2E]">
             Complete your account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-[#6B6B78]">
             Set up your details to join the team
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
+        <form className="mt-8 space-y-6 bg-white rounded-xl border border-[#E4E4E8] shadow-[var(--shadow-card)] p-8" onSubmit={handleSubmit}>
+          <div className="rounded-md -space-y-px">
             <div className="mb-4">
               <Input
                 label="Full Name"
@@ -151,7 +151,7 @@ function JoinForm() {
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm">
+            <div className="bg-[#FEE2E2] border border-[#EF4444]/20 text-[#991B1B] px-4 py-3 rounded-lg text-sm">
               {error}
             </div>
           )}
@@ -174,10 +174,10 @@ function JoinForm() {
 export default function JoinPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-[#F7F7F8]">
         <div className="text-center">
           <Logo className="h-12 w-auto mx-auto" />
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <p className="mt-4 text-[#6B6B78]">Loading...</p>
         </div>
       </div>
     }>

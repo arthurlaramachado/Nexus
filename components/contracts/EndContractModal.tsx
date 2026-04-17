@@ -68,7 +68,7 @@ export default function EndContractModal({
     <Modal isOpen={isOpen} onClose={onClose} title="End Contract">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-[#6B6B78] mb-4">
             You are about to end the contract <strong>{contractName}</strong>. Please select the reason:
           </p>
 
@@ -76,7 +76,7 @@ export default function EndContractModal({
             {reasons.map((reason) => (
               <label
                 key={reason.value}
-                className="flex items-start p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                className="flex items-start p-4 border border-[#E4E4E8] rounded-lg cursor-pointer hover:bg-[#F7F7F8] transition-colors"
               >
                 <input
                   type="radio"
@@ -87,8 +87,8 @@ export default function EndContractModal({
                   className="mt-1 mr-3"
                 />
                 <div className="flex-1">
-                  <div className="font-medium text-gray-900">{reason.label}</div>
-                  <div className="text-sm text-gray-500">{reason.description}</div>
+                  <div className="font-medium text-[#1A1A2E]">{reason.label}</div>
+                  <div className="text-sm text-[#9898A3]">{reason.description}</div>
                 </div>
               </label>
             ))}
@@ -96,7 +96,7 @@ export default function EndContractModal({
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm">
+          <div className="bg-[#FEE2E2] border border-[#EF4444]/20 text-[#991B1B] px-4 py-3 rounded-lg text-sm">
             {error}
           </div>
         )}

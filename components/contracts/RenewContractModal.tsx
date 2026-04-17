@@ -81,7 +81,7 @@ export default function RenewContractModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Renew Contract">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded text-sm">
+        <div className="bg-[#DBEAFE] border border-[#3B82F6]/20 text-[#1D4ED8] px-4 py-3 rounded-lg text-sm">
           <p className="font-medium mb-1">Renewing: {contract.name}</p>
           <p>This will end the current contract and create a new one linked to it.</p>
         </div>
@@ -122,7 +122,7 @@ export default function RenewContractModal({
         />
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm">
+          <div className="bg-[#FEE2E2] border border-[#EF4444]/20 text-[#991B1B] px-4 py-3 rounded-lg text-sm">
             {error}
           </div>
         )}

@@ -86,16 +86,16 @@ export default function ContractActionsMenu({
               className="fixed inset-0 z-10"
               onClick={() => setIsMenuOpen(false)}
             />
-            <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20">
-              <div className="py-1">
+            <div className="absolute right-0 mt-2 w-56 rounded-xl shadow-[var(--shadow-dropdown)] bg-white border border-[#E4E4E8] z-20 p-1">
+              <div>
                 {actions.map((action) => {
                   const Icon = action.icon
                   return (
                     <button
                       key={action.label}
                       onClick={action.onClick}
-                      className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-gray-100 ${
-                        action.variant === 'danger' ? 'text-red-600' : 'text-gray-700'
+                      className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 rounded-lg hover:bg-[#F7F7F8] ${
+                        action.variant === 'danger' ? 'text-[#991B1B]' : 'text-[#3A3A47]'
                       }`}
                     >
                       <Icon className="w-4 h-4" />

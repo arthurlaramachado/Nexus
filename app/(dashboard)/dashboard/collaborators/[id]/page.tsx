@@ -10,7 +10,7 @@ import AuditHistoryList from '@/components/audit/AuditHistoryList'
 export default async function CollaboratorDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const supabase = await createClient()
-  
+
   const { data: collaborator, error: collaboratorError } = await supabase
     .from('collaborators')
     .select('*, roles!collaborators_role_id_fkey(*)')
@@ -39,7 +39,7 @@ export default async function CollaboratorDetailPage({ params }: { params: Promi
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{collaborator.full_name}</h1>
+          <h1 className="text-2xl font-semibold text-[#1A1A2E] tracking-tight">{collaborator.full_name}</h1>
           <div className="mt-2 flex gap-2">
             <Badge variant={collaborator.status === 'active' ? 'success' : 'default'}>
               {collaborator.status}
@@ -58,18 +58,18 @@ export default async function CollaboratorDetailPage({ params }: { params: Promi
         <Card title="Collaborator Information">
           <dl className="space-y-4">
             <div>
-              <dt className="text-sm font-medium text-gray-500">Email</dt>
-              <dd className="mt-1 text-sm text-gray-900">{collaborator.email}</dd>
+              <dt className="text-sm font-medium text-[#9898A3]">Email</dt>
+              <dd className="mt-1 text-sm text-[#1A1A2E]">{collaborator.email}</dd>
             </div>
             <div>
-              <dt className="text-sm font-medium text-gray-500">Role</dt>
-              <dd className="mt-1 text-sm text-gray-900">
+              <dt className="text-sm font-medium text-[#9898A3]">Role</dt>
+              <dd className="mt-1 text-sm text-[#1A1A2E]">
                 {(collaborator.roles as any)?.name || '-'}
               </dd>
             </div>
             <div>
-              <dt className="text-sm font-medium text-gray-500">Created At</dt>
-              <dd className="mt-1 text-sm text-gray-900">
+              <dt className="text-sm font-medium text-[#9898A3]">Created At</dt>
+              <dd className="mt-1 text-sm text-[#1A1A2E]">
                 {new Date(collaborator.created_at).toLocaleDateString()}
               </dd>
             </div>
@@ -96,7 +96,7 @@ export default async function CollaboratorDetailPage({ params }: { params: Promi
                   <TableCell>
                     <Link
                       href={`/dashboard/contracts/${assignment.contract_id}`}
-                      className="text-indigo-600 hover:text-indigo-900"
+                      className="text-[#3B82F6] hover:text-[#2563EB]"
                     >
                       {assignment.contracts?.name || '-'}
                     </Link>
@@ -129,7 +129,7 @@ export default async function CollaboratorDetailPage({ params }: { params: Promi
             </TableBody>
           </Table>
         ) : (
-          <p className="text-gray-500">No contract assignments found for this collaborator.</p>
+          <p className="text-[#9898A3]">No contract assignments found for this collaborator.</p>
         )}
         <div className="mt-4">
           <Link href={`/dashboard/contract-assignments/new?collaborator_id=${id}`}>

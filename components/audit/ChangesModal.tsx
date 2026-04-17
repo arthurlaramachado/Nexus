@@ -175,13 +175,13 @@ export default function ChangesModal({ isOpen, onClose, changes, action, title }
           <Badge variant={getActionBadgeVariant()}>
             {getActionLabel()}
           </Badge>
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-[#6B6B78]">
             {changeArray.length} {changeArray.length === 1 ? 'field' : 'fields'} {action === 'insert' ? 'set' : action === 'delete' ? 'removed' : 'changed'}
           </span>
         </div>
 
         {changeArray.length === 0 ? (
-          <div className="text-center text-gray-500 py-8">
+          <div className="text-center text-[#9898A3] py-8">
             No changes recorded
           </div>
         ) : (
@@ -189,34 +189,34 @@ export default function ChangesModal({ isOpen, onClose, changes, action, title }
             {changeArray.map((change, idx) => (
               <div
                 key={idx}
-                className="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:bg-gray-100 transition-colors"
+                className="bg-[#F7F7F8] border border-[#E4E4E8] rounded-lg p-4 hover:bg-[#F0F0F2] transition-colors"
               >
-                <div className="font-semibold text-base text-gray-900 mb-3">
+                <div className="font-semibold text-base text-[#1A1A2E] mb-3">
                   {getFieldLabel(change.field)}
                 </div>
                 <div className="space-y-2">
                   {change.old !== undefined && (
                     <div className="flex items-start gap-3">
-                      <span className="text-xs font-semibold text-red-700 bg-red-50 px-3 py-1.5 rounded border border-red-200 min-w-[60px] text-center">
+                      <span className="text-xs font-semibold text-[#991B1B] bg-[#FEE2E2] px-3 py-1.5 rounded border border-[#EF4444]/20 min-w-[60px] text-center">
                         Old
                       </span>
-                      <span className="text-sm text-gray-700 line-through flex-1 break-words pt-1">
+                      <span className="text-sm text-[#3A3A47] line-through flex-1 break-words pt-1">
                         {formatValue(change.old, change.field)}
                       </span>
                     </div>
                   )}
                   {change.new !== undefined && (
                     <div className="flex items-start gap-3">
-                      <span className="text-xs font-semibold text-green-700 bg-green-50 px-3 py-1.5 rounded border border-green-200 min-w-[60px] text-center">
+                      <span className="text-xs font-semibold text-[#15803D] bg-[#DCFCE7] px-3 py-1.5 rounded border border-[#22C55E]/20 min-w-[60px] text-center">
                         {change.old !== undefined ? 'New' : 'Value'}
                       </span>
-                      <span className="text-sm text-gray-900 font-medium flex-1 break-words pt-1">
+                      <span className="text-sm text-[#1A1A2E] font-medium flex-1 break-words pt-1">
                         {formatValue(change.new, change.field)}
                       </span>
                     </div>
                   )}
                   {change.old === undefined && change.new === undefined && (
-                    <span className="text-sm text-gray-500">No value</span>
+                    <span className="text-sm text-[#9898A3]">No value</span>
                   )}
                 </div>
               </div>
@@ -224,7 +224,7 @@ export default function ChangesModal({ isOpen, onClose, changes, action, title }
           </div>
         )}
 
-        <div className="flex justify-end pt-4 border-t border-gray-200">
+        <div className="flex justify-end pt-4 border-t border-[#E4E4E8]">
           <Button onClick={onClose}>Close</Button>
         </div>
       </div>

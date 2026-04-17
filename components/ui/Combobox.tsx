@@ -30,7 +30,6 @@ export default function Combobox({
   const [query, setQuery] = useState('')
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // Initialize query based on selected value
   useEffect(() => {
     if (value) {
       const selected = options.find(opt => opt.value === value)
@@ -46,7 +45,6 @@ export default function Combobox({
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false)
-        // Reset query to match value if closed without selection
         const selected = options.find(opt => opt.value === value)
         setQuery(selected ? selected.label : '')
       }
@@ -56,9 +54,9 @@ export default function Combobox({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [value, options])
 
-  const filteredOptions = query === '' 
-    ? options 
-    : options.filter(opt => 
+  const filteredOptions = query === ''
+    ? options
+    : options.filter(opt =>
         opt.label.toLowerCase().includes(query.toLowerCase())
       )
 
@@ -79,7 +77,7 @@ export default function Combobox({
   return (
     <div className="w-full" ref={containerRef}>
       {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-[#1A1A2E] mb-1">
           {label}
         </label>
       )}
@@ -87,12 +85,12 @@ export default function Combobox({
         <input
           type="text"
           className={`
-            w-full rounded-md border shadow-sm px-3 py-2 text-sm outline-none focus:ring-1
-            ${error 
-              ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
-              : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'
+            w-full rounded-lg border px-3 py-2 text-sm outline-none transition-colors focus:ring-1
+            ${error
+              ? 'border-red-400 focus:border-red-500 focus:ring-red-500'
+              : 'border-[#E4E4E8] focus:border-[#9898A3] focus:ring-[#9898A3]'
             }
-            ${disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}
+            ${disabled ? 'bg-[#F7F7F8] cursor-not-allowed' : 'bg-white'}
           `}
           placeholder={placeholder}
           value={query}
@@ -100,19 +98,22 @@ export default function Combobox({
           onFocus={() => !disabled && setIsOpen(true)}
           disabled={disabled}
         />
-        
+
         {isOpen && !disabled && (
-          <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg max-h-60 overflow-auto border border-gray-200">
+          <div className="absolute z-10 w-full mt-1 bg-white rounded-xl shadow-[var(--shadow-dropdown)] max-h-60 overflow-auto border border-[#E4E4E8] p-1">
             {filteredOptions.length === 0 ? (
-              <div className="px-3 py-2 text-sm text-gray-500">No results found</div>
+              <div className="px-3 py-2 text-sm text-[#9898A3]">No results found</div>
             ) : (
-              <ul className="py-1">
+              <ul>
                 {filteredOptions.map((option) => (
                   <li
                     key={option.value}
                     className={`
-                      px-3 py-2 text-sm cursor-pointer hover:bg-indigo-50
-                      ${option.value === value ? 'bg-indigo-50 text-indigo-700 font-medium' : 'text-gray-900'}
+                      px-3 py-2.5 text-sm cursor-pointer rounded-lg
+                      ${option.value === value
+                        ? 'bg-[#F7F7F8] text-[#1A1A2E] font-medium'
+                        : 'text-[#1A1A2E] hover:bg-[#F7F7F8]'
+                      }
                     `}
                     onClick={() => handleSelect(option)}
                   >
@@ -128,5 +129,3 @@ export default function Combobox({
     </div>
   )
 }
-
-

@@ -27,13 +27,13 @@ export default async function CollaboratorsPage({
   const { data: collaborators, error } = await query
 
   if (error) {
-    return <div>Error loading collaborators: {error.message}</div>
+    return <div className="bg-[#FEE2E2] border border-[#EF4444]/20 text-[#991B1B] rounded-lg px-4 py-3">Error loading collaborators: {error.message}</div>
   }
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Collaborators</h1>
+        <h1 className="text-2xl font-semibold text-[#1A1A2E] tracking-tight">Collaborators</h1>
         {canWrite && (
           <Link href="/dashboard/collaborators/new">
             <Button>New Collaborator</Button>
