@@ -22,7 +22,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
                   href="/dashboard"
                   className="border-transparent text-[#6B6B78] hover:border-[#CBCBD1] hover:text-[#1A1A2E] inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
-                  Dashboard
+                  Overview
                 </Link>
                 <Link
                   href="/dashboard/clients"
@@ -53,12 +53,6 @@ export default async function DashboardLayout({ children }: { children: ReactNod
                   className="border-transparent text-[#6B6B78] hover:border-[#CBCBD1] hover:text-[#1A1A2E] inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                 >
                   Audit Logs
-                </Link>
-                <Link
-                  href="/dashboard/reports"
-                  className="border-transparent text-[#6B6B78] hover:border-[#CBCBD1] hover:text-[#1A1A2E] inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                >
-                  Reports
                 </Link>
               </div>
             </div>

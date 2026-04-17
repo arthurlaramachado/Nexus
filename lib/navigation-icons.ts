@@ -4,8 +4,6 @@ import {
   HomeIcon,
   UsersIcon,
   DocumentTextIcon,
-  UserGroupIcon,
-  ChartBarIcon,
   BriefcaseIcon,
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline'
@@ -18,7 +16,6 @@ export const navigationIconMap: Record<string, typeof HomeIcon> = {
   '/dashboard/collaborators': UsersIcon,
   '/dashboard/roles': ShieldCheckIcon,
   '/dashboard/audit-logs': DocumentTextIcon,
-  '/dashboard/reports': ChartBarIcon,
 }
 
 export function getIconForHref(href: string) {

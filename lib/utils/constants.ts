@@ -5,7 +5,6 @@ export const ROUTES = {
   COLLABORATORS: '/dashboard/collaborators',
   ROLES: '/dashboard/roles',
   AUDIT_LOGS: '/dashboard/audit-logs',
-  REPORTS: '/dashboard/reports',
   LOGIN: '/login',
   SIGNUP: '/signup',
 } as const

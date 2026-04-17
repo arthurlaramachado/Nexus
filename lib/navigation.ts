@@ -2,8 +2,6 @@ import {
   HomeIcon,
   UsersIcon,
   DocumentTextIcon,
-  UserGroupIcon,
-  ChartBarIcon,
   BriefcaseIcon,
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline'
@@ -18,7 +16,7 @@ export interface NavItem {
 }
 
 const navigation: NavItem[] = [
-  { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+  { name: 'Overview', href: '/dashboard', icon: HomeIcon },
   { name: 'Clients', href: '/dashboard/clients', icon: BriefcaseIcon, permission: { table: 'clients', type: 'read' } },
   { name: 'Contracts', href: '/dashboard/contracts', icon: DocumentTextIcon, permission: { table: 'contracts', type: 'read' } },
   { name: 'Collaborators', href: '/dashboard/collaborators', icon: UsersIcon, permission: { table: 'collaborators', type: 'read' } },
@@ -33,12 +31,6 @@ const navigation: NavItem[] = [
     href: '/dashboard/audit-logs',
     icon: DocumentTextIcon,
     permission: { table: 'audit_logs', type: 'read' },
-  },
-  {
-    name: 'Reports',
-    href: '/dashboard/reports',
-    icon: ChartBarIcon,
-    permission: { table: 'contracts', type: 'read' },
   },
 ]
 
