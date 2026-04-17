@@ -10,10 +10,14 @@ import { PencilSquareIcon } from '@heroicons/react/24/outline'
 
 export default function ContractsList({ canWrite }: { canWrite: boolean }) {
   const searchParams = useSearchParams()
+  const search = searchParams.get('search') || undefined
   const status = searchParams.get('status') || undefined
   const client_id = searchParams.get('client_id') || undefined
+  const termination_reason = searchParams.get('termination_reason') || undefined
+  const start_date_from = searchParams.get('start_date_from') || undefined
+  const start_date_to = searchParams.get('start_date_to') || undefined
 
-  const { data: contracts, isLoading } = useContracts({ status, client_id })
+  const { data: contracts, isLoading } = useContracts({ search, status, client_id, termination_reason, start_date_from, start_date_to })
 
   if (isLoading && !contracts) {
     return <div className="animate-pulse space-y-4">
