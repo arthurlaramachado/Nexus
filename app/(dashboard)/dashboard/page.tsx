@@ -6,6 +6,9 @@ import Link from 'next/link'
 import { ROUTES } from '@/lib/utils/constants'
 import DonutChart from '@/components/charts/DonutChart'
 import BarChartCard from '@/components/charts/BarChartCard'
+import LineChartCard from '@/components/charts/LineChartCard'
+import StackedBarChartCard from '@/components/charts/StackedBarChartCard'
+import HorizontalStatusBar from '@/components/charts/HorizontalStatusBar'
 
 export default async function OverviewPage() {
   const data = await getOverviewData()
@@ -17,9 +20,9 @@ export default async function OverviewPage() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
-          label="Total Clients"
-          value={String(data.totalClients)}
-          subtitle={`${data.activeClients} active, ${data.inactiveClients} inactive`}
+          label="Active Clients"
+          value={String(data.activeClients)}
+          subtitle={`${data.inactiveClients} inactive`}
           href={ROUTES.CLIENTS}
           icon={
             <svg className="w-6 h-6 text-[#3B82F6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -28,9 +31,9 @@ export default async function OverviewPage() {
           }
         />
         <KpiCard
-          label="Total Contracts"
-          value={String(data.totalContracts)}
-          subtitle={`${data.contractStatusDistribution[0].value} active`}
+          label="Active Contracts"
+          value={String(data.activeContracts)}
+          subtitle={`${data.endedContracts} ended`}
           href={ROUTES.CONTRACTS}
           icon={
             <svg className="w-6 h-6 text-[#3B82F6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -41,7 +44,7 @@ export default async function OverviewPage() {
         <KpiCard
           label="Churn Rate"
           value={`${data.churnRate.toFixed(1)}%`}
-          subtitle="Inactive vs total clients"
+          subtitle="Last 6 months"
           icon={
             <svg className="w-6 h-6 text-[#EF4444]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
@@ -50,9 +53,9 @@ export default async function OverviewPage() {
           iconBg="bg-[#FEE2E2]"
         />
         <KpiCard
-          label="Total Revenue"
-          value={formatCurrency(data.totalRevenue)}
-          subtitle="Active contracts"
+          label="MRR"
+          value={formatCurrency(data.mrr)}
+          subtitle="Monthly Recurring Revenue"
           icon={
             <svg className="w-6 h-6 text-[#10B981]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -62,37 +65,61 @@ export default async function OverviewPage() {
         />
       </div>
 
-      {/* Charts Row 1 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      {/* Row 2: MRR Trend + Contract Status */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2">
+          <Card title="MRR Trend (12 months)">
+            <LineChartCard
+              data={data.mrrTrend}
+              color="#3B82F6"
+              formatAsCurrency
+            />
+          </Card>
+        </div>
         <Card title="Contract Status">
-          <DonutChart data={data.contractStatusDistribution} />
+          <HorizontalStatusBar data={data.contractStatusDistribution} />
+        </Card>
+      </div>
+
+      {/* Row 3: Financial Movements + Contract Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Card title="Financial Movements (12 months)">
+          <StackedBarChartCard
+            data={data.financialMovements}
+            formatAsCurrency
+          />
         </Card>
         <Card title="Contract Activity">
           <BarChartCard data={data.contractLogActivity} color="#6366F1" />
         </Card>
       </div>
 
-      {/* Charts Row 2 */}
+      {/* Row 4: Collaborator Workload + Allocation */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card title="Collaborator Workload (Top 10)">
+        <Card title="Contracts per Collaborator (Top 10)">
           <BarChartCard data={data.collaboratorWorkload} layout="horizontal" color="#3B82F6" />
         </Card>
-        <Card title="Avg. Allocation % (Top 10)">
+        <Card title="Avg. Time Dedicated per Collaborator (Top 10)">
           <BarChartCard data={data.resourceAllocation} layout="horizontal" color="#F0C14B" />
         </Card>
       </div>
 
-      {/* Charts Row 3 */}
+      {/* Row 5: Clients by Tag + Termination Reasons */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card title="Clients by Industry">
-          <DonutChart data={data.clientsByIndustry} />
+        <Card title="Clients by Tag">
+          <DonutChart data={data.clientsByTag} />
         </Card>
-        <Card title="Revenue by Client (Top 10)">
-          <BarChartCard data={data.revenueByClient} layout="horizontal" color="#10B981" />
+        <Card title="Contracts by Termination Reason">
+          <DonutChart data={data.terminationReasonDistribution} />
         </Card>
       </div>
 
-      {/* Expiring Contracts Table */}
+      {/* Row 6: Revenue by Client */}
+      <Card title="Revenue by Client (Top 10)">
+        <BarChartCard data={data.revenueByClient} layout="horizontal" color="#10B981" />
+      </Card>
+
+      {/* Row 7: Expiring Contracts Table */}
       <Card title="Contracts Expiring Soon (90 days)">
         {data.expiringContracts.length > 0 ? (
           <Table>
