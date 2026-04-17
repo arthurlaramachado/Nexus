@@ -22,6 +22,7 @@ export default function EndContractModal({
 }: EndContractModalProps) {
   const router = useRouter()
   const [selectedReason, setSelectedReason] = useState<EndContractReason | ''>('')
+  const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -31,12 +32,16 @@ export default function EndContractModal({
       setError('Please select a termination reason')
       return
     }
+    if (!description.trim()) {
+      setError('Please provide a description')
+      return
+    }
 
     setLoading(true)
     setError(null)
 
     try {
-      await endContract(contractId, selectedReason as EndContractReason)
+      await endContract(contractId, selectedReason as EndContractReason, description.trim() || undefined)
       router.refresh()
       onClose()
     } catch (err: any) {
@@ -93,6 +98,19 @@ export default function EndContractModal({
               </label>
             ))}
           </div>
+
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-[#1A1A2E] mb-1.5">
+              Description <span className="text-[#EF4444] font-normal">*</span>
+            </label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Describe the reason or add any relevant comments..."
+              rows={3}
+              className="block w-full px-3 py-2 border border-[#E4E4E8] rounded-lg text-sm outline-none transition-colors focus:ring-1 bg-white hover:border-[#CBCBD1] focus:border-[#9898A3] focus:ring-[#9898A3] resize-none"
+            />
+          </div>
         </div>
 
         {error && (
@@ -105,7 +123,7 @@ export default function EndContractModal({
           <Button type="button" variant="outline" onClick={onClose} disabled={loading}>
             Cancel
           </Button>
-          <Button type="submit" disabled={loading || !selectedReason}>
+          <Button type="submit" disabled={loading || !selectedReason || !description.trim()}>
             {loading ? 'Ending Contract...' : 'End Contract'}
           </Button>
         </div>

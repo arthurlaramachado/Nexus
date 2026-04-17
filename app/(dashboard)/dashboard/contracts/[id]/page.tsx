@@ -123,6 +123,13 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
         </div>
       </div>
 
+      {contract.termination_description && (
+        <div className="mb-6 bg-[#FEF3C7] border border-[#F59E0B]/30 rounded-lg px-4 py-3">
+          <p className="text-sm font-medium text-[#92400E] mb-1">Termination Notes</p>
+          <p className="text-sm text-[#78350F]">{contract.termination_description}</p>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div className="md:col-span-1">
           <Card title="Contract Information">

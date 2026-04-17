@@ -51,6 +51,7 @@ export interface Contract {
   name: string
   status: ContractStatus
   termination_reason: TerminationReason | null
+  termination_description: string | null
   previous_contract_id: string | null
   start_date: string
   end_date: string | null

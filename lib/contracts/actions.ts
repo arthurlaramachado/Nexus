@@ -92,10 +92,15 @@ export async function updateContractValue(
 // 2. End Contract
 export async function endContract(
   contractId: string,
-  reason: 'CHURN' | 'CUT' | 'NOT_RENEWED'
+  reason: 'CHURN' | 'CUT' | 'NOT_RENEWED',
+  description?: string
 ) {
+  if (!description?.trim()) {
+    throw new Error('Description is required when ending a contract')
+  }
+
   const supabase = await createClient()
-  
+
   // Verify permissions
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
@@ -123,6 +128,7 @@ export async function endContract(
     .update({
       status: 'ENDED',
       termination_reason: reason,
+      termination_description: description || null,
     })
     .eq('id', contractId)
 
