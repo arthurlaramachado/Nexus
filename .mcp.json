@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "nexus": {
+      "command": "node",
+      "args": ["mcp/dist/index.js"],
+      "cwd": "/Users/arthurlaramachado/code/work/NexusCS"
+    }
+  }
+}
