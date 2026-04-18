@@ -11,12 +11,10 @@ export default async function EditContractPage({ params }: { params: Promise<{ i
   const [
     { data: contract, error },
     { data: clients },
-    { data: services },
     { data: contractServices },
   ] = await Promise.all([
     supabase.from('contracts').select('*').eq('id', id).single(),
     supabase.from('clients').select('id, name').order('name'),
-    supabase.from('services').select('id, name').order('name'),
     supabase.from('contract_services').select('service_id').eq('contract_id', id),
   ])
 
@@ -32,7 +30,6 @@ export default async function EditContractPage({ params }: { params: Promise<{ i
       <ContractForm
         contract={contract}
         clients={clients || []}
-        services={services || []}
         defaultServiceIds={defaultServiceIds}
       />
     </div>

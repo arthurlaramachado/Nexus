@@ -45,7 +45,7 @@ export default function ServiceMultiSelect({
   const selectedServices = useMemo(() =>
     value
       .map(id => services.find(s => s.id === id))
-      .filter((s): s is ServiceOption => s !== undefined),
+      .filter((s): s is { id: string; name: string } => s !== undefined),
     [services, value]
   )
 

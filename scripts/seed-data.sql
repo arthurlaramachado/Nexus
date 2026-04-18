@@ -36,7 +36,8 @@ INSERT INTO role_permissions (role_id, table_name, can_read, can_write, can_dele
   ('a1b2c3d4-1111-4000-a000-000000000001', 'collaborators',        true, true, false),
   ('a1b2c3d4-1111-4000-a000-000000000001', 'tags',                 true, true, false),
   ('a1b2c3d4-1111-4000-a000-000000000001', 'audit_logs',           true, false, false),
-  ('a1b2c3d4-1111-4000-a000-000000000001', 'roles',                true, false, false);
+  ('a1b2c3d4-1111-4000-a000-000000000001', 'roles',                true, false, false),
+  ('a1b2c3d4-1111-4000-a000-000000000001', 'services',             true, true, false);
 
 -- Analyst: read-only on most, write on contract_logs
 INSERT INTO role_permissions (role_id, table_name, can_read, can_write, can_delete) VALUES
@@ -47,22 +48,37 @@ INSERT INTO role_permissions (role_id, table_name, can_read, can_write, can_dele
   ('a1b2c3d4-2222-4000-a000-000000000002', 'collaborators',        true, false, false),
   ('a1b2c3d4-2222-4000-a000-000000000002', 'tags',                 true, false, false),
   ('a1b2c3d4-2222-4000-a000-000000000002', 'audit_logs',           true, false, false),
-  ('a1b2c3d4-2222-4000-a000-000000000002', 'roles',                true, false, false);
+  ('a1b2c3d4-2222-4000-a000-000000000002', 'roles',                true, false, false),
+  ('a1b2c3d4-2222-4000-a000-000000000002', 'services',             true, false, false);
 
 -- -----------------------------------------------------------------------------
--- 3. COLLABORATORS (4 new team members)
+-- 3. COLLABORATORS (10 team members: 2 managers + 8 analysts)
 -- -----------------------------------------------------------------------------
 
 INSERT INTO collaborators (id, user_id, role_id, full_name, email, status, invite_token, expires_at) VALUES
+  -- Managers
   ('cc000001-0000-4000-a000-000000000001', NULL, 'a1b2c3d4-1111-4000-a000-000000000001',
-   'Ana Costa', 'ana.costa@moicdigital.com', 'active', NULL, NULL),
+   'Pereira', 'pereira@moicdigital.com', 'active', NULL, NULL),
   ('cc000001-0000-4000-a000-000000000002', NULL, 'a1b2c3d4-1111-4000-a000-000000000001',
-   'Lucas Ferreira', 'lucas.ferreira@moicdigital.com', 'active', NULL, NULL),
+   'Adan', 'adan@moicdigital.com', 'active', NULL, NULL),
+  -- Analysts
   ('cc000001-0000-4000-a000-000000000003', NULL, 'a1b2c3d4-2222-4000-a000-000000000002',
-   'Mariana Silva', 'mariana.silva@moicdigital.com', 'active', NULL, NULL),
+   'Cabral', 'cabral@moicdigital.com', 'active', NULL, NULL),
   ('cc000001-0000-4000-a000-000000000004', NULL, 'a1b2c3d4-2222-4000-a000-000000000002',
-   'Rafael Oliveira', 'rafael.oliveira@moicdigital.com', 'invited',
-   'A7F3E1D9B2C84F60ABCD1234EFGH5678', '2026-04-18T13:00:00Z');
+   'JJ', 'jj@moicdigital.com', 'active', NULL, NULL),
+  ('cc000001-0000-4000-a000-000000000005', NULL, 'a1b2c3d4-2222-4000-a000-000000000002',
+   'Little Legs', 'littlelegs@moicdigital.com', 'active', NULL, NULL),
+  ('cc000001-0000-4000-a000-000000000006', NULL, 'a1b2c3d4-2222-4000-a000-000000000002',
+   'Salame', 'salame@moicdigital.com', 'active', NULL, NULL),
+  ('cc000001-0000-4000-a000-000000000007', NULL, 'a1b2c3d4-2222-4000-a000-000000000002',
+   'Foguinho', 'foguinho@moicdigital.com', 'active', NULL, NULL),
+  ('cc000001-0000-4000-a000-000000000008', NULL, 'a1b2c3d4-2222-4000-a000-000000000002',
+   'Torresmo', 'torresmo@moicdigital.com', 'active', NULL, NULL),
+  ('cc000001-0000-4000-a000-000000000009', NULL, 'a1b2c3d4-2222-4000-a000-000000000002',
+   'Batata', 'batata@moicdigital.com', 'active', NULL, NULL),
+  ('cc000001-0000-4000-a000-000000000010', NULL, 'a1b2c3d4-2222-4000-a000-000000000002',
+   'Pipoca', 'pipoca@moicdigital.com', 'invited',
+   'B8G4F2E1C3D74A50XYZW9876ABCD1234', '2026-04-20T13:00:00Z');
 
 -- -----------------------------------------------------------------------------
 -- 4. TAGS
@@ -76,30 +92,49 @@ INSERT INTO tags (id, name) VALUES
   ('aa000001-0000-4000-a000-000000000005', 'Fintech'),
   ('aa000001-0000-4000-a000-000000000006', 'E-commerce'),
   ('aa000001-0000-4000-a000-000000000007', 'Healthcare'),
-  ('aa000001-0000-4000-a000-000000000008', 'High Touch');
+  ('aa000001-0000-4000-a000-000000000008', 'High Touch'),
+  ('aa000001-0000-4000-a000-000000000009', 'EdTech'),
+  ('aa000001-0000-4000-a000-000000000010', 'Logistics');
 
 -- -----------------------------------------------------------------------------
--- 5. CLIENTS (12 clients)
+-- 5. SERVICES
+-- -----------------------------------------------------------------------------
+
+INSERT INTO services (id, name, description) VALUES
+  ('a0000001-0000-4000-a000-000000000001', 'Social Media Management', 'Full social media strategy, content creation, and community management'),
+  ('a0000001-0000-4000-a000-000000000002', 'Paid Ads', 'Campaign management across Google Ads, Meta Ads, and LinkedIn Ads'),
+  ('a0000001-0000-4000-a000-000000000003', 'SEO', 'Technical SEO, on-page optimization, and link building'),
+  ('a0000001-0000-4000-a000-000000000004', 'Web Development', 'Website design, development, and maintenance'),
+  ('a0000001-0000-4000-a000-000000000005', 'Branding', 'Brand identity, visual guidelines, and positioning'),
+  ('a0000001-0000-4000-a000-000000000006', 'Content Marketing', 'Blog posts, whitepapers, email campaigns, and editorial calendars'),
+  ('a0000001-0000-4000-a000-000000000007', 'CRM & Automation', 'CRM setup, marketing automation flows, and lead nurturing'),
+  ('a0000001-0000-4000-a000-000000000008', 'Analytics & BI', 'Dashboards, reporting, and data-driven insights');
+
+-- -----------------------------------------------------------------------------
+-- 6. CLIENTS (15 clients)
 -- -----------------------------------------------------------------------------
 
 INSERT INTO clients (id, name, status, country, city, created_at) VALUES
-  -- Active clients
-  ('c1000001-0000-4000-a000-000000000001', 'TechNova Solutions',   'active',   'Brazil',        'São Paulo',      '2025-10-05T10:00:00Z'),
-  ('c1000001-0000-4000-a000-000000000002', 'FinPay Global',        'active',   'Brazil',        'Rio de Janeiro', '2025-10-12T14:30:00Z'),
-  ('c1000001-0000-4000-a000-000000000003', 'MedVita Health',       'active',   'Brazil',        'Curitiba',       '2025-11-01T09:00:00Z'),
-  ('c1000001-0000-4000-a000-000000000004', 'CloudBase Inc',        'active',   'United States', 'Austin',         '2025-11-15T16:00:00Z'),
-  ('c1000001-0000-4000-a000-000000000005', 'RetailMax',            'active',   'Mexico',        'Mexico City',    '2025-12-01T11:00:00Z'),
-  ('c1000001-0000-4000-a000-000000000006', 'DataStream Analytics', 'active',   'Colombia',      'Bogotá',         '2025-12-10T08:00:00Z'),
-  ('c1000001-0000-4000-a000-000000000007', 'Elevate Digital',      'active',   'Brazil',        'Belo Horizonte', '2026-01-08T10:00:00Z'),
-  ('c1000001-0000-4000-a000-000000000008', 'NordPay',              'active',   'Argentina',     'Buenos Aires',   '2026-01-20T13:00:00Z'),
-  ('c1000001-0000-4000-a000-000000000009', 'GreenLeaf Agro',       'active',   'Brazil',        'Campinas',       '2026-02-05T09:30:00Z'),
-  -- Inactive clients (churned)
-  ('c1000001-0000-4000-a000-000000000010', 'QuickShip Logistics',  'inactive', 'Brazil',        'Porto Alegre',   '2025-10-20T15:00:00Z'),
-  ('c1000001-0000-4000-a000-000000000011', 'BrightPath Education', 'inactive', 'Chile',         'Santiago',       '2025-11-05T10:00:00Z'),
-  ('c1000001-0000-4000-a000-000000000012', 'UrbanLoft Design',     'inactive', 'Peru',          'Lima',           '2025-12-15T14:00:00Z');
+  -- Active clients (11)
+  ('c1000001-0000-4000-a000-000000000001', 'TechNova Solutions',     'active',   'Brazil',        'São Paulo',        '2025-10-05T10:00:00Z'),
+  ('c1000001-0000-4000-a000-000000000002', 'FinPay Global',          'active',   'Brazil',        'Rio de Janeiro',   '2025-10-12T14:30:00Z'),
+  ('c1000001-0000-4000-a000-000000000003', 'MedVita Health',         'active',   'Brazil',        'Curitiba',         '2025-11-01T09:00:00Z'),
+  ('c1000001-0000-4000-a000-000000000004', 'CloudBase Inc',          'active',   'United States', 'Austin',           '2025-11-15T16:00:00Z'),
+  ('c1000001-0000-4000-a000-000000000005', 'RetailMax',              'active',   'Mexico',        'Mexico City',      '2025-12-01T11:00:00Z'),
+  ('c1000001-0000-4000-a000-000000000006', 'DataStream Analytics',   'active',   'Colombia',      'Bogotá',           '2025-12-10T08:00:00Z'),
+  ('c1000001-0000-4000-a000-000000000007', 'Elevate Digital',        'active',   'Brazil',        'Belo Horizonte',   '2026-01-08T10:00:00Z'),
+  ('c1000001-0000-4000-a000-000000000008', 'NordPay',                'active',   'Argentina',     'Buenos Aires',     '2026-01-20T13:00:00Z'),
+  ('c1000001-0000-4000-a000-000000000009', 'GreenLeaf Agro',         'active',   'Brazil',        'Campinas',         '2026-02-05T09:30:00Z'),
+  ('c1000001-0000-4000-a000-000000000010', 'Plataforma Escola',      'active',   'Brazil',        'Florianópolis',    '2026-02-20T11:00:00Z'),
+  ('c1000001-0000-4000-a000-000000000011', 'CargaRápida Express',    'active',   'Brazil',        'Recife',           '2026-03-01T08:00:00Z'),
+  -- Inactive clients (4, churned/cut)
+  ('c1000001-0000-4000-a000-000000000012', 'QuickShip Logistics',    'inactive', 'Brazil',        'Porto Alegre',     '2025-10-20T15:00:00Z'),
+  ('c1000001-0000-4000-a000-000000000013', 'BrightPath Education',   'inactive', 'Chile',         'Santiago',         '2025-11-05T10:00:00Z'),
+  ('c1000001-0000-4000-a000-000000000014', 'UrbanLoft Design',       'inactive', 'Peru',          'Lima',             '2025-12-15T14:00:00Z'),
+  ('c1000001-0000-4000-a000-000000000015', 'VoltEnergy',             'inactive', 'Brazil',        'Salvador',         '2026-01-10T10:00:00Z');
 
 -- -----------------------------------------------------------------------------
--- 6. CLIENT TAGS
+-- 7. CLIENT TAGS
 -- -----------------------------------------------------------------------------
 
 INSERT INTO client_tags (client_id, tag_id) VALUES
@@ -130,23 +165,32 @@ INSERT INTO client_tags (client_id, tag_id) VALUES
   ('c1000001-0000-4000-a000-000000000008', 'aa000001-0000-4000-a000-000000000005'),
   -- GreenLeaf: SMB
   ('c1000001-0000-4000-a000-000000000009', 'aa000001-0000-4000-a000-000000000002'),
-  -- QuickShip: SMB, E-commerce
+  -- Plataforma Escola: SMB, EdTech
   ('c1000001-0000-4000-a000-000000000010', 'aa000001-0000-4000-a000-000000000002'),
-  ('c1000001-0000-4000-a000-000000000010', 'aa000001-0000-4000-a000-000000000006'),
-  -- BrightPath: Startup
+  ('c1000001-0000-4000-a000-000000000010', 'aa000001-0000-4000-a000-000000000009'),
+  -- CargaRápida: Startup, Logistics
   ('c1000001-0000-4000-a000-000000000011', 'aa000001-0000-4000-a000-000000000003'),
+  ('c1000001-0000-4000-a000-000000000011', 'aa000001-0000-4000-a000-000000000010'),
+  -- QuickShip: SMB, Logistics
+  ('c1000001-0000-4000-a000-000000000012', 'aa000001-0000-4000-a000-000000000002'),
+  ('c1000001-0000-4000-a000-000000000012', 'aa000001-0000-4000-a000-000000000010'),
+  -- BrightPath: Startup, EdTech
+  ('c1000001-0000-4000-a000-000000000013', 'aa000001-0000-4000-a000-000000000003'),
+  ('c1000001-0000-4000-a000-000000000013', 'aa000001-0000-4000-a000-000000000009'),
   -- UrbanLoft: SMB
-  ('c1000001-0000-4000-a000-000000000012', 'aa000001-0000-4000-a000-000000000002');
+  ('c1000001-0000-4000-a000-000000000014', 'aa000001-0000-4000-a000-000000000002'),
+  -- VoltEnergy: Startup, E-commerce
+  ('c1000001-0000-4000-a000-000000000015', 'aa000001-0000-4000-a000-000000000003'),
+  ('c1000001-0000-4000-a000-000000000015', 'aa000001-0000-4000-a000-000000000006');
 
 -- -----------------------------------------------------------------------------
--- 7. CONTRACTS
+-- 8. CONTRACTS
 --    Inserted in chronological order so previous_contract_id references resolve.
---    Contracts with upsells/downsells are inserted with ORIGINAL values.
 -- -----------------------------------------------------------------------------
 
 -- === FinPay Pilot (oldest, Jul 2025) ===
 INSERT INTO contracts (id, client_id, name, status, termination_reason, previous_contract_id, start_date, end_date, renewal_date, current_value, created_at) VALUES
-  ('c0000001-0000-4000-a000-000000000016',
+  ('c0000001-0000-4000-a000-000000000001',
    'c1000001-0000-4000-a000-000000000002',
    'FinPay - Pilot', 'ENDED', 'RENEWED', NULL,
    '2025-07-01', '2025-10-11', '2025-09-20', 10000.00,
@@ -154,40 +198,39 @@ INSERT INTO contracts (id, client_id, name, status, termination_reason, previous
 
 -- === QuickShip Trial (Jul 2025) ===
 INSERT INTO contracts (id, client_id, name, status, termination_reason, previous_contract_id, start_date, end_date, renewal_date, current_value, created_at) VALUES
-  ('c0000001-0000-4000-a000-000000000017',
-   'c1000001-0000-4000-a000-000000000010',
+  ('c0000001-0000-4000-a000-000000000002',
+   'c1000001-0000-4000-a000-000000000012',
    'QuickShip - Trial', 'ENDED', 'RENEWED', NULL,
    '2025-07-15', '2025-10-19', '2025-10-01', 3000.00,
    '2025-07-15T12:00:00Z');
 
 -- === TechNova Q4 2025: ENDED (RENEWED) ===
 INSERT INTO contracts (id, client_id, name, status, termination_reason, previous_contract_id, start_date, end_date, renewal_date, current_value, created_at) VALUES
-  ('c0000001-0000-4000-a000-000000000001',
+  ('c0000001-0000-4000-a000-000000000003',
    'c1000001-0000-4000-a000-000000000001',
    'TechNova - Q4 2025', 'ENDED', 'RENEWED', NULL,
    '2025-10-05', '2025-12-31', '2025-12-15', 8000.00,
    '2025-10-05T10:30:00Z');
 
 -- === FinPay H2 2025: ENDED (RENEWED), points to Pilot ===
--- Inserted with original value 15000 (upsell to 18000 happens in logs)
 INSERT INTO contracts (id, client_id, name, status, termination_reason, previous_contract_id, start_date, end_date, renewal_date, current_value, created_at) VALUES
   ('c0000001-0000-4000-a000-000000000004',
    'c1000001-0000-4000-a000-000000000002',
    'FinPay - H2 2025', 'ENDED', 'RENEWED',
-   'c0000001-0000-4000-a000-000000000016',
+   'c0000001-0000-4000-a000-000000000001',
    '2025-10-12', '2026-01-31', '2026-01-15', 15000.00,
    '2025-10-12T15:00:00Z');
 
 -- === QuickShip Logistics: ENDED (CHURN), points to Trial ===
 INSERT INTO contracts (id, client_id, name, status, termination_reason, previous_contract_id, start_date, end_date, renewal_date, current_value, created_at) VALUES
-  ('c0000001-0000-4000-a000-000000000013',
-   'c1000001-0000-4000-a000-000000000010',
+  ('c0000001-0000-4000-a000-000000000005',
+   'c1000001-0000-4000-a000-000000000012',
    'QuickShip - Logistics Plan', 'ENDED', 'CHURN',
-   'c0000001-0000-4000-a000-000000000017',
+   'c0000001-0000-4000-a000-000000000002',
    '2025-10-20', '2026-01-20', NULL, 5000.00,
    '2025-10-20T15:30:00Z');
 
--- === MedVita: ACTIVE, inserted with original value 8000 (downsell to 6500 in logs) ===
+-- === MedVita: ACTIVE ===
 INSERT INTO contracts (id, client_id, name, status, termination_reason, previous_contract_id, start_date, end_date, renewal_date, current_value, created_at) VALUES
   ('c0000001-0000-4000-a000-000000000006',
    'c1000001-0000-4000-a000-000000000003',
@@ -196,33 +239,32 @@ INSERT INTO contracts (id, client_id, name, status, termination_reason, previous
    '2025-11-01T09:30:00Z');
 
 -- === BrightPath: ENDED (NOT_RENEWED) ===
--- renewal_date represents when renewal was due, not when it happened
 INSERT INTO contracts (id, client_id, name, status, termination_reason, previous_contract_id, start_date, end_date, renewal_date, current_value, created_at) VALUES
-  ('c0000001-0000-4000-a000-000000000014',
-   'c1000001-0000-4000-a000-000000000011',
+  ('c0000001-0000-4000-a000-000000000007',
+   'c1000001-0000-4000-a000-000000000013',
    'BrightPath - Education Suite', 'ENDED', 'NOT_RENEWED', NULL,
    '2025-11-05', '2026-02-05', '2026-01-20', 4000.00,
    '2025-11-05T10:30:00Z');
 
--- === CloudBase: ACTIVE, inserted with original value 20000 (upsell to 25000 in logs) ===
+-- === CloudBase: ACTIVE ===
 INSERT INTO contracts (id, client_id, name, status, termination_reason, previous_contract_id, start_date, end_date, renewal_date, current_value, created_at) VALUES
-  ('c0000001-0000-4000-a000-000000000007',
+  ('c0000001-0000-4000-a000-000000000008',
    'c1000001-0000-4000-a000-000000000004',
    'CloudBase - Enterprise Plan', 'ACTIVE', NULL, NULL,
    '2025-11-15', '2026-11-14', '2026-10-01', 20000.00,
    '2025-11-15T16:30:00Z');
 
--- === RetailMax: ACTIVE, inserted with original value 6000 (downsell to 4500 in logs) ===
+-- === RetailMax: ACTIVE ===
 INSERT INTO contracts (id, client_id, name, status, termination_reason, previous_contract_id, start_date, end_date, renewal_date, current_value, created_at) VALUES
-  ('c0000001-0000-4000-a000-000000000008',
+  ('c0000001-0000-4000-a000-000000000009',
    'c1000001-0000-4000-a000-000000000005',
    'RetailMax - Growth', 'ACTIVE', NULL, NULL,
    '2025-12-01', '2026-05-31', '2026-05-01', 6000.00,
    '2025-12-01T11:30:00Z');
 
--- === DataStream: ACTIVE, inserted with original value 2000 (upsell to 3000 in logs) ===
+-- === DataStream: ACTIVE ===
 INSERT INTO contracts (id, client_id, name, status, termination_reason, previous_contract_id, start_date, end_date, renewal_date, current_value, created_at) VALUES
-  ('c0000001-0000-4000-a000-000000000009',
+  ('c0000001-0000-4000-a000-000000000010',
    'c1000001-0000-4000-a000-000000000006',
    'DataStream - Starter', 'ACTIVE', NULL, NULL,
    '2025-12-10', '2026-06-10', '2026-05-15', 2000.00,
@@ -230,32 +272,40 @@ INSERT INTO contracts (id, client_id, name, status, termination_reason, previous
 
 -- === UrbanLoft: ENDED (CUT) ===
 INSERT INTO contracts (id, client_id, name, status, termination_reason, previous_contract_id, start_date, end_date, renewal_date, current_value, created_at) VALUES
-  ('c0000001-0000-4000-a000-000000000015',
-   'c1000001-0000-4000-a000-000000000012',
+  ('c0000001-0000-4000-a000-000000000011',
+   'c1000001-0000-4000-a000-000000000014',
    'UrbanLoft - Design Platform', 'ENDED', 'CUT', NULL,
    '2025-12-15', '2026-06-15', NULL, 3500.00,
    '2025-12-15T14:30:00Z');
 
--- === TechNova Q1 2026: ENDED (RENEWED), inserted with original 10000 (upsell to 12000 in logs) ===
+-- === TechNova Q1 2026: ENDED (RENEWED), points to Q4 2025 ===
 INSERT INTO contracts (id, client_id, name, status, termination_reason, previous_contract_id, start_date, end_date, renewal_date, current_value, created_at) VALUES
-  ('c0000001-0000-4000-a000-000000000002',
+  ('c0000001-0000-4000-a000-000000000012',
    'c1000001-0000-4000-a000-000000000001',
    'TechNova - Q1 2026', 'ENDED', 'RENEWED',
-   'c0000001-0000-4000-a000-000000000001',
+   'c0000001-0000-4000-a000-000000000003',
    '2026-01-01', '2026-03-31', '2026-03-15', 10000.00,
    '2025-12-20T09:00:00Z');
 
--- === Elevate: ACTIVE, inserted with original value 4000 (upsell to 5500 in logs) ===
+-- === VoltEnergy: ENDED (CHURN) ===
 INSERT INTO contracts (id, client_id, name, status, termination_reason, previous_contract_id, start_date, end_date, renewal_date, current_value, created_at) VALUES
-  ('c0000001-0000-4000-a000-000000000010',
+  ('c0000001-0000-4000-a000-000000000013',
+   'c1000001-0000-4000-a000-000000000015',
+   'VoltEnergy - Digital Launch', 'ENDED', 'CHURN', NULL,
+   '2026-01-10', '2026-04-10', NULL, 4500.00,
+   '2026-01-10T10:30:00Z');
+
+-- === Elevate: ACTIVE ===
+INSERT INTO contracts (id, client_id, name, status, termination_reason, previous_contract_id, start_date, end_date, renewal_date, current_value, created_at) VALUES
+  ('c0000001-0000-4000-a000-000000000014',
    'c1000001-0000-4000-a000-000000000007',
    'Elevate - Pro Plan', 'ACTIVE', NULL, NULL,
    '2026-01-08', '2026-07-08', '2026-06-15', 4000.00,
    '2026-01-08T10:30:00Z');
 
--- === NordPay: ACTIVE, inserted with original value 5000 (upsell to 7000 in logs) ===
+-- === NordPay: ACTIVE ===
 INSERT INTO contracts (id, client_id, name, status, termination_reason, previous_contract_id, start_date, end_date, renewal_date, current_value, created_at) VALUES
-  ('c0000001-0000-4000-a000-000000000011',
+  ('c0000001-0000-4000-a000-000000000015',
    'c1000001-0000-4000-a000-000000000008',
    'NordPay - Fintech Bundle', 'ACTIVE', NULL, NULL,
    '2026-01-20', '2026-07-20', '2026-06-20', 5000.00,
@@ -263,194 +313,292 @@ INSERT INTO contracts (id, client_id, name, status, termination_reason, previous
 
 -- === FinPay 2026: ACTIVE, points to H2 2025 ===
 INSERT INTO contracts (id, client_id, name, status, termination_reason, previous_contract_id, start_date, end_date, renewal_date, current_value, created_at) VALUES
-  ('c0000001-0000-4000-a000-000000000005',
+  ('c0000001-0000-4000-a000-000000000016',
    'c1000001-0000-4000-a000-000000000002',
    'FinPay - 2026', 'ACTIVE', NULL,
    'c0000001-0000-4000-a000-000000000004',
    '2026-02-01', '2026-07-31', '2026-07-01', 18000.00,
    '2026-01-20T11:00:00Z');
 
--- === GreenLeaf: ACTIVE, inserted with original value 2500 (upsell to 3500 in logs) ===
+-- === GreenLeaf: ACTIVE ===
 INSERT INTO contracts (id, client_id, name, status, termination_reason, previous_contract_id, start_date, end_date, renewal_date, current_value, created_at) VALUES
-  ('c0000001-0000-4000-a000-000000000012',
+  ('c0000001-0000-4000-a000-000000000017',
    'c1000001-0000-4000-a000-000000000009',
    'GreenLeaf - Agro Digital', 'ACTIVE', NULL, NULL,
    '2026-02-05', '2026-08-05', '2026-07-01', 2500.00,
    '2026-02-05T09:45:00Z');
 
+-- === Plataforma Escola: ACTIVE ===
+INSERT INTO contracts (id, client_id, name, status, termination_reason, previous_contract_id, start_date, end_date, renewal_date, current_value, created_at) VALUES
+  ('c0000001-0000-4000-a000-000000000018',
+   'c1000001-0000-4000-a000-000000000010',
+   'Plataforma Escola - EdTech Suite', 'ACTIVE', NULL, NULL,
+   '2026-02-20', '2026-08-20', '2026-07-20', 6500.00,
+   '2026-02-20T11:30:00Z');
+
+-- === CargaRápida: ACTIVE ===
+INSERT INTO contracts (id, client_id, name, status, termination_reason, previous_contract_id, start_date, end_date, renewal_date, current_value, created_at) VALUES
+  ('c0000001-0000-4000-a000-000000000019',
+   'c1000001-0000-4000-a000-000000000011',
+   'CargaRápida - Growth Plan', 'ACTIVE', NULL, NULL,
+   '2026-03-01', '2026-09-01', '2026-08-01', 3500.00,
+   '2026-03-01T08:30:00Z');
+
 -- === TechNova Q2 2026: ACTIVE, points to Q1 2026 ===
 INSERT INTO contracts (id, client_id, name, status, termination_reason, previous_contract_id, start_date, end_date, renewal_date, current_value, created_at) VALUES
-  ('c0000001-0000-4000-a000-000000000003',
+  ('c0000001-0000-4000-a000-000000000020',
    'c1000001-0000-4000-a000-000000000001',
    'TechNova - Q2 2026', 'ACTIVE', NULL,
-   'c0000001-0000-4000-a000-000000000002',
+   'c0000001-0000-4000-a000-000000000012',
    '2026-04-01', '2026-06-30', '2026-06-15', 12000.00,
    '2026-03-20T10:00:00Z');
 
 -- -----------------------------------------------------------------------------
--- 8. CONTRACT LOGS (financial history over ~6 months)
---    Chronological order. After each upsell/downsell, UPDATE current_value.
+-- 9. CONTRACT SERVICES (link contracts to services)
 -- -----------------------------------------------------------------------------
 
--- Auth user IDs used for created_by:
--- Pedro Melo:   80edd4ef-047d-4429-b543-d4aff17e8aa5
--- System Admin: fcbfe33d-fed0-422a-a06f-58ec3e38dc48
+INSERT INTO contract_services (contract_id, service_id) VALUES
+  -- TechNova Q2 2026: Social Media, Paid Ads, SEO, Analytics
+  ('c0000001-0000-4000-a000-000000000020', 'a0000001-0000-4000-a000-000000000001'),
+  ('c0000001-0000-4000-a000-000000000020', 'a0000001-0000-4000-a000-000000000002'),
+  ('c0000001-0000-4000-a000-000000000020', 'a0000001-0000-4000-a000-000000000003'),
+  ('c0000001-0000-4000-a000-000000000020', 'a0000001-0000-4000-a000-000000000008'),
+  -- FinPay 2026: Paid Ads, CRM & Automation, Analytics
+  ('c0000001-0000-4000-a000-000000000016', 'a0000001-0000-4000-a000-000000000002'),
+  ('c0000001-0000-4000-a000-000000000016', 'a0000001-0000-4000-a000-000000000007'),
+  ('c0000001-0000-4000-a000-000000000016', 'a0000001-0000-4000-a000-000000000008'),
+  -- MedVita: Content Marketing, Web Development
+  ('c0000001-0000-4000-a000-000000000006', 'a0000001-0000-4000-a000-000000000006'),
+  ('c0000001-0000-4000-a000-000000000006', 'a0000001-0000-4000-a000-000000000004'),
+  -- CloudBase: Paid Ads, SEO, Content Marketing, Branding
+  ('c0000001-0000-4000-a000-000000000008', 'a0000001-0000-4000-a000-000000000002'),
+  ('c0000001-0000-4000-a000-000000000008', 'a0000001-0000-4000-a000-000000000003'),
+  ('c0000001-0000-4000-a000-000000000008', 'a0000001-0000-4000-a000-000000000006'),
+  ('c0000001-0000-4000-a000-000000000008', 'a0000001-0000-4000-a000-000000000005'),
+  -- RetailMax: Social Media, E-commerce (Paid Ads)
+  ('c0000001-0000-4000-a000-000000000009', 'a0000001-0000-4000-a000-000000000001'),
+  ('c0000001-0000-4000-a000-000000000009', 'a0000001-0000-4000-a000-000000000002'),
+  -- DataStream: SEO, Content Marketing
+  ('c0000001-0000-4000-a000-000000000010', 'a0000001-0000-4000-a000-000000000003'),
+  ('c0000001-0000-4000-a000-000000000010', 'a0000001-0000-4000-a000-000000000006'),
+  -- Elevate: Social Media, Branding, Web Development
+  ('c0000001-0000-4000-a000-000000000014', 'a0000001-0000-4000-a000-000000000001'),
+  ('c0000001-0000-4000-a000-000000000014', 'a0000001-0000-4000-a000-000000000005'),
+  ('c0000001-0000-4000-a000-000000000014', 'a0000001-0000-4000-a000-000000000004'),
+  -- NordPay: Paid Ads, CRM & Automation
+  ('c0000001-0000-4000-a000-000000000015', 'a0000001-0000-4000-a000-000000000002'),
+  ('c0000001-0000-4000-a000-000000000015', 'a0000001-0000-4000-a000-000000000007'),
+  -- GreenLeaf: Social Media, Content Marketing
+  ('c0000001-0000-4000-a000-000000000017', 'a0000001-0000-4000-a000-000000000001'),
+  ('c0000001-0000-4000-a000-000000000017', 'a0000001-0000-4000-a000-000000000006'),
+  -- Plataforma Escola: Web Development, SEO, CRM & Automation
+  ('c0000001-0000-4000-a000-000000000018', 'a0000001-0000-4000-a000-000000000004'),
+  ('c0000001-0000-4000-a000-000000000018', 'a0000001-0000-4000-a000-000000000003'),
+  ('c0000001-0000-4000-a000-000000000018', 'a0000001-0000-4000-a000-000000000007'),
+  -- CargaRápida: Social Media, Paid Ads, Branding
+  ('c0000001-0000-4000-a000-000000000019', 'a0000001-0000-4000-a000-000000000001'),
+  ('c0000001-0000-4000-a000-000000000019', 'a0000001-0000-4000-a000-000000000002'),
+  ('c0000001-0000-4000-a000-000000000019', 'a0000001-0000-4000-a000-000000000005');
+
+-- -----------------------------------------------------------------------------
+-- 10. CONTRACT LOGS (financial history over ~6 months)
+--     After each upsell/downsell, UPDATE current_value.
+-- -----------------------------------------------------------------------------
 
 -- --- Oct 2025: FinPay Pilot → H2 renewal ---
 INSERT INTO contract_logs (contract_id, action_type, old_value, new_value, delta_value, created_at, created_by) VALUES
-  ('c0000001-0000-4000-a000-000000000016', 'RENEWAL_EXIT',  10000.00, 0.00,     -10000.00, '2025-10-10T10:00:00Z', 'fcbfe33d-fed0-422a-a06f-58ec3e38dc48'),
-  ('c0000001-0000-4000-a000-000000000004', 'RENEWAL_ENTRY', 0.00,     15000.00,  15000.00,  '2025-10-10T10:00:00Z', 'fcbfe33d-fed0-422a-a06f-58ec3e38dc48');
+  ('c0000001-0000-4000-a000-000000000001', 'RENEWAL_EXIT',  10000.00, 0.00,     -10000.00, '2025-10-10T10:00:00Z', NULL),
+  ('c0000001-0000-4000-a000-000000000004', 'RENEWAL_ENTRY', 0.00,     15000.00,  15000.00,  '2025-10-10T10:00:00Z', NULL);
 
 -- --- Oct 2025: QuickShip Trial → Logistics renewal ---
 INSERT INTO contract_logs (contract_id, action_type, old_value, new_value, delta_value, created_at, created_by) VALUES
-  ('c0000001-0000-4000-a000-000000000017', 'RENEWAL_EXIT',  3000.00, 0.00,    -3000.00, '2025-10-18T10:00:00Z', 'fcbfe33d-fed0-422a-a06f-58ec3e38dc48'),
-  ('c0000001-0000-4000-a000-000000000013', 'RENEWAL_ENTRY', 0.00,    5000.00,  5000.00,  '2025-10-18T10:00:00Z', 'fcbfe33d-fed0-422a-a06f-58ec3e38dc48');
+  ('c0000001-0000-4000-a000-000000000002', 'RENEWAL_EXIT',  3000.00, 0.00,    -3000.00, '2025-10-18T10:00:00Z', NULL),
+  ('c0000001-0000-4000-a000-000000000005', 'RENEWAL_ENTRY', 0.00,    5000.00,  5000.00,  '2025-10-18T10:00:00Z', NULL);
 
 -- --- Dec 2025: FinPay upsell 15000 → 18000 ---
 INSERT INTO contract_logs (contract_id, action_type, old_value, new_value, delta_value, created_at, created_by) VALUES
-  ('c0000001-0000-4000-a000-000000000004', 'UPSELL', 15000.00, 18000.00, 3000.00, '2025-12-05T11:00:00Z', '80edd4ef-047d-4429-b543-d4aff17e8aa5');
+  ('c0000001-0000-4000-a000-000000000004', 'UPSELL', 15000.00, 18000.00, 3000.00, '2025-12-05T11:00:00Z', NULL);
 UPDATE contracts SET current_value = 18000.00 WHERE id = 'c0000001-0000-4000-a000-000000000004';
 
 -- --- Dec 2025: TechNova Q4 → Q1 renewal ---
 INSERT INTO contract_logs (contract_id, action_type, old_value, new_value, delta_value, created_at, created_by) VALUES
-  ('c0000001-0000-4000-a000-000000000001', 'RENEWAL_EXIT',  8000.00,  0.00,     -8000.00,  '2025-12-28T10:00:00Z', '80edd4ef-047d-4429-b543-d4aff17e8aa5'),
-  ('c0000001-0000-4000-a000-000000000002', 'RENEWAL_ENTRY', 0.00,     10000.00,  10000.00,  '2025-12-28T10:00:00Z', '80edd4ef-047d-4429-b543-d4aff17e8aa5');
+  ('c0000001-0000-4000-a000-000000000003', 'RENEWAL_EXIT',  8000.00,  0.00,     -8000.00,  '2025-12-28T10:00:00Z', NULL),
+  ('c0000001-0000-4000-a000-000000000012', 'RENEWAL_ENTRY', 0.00,     10000.00,  10000.00,  '2025-12-28T10:00:00Z', NULL);
 
 -- --- Jan 2026: MedVita downsell 8000 → 6500 ---
 INSERT INTO contract_logs (contract_id, action_type, old_value, new_value, delta_value, created_at, created_by) VALUES
-  ('c0000001-0000-4000-a000-000000000006', 'DOWNSELL', 8000.00, 6500.00, -1500.00, '2026-01-15T09:00:00Z', '80edd4ef-047d-4429-b543-d4aff17e8aa5');
+  ('c0000001-0000-4000-a000-000000000006', 'DOWNSELL', 8000.00, 6500.00, -1500.00, '2026-01-15T09:00:00Z', NULL);
 UPDATE contracts SET current_value = 6500.00 WHERE id = 'c0000001-0000-4000-a000-000000000006';
 
 -- --- Jan 2026: QuickShip CHURN ---
 INSERT INTO contract_logs (contract_id, action_type, old_value, new_value, delta_value, created_at, created_by) VALUES
-  ('c0000001-0000-4000-a000-000000000013', 'CHURN', 5000.00, 0.00, -5000.00, '2026-01-18T16:00:00Z', 'fcbfe33d-fed0-422a-a06f-58ec3e38dc48');
+  ('c0000001-0000-4000-a000-000000000005', 'CHURN', 5000.00, 0.00, -5000.00, '2026-01-18T16:00:00Z', NULL);
 
 -- --- Jan 2026: FinPay H2 → 2026 renewal ---
 INSERT INTO contract_logs (contract_id, action_type, old_value, new_value, delta_value, created_at, created_by) VALUES
-  ('c0000001-0000-4000-a000-000000000004', 'RENEWAL_EXIT',  18000.00, 0.00,     -18000.00, '2026-01-28T09:00:00Z', '80edd4ef-047d-4429-b543-d4aff17e8aa5'),
-  ('c0000001-0000-4000-a000-000000000005', 'RENEWAL_ENTRY', 0.00,     18000.00,  18000.00,  '2026-01-28T09:00:00Z', '80edd4ef-047d-4429-b543-d4aff17e8aa5');
+  ('c0000001-0000-4000-a000-000000000004', 'RENEWAL_EXIT',  18000.00, 0.00,     -18000.00, '2026-01-28T09:00:00Z', NULL),
+  ('c0000001-0000-4000-a000-000000000016', 'RENEWAL_ENTRY', 0.00,     18000.00,  18000.00,  '2026-01-28T09:00:00Z', NULL);
 
 -- --- Feb 2026: BrightPath NOT_RENEWED ---
 INSERT INTO contract_logs (contract_id, action_type, old_value, new_value, delta_value, created_at, created_by) VALUES
-  ('c0000001-0000-4000-a000-000000000014', 'NOT_RENEWED', 4000.00, 0.00, -4000.00, '2026-02-03T10:00:00Z', '80edd4ef-047d-4429-b543-d4aff17e8aa5');
+  ('c0000001-0000-4000-a000-000000000007', 'NOT_RENEWED', 4000.00, 0.00, -4000.00, '2026-02-03T10:00:00Z', NULL);
 
 -- --- Feb 2026: TechNova upsell 10000 → 12000 ---
 INSERT INTO contract_logs (contract_id, action_type, old_value, new_value, delta_value, created_at, created_by) VALUES
-  ('c0000001-0000-4000-a000-000000000002', 'UPSELL', 10000.00, 12000.00, 2000.00, '2026-02-15T14:00:00Z', 'fcbfe33d-fed0-422a-a06f-58ec3e38dc48');
-UPDATE contracts SET current_value = 12000.00 WHERE id = 'c0000001-0000-4000-a000-000000000002';
+  ('c0000001-0000-4000-a000-000000000012', 'UPSELL', 10000.00, 12000.00, 2000.00, '2026-02-15T14:00:00Z', NULL);
+UPDATE contracts SET current_value = 12000.00 WHERE id = 'c0000001-0000-4000-a000-000000000012';
 
 -- --- Feb 2026: CloudBase upsell 20000 → 25000 ---
 INSERT INTO contract_logs (contract_id, action_type, old_value, new_value, delta_value, created_at, created_by) VALUES
-  ('c0000001-0000-4000-a000-000000000007', 'UPSELL', 20000.00, 25000.00, 5000.00, '2026-02-20T15:00:00Z', 'fcbfe33d-fed0-422a-a06f-58ec3e38dc48');
-UPDATE contracts SET current_value = 25000.00 WHERE id = 'c0000001-0000-4000-a000-000000000007';
+  ('c0000001-0000-4000-a000-000000000008', 'UPSELL', 20000.00, 25000.00, 5000.00, '2026-02-20T15:00:00Z', NULL);
+UPDATE contracts SET current_value = 25000.00 WHERE id = 'c0000001-0000-4000-a000-000000000008';
+
+-- --- Mar 2026: VoltEnergy CHURN ---
+INSERT INTO contract_logs (contract_id, action_type, old_value, new_value, delta_value, created_at, created_by) VALUES
+  ('c0000001-0000-4000-a000-000000000013', 'CHURN', 4500.00, 0.00, -4500.00, '2026-03-01T09:00:00Z', NULL);
 
 -- --- Mar 2026: DataStream upsell 2000 → 3000 ---
 INSERT INTO contract_logs (contract_id, action_type, old_value, new_value, delta_value, created_at, created_by) VALUES
-  ('c0000001-0000-4000-a000-000000000009', 'UPSELL', 2000.00, 3000.00, 1000.00, '2026-03-01T08:00:00Z', 'fcbfe33d-fed0-422a-a06f-58ec3e38dc48');
-UPDATE contracts SET current_value = 3000.00 WHERE id = 'c0000001-0000-4000-a000-000000000009';
+  ('c0000001-0000-4000-a000-000000000010', 'UPSELL', 2000.00, 3000.00, 1000.00, '2026-03-01T08:00:00Z', NULL);
+UPDATE contracts SET current_value = 3000.00 WHERE id = 'c0000001-0000-4000-a000-000000000010';
 
 -- --- Mar 2026: Elevate upsell 4000 → 5500 ---
 INSERT INTO contract_logs (contract_id, action_type, old_value, new_value, delta_value, created_at, created_by) VALUES
-  ('c0000001-0000-4000-a000-000000000010', 'UPSELL', 4000.00, 5500.00, 1500.00, '2026-03-05T13:00:00Z', '80edd4ef-047d-4429-b543-d4aff17e8aa5');
-UPDATE contracts SET current_value = 5500.00 WHERE id = 'c0000001-0000-4000-a000-000000000010';
+  ('c0000001-0000-4000-a000-000000000014', 'UPSELL', 4000.00, 5500.00, 1500.00, '2026-03-05T13:00:00Z', NULL);
+UPDATE contracts SET current_value = 5500.00 WHERE id = 'c0000001-0000-4000-a000-000000000014';
 
 -- --- Mar 2026: RetailMax downsell 6000 → 4500 ---
 INSERT INTO contract_logs (contract_id, action_type, old_value, new_value, delta_value, created_at, created_by) VALUES
-  ('c0000001-0000-4000-a000-000000000008', 'DOWNSELL', 6000.00, 4500.00, -1500.00, '2026-03-10T10:00:00Z', '80edd4ef-047d-4429-b543-d4aff17e8aa5');
-UPDATE contracts SET current_value = 4500.00 WHERE id = 'c0000001-0000-4000-a000-000000000008';
+  ('c0000001-0000-4000-a000-000000000009', 'DOWNSELL', 6000.00, 4500.00, -1500.00, '2026-03-10T10:00:00Z', NULL);
+UPDATE contracts SET current_value = 4500.00 WHERE id = 'c0000001-0000-4000-a000-000000000009';
 
 -- --- Mar 2026: NordPay upsell 5000 → 7000 ---
 INSERT INTO contract_logs (contract_id, action_type, old_value, new_value, delta_value, created_at, created_by) VALUES
-  ('c0000001-0000-4000-a000-000000000011', 'UPSELL', 5000.00, 7000.00, 2000.00, '2026-03-15T14:00:00Z', '80edd4ef-047d-4429-b543-d4aff17e8aa5');
-UPDATE contracts SET current_value = 7000.00 WHERE id = 'c0000001-0000-4000-a000-000000000011';
+  ('c0000001-0000-4000-a000-000000000015', 'UPSELL', 5000.00, 7000.00, 2000.00, '2026-03-15T14:00:00Z', NULL);
+UPDATE contracts SET current_value = 7000.00 WHERE id = 'c0000001-0000-4000-a000-000000000015';
 
 -- --- Mar 2026: UrbanLoft CUT ---
 INSERT INTO contract_logs (contract_id, action_type, old_value, new_value, delta_value, created_at, created_by) VALUES
-  ('c0000001-0000-4000-a000-000000000015', 'CUT', 3500.00, 0.00, -3500.00, '2026-03-20T11:00:00Z', 'fcbfe33d-fed0-422a-a06f-58ec3e38dc48');
+  ('c0000001-0000-4000-a000-000000000011', 'CUT', 3500.00, 0.00, -3500.00, '2026-03-20T11:00:00Z', NULL);
 
 -- --- Mar 2026: GreenLeaf upsell 2500 → 3500 ---
 INSERT INTO contract_logs (contract_id, action_type, old_value, new_value, delta_value, created_at, created_by) VALUES
-  ('c0000001-0000-4000-a000-000000000012', 'UPSELL', 2500.00, 3500.00, 1000.00, '2026-03-25T10:00:00Z', 'fcbfe33d-fed0-422a-a06f-58ec3e38dc48');
-UPDATE contracts SET current_value = 3500.00 WHERE id = 'c0000001-0000-4000-a000-000000000012';
+  ('c0000001-0000-4000-a000-000000000017', 'UPSELL', 2500.00, 3500.00, 1000.00, '2026-03-25T10:00:00Z', NULL);
+UPDATE contracts SET current_value = 3500.00 WHERE id = 'c0000001-0000-4000-a000-000000000017';
 
 -- --- Mar 2026: TechNova Q1 → Q2 renewal ---
 INSERT INTO contract_logs (contract_id, action_type, old_value, new_value, delta_value, created_at, created_by) VALUES
-  ('c0000001-0000-4000-a000-000000000002', 'RENEWAL_EXIT',  12000.00, 0.00,     -12000.00, '2026-03-28T09:00:00Z', '80edd4ef-047d-4429-b543-d4aff17e8aa5'),
-  ('c0000001-0000-4000-a000-000000000003', 'RENEWAL_ENTRY', 0.00,     12000.00,  12000.00,  '2026-03-28T09:00:00Z', '80edd4ef-047d-4429-b543-d4aff17e8aa5');
+  ('c0000001-0000-4000-a000-000000000012', 'RENEWAL_EXIT',  12000.00, 0.00,     -12000.00, '2026-03-28T09:00:00Z', NULL),
+  ('c0000001-0000-4000-a000-000000000020', 'RENEWAL_ENTRY', 0.00,     12000.00,  12000.00,  '2026-03-28T09:00:00Z', NULL);
+
+-- --- Apr 2026: Plataforma Escola upsell 6500 → 8000 ---
+INSERT INTO contract_logs (contract_id, action_type, old_value, new_value, delta_value, created_at, created_by) VALUES
+  ('c0000001-0000-4000-a000-000000000018', 'UPSELL', 6500.00, 8000.00, 1500.00, '2026-04-05T10:00:00Z', NULL);
+UPDATE contracts SET current_value = 8000.00 WHERE id = 'c0000001-0000-4000-a000-000000000018';
+
+-- --- Apr 2026: CargaRápida upsell 3500 → 4500 ---
+INSERT INTO contract_logs (contract_id, action_type, old_value, new_value, delta_value, created_at, created_by) VALUES
+  ('c0000001-0000-4000-a000-000000000019', 'UPSELL', 3500.00, 4500.00, 1000.00, '2026-04-10T09:00:00Z', NULL);
+UPDATE contracts SET current_value = 4500.00 WHERE id = 'c0000001-0000-4000-a000-000000000019';
 
 -- -----------------------------------------------------------------------------
--- 9. CONTRACT ASSIGNMENTS (team allocated to contracts)
+-- 11. CONTRACT ASSIGNMENTS (team allocated to contracts)
 -- -----------------------------------------------------------------------------
 
 -- Collaborator IDs:
--- Pedro Melo:      8c2ca39f-0246-484f-bf98-f9c59828e1e1
--- Ana Costa:       cc000001-0000-4000-a000-000000000001
--- Lucas Ferreira:  cc000001-0000-4000-a000-000000000002
--- Mariana Silva:   cc000001-0000-4000-a000-000000000003
+-- Pereira:     cc000001-0000-4000-a000-000000000001 (Manager)
+-- Adan:        cc000001-0000-4000-a000-000000000002 (Manager)
+-- Cabral:      cc000001-0000-4000-a000-000000000003 (Analyst)
+-- JJ:          cc000001-0000-4000-a000-000000000004 (Analyst)
+-- Little Legs: cc000001-0000-4000-a000-000000000005 (Analyst)
+-- Salame:      cc000001-0000-4000-a000-000000000006 (Analyst)
+-- Foguinho:    cc000001-0000-4000-a000-000000000007 (Analyst)
+-- Torresmo:    cc000001-0000-4000-a000-000000000008 (Analyst)
+-- Batata:      cc000001-0000-4000-a000-000000000009 (Analyst)
+-- Pipoca:      cc000001-0000-4000-a000-000000000010 (Analyst, invited)
 
 INSERT INTO contract_assignments (contract_id, collaborator_id, role_on_contract, start_date, end_date, allocation_percentage) VALUES
-  -- TechNova Q4 2025 (ended)
-  ('c0000001-0000-4000-a000-000000000001', 'cc000001-0000-4000-a000-000000000001', 'Account Manager',    '2025-10-05', '2025-12-31', 60.00),
-  ('c0000001-0000-4000-a000-000000000001', 'cc000001-0000-4000-a000-000000000003', 'CS Analyst',         '2025-10-05', '2025-12-31', 30.00),
+  -- TechNova Q4 2025 (ended) - Pereira + Cabral
+  ('c0000001-0000-4000-a000-000000000003', 'cc000001-0000-4000-a000-000000000001', 'Account Manager',    '2025-10-05', '2025-12-31', 50.00),
+  ('c0000001-0000-4000-a000-000000000003', 'cc000001-0000-4000-a000-000000000003', 'CS Analyst',         '2025-10-05', '2025-12-31', 30.00),
 
-  -- TechNova Q1 2026 (ended)
-  ('c0000001-0000-4000-a000-000000000002', 'cc000001-0000-4000-a000-000000000001', 'Account Manager',    '2026-01-01', '2026-03-31', 60.00),
-  ('c0000001-0000-4000-a000-000000000002', 'cc000001-0000-4000-a000-000000000003', 'CS Analyst',         '2026-01-01', '2026-03-31', 30.00),
+  -- TechNova Q1 2026 (ended) - Pereira + Cabral
+  ('c0000001-0000-4000-a000-000000000012', 'cc000001-0000-4000-a000-000000000001', 'Account Manager',    '2026-01-01', '2026-03-31', 50.00),
+  ('c0000001-0000-4000-a000-000000000012', 'cc000001-0000-4000-a000-000000000003', 'CS Analyst',         '2026-01-01', '2026-03-31', 30.00),
 
-  -- TechNova Q2 2026 (active)
-  ('c0000001-0000-4000-a000-000000000003', 'cc000001-0000-4000-a000-000000000001', 'Account Manager',    '2026-04-01', NULL, 50.00),
-  ('c0000001-0000-4000-a000-000000000003', 'cc000001-0000-4000-a000-000000000003', 'CS Analyst',         '2026-04-01', NULL, 30.00),
-  ('c0000001-0000-4000-a000-000000000003', 'cc000001-0000-4000-a000-000000000002', 'Technical Lead',     '2026-04-01', NULL, 20.00),
+  -- TechNova Q2 2026 (active) - Pereira + Cabral + Adan
+  ('c0000001-0000-4000-a000-000000000020', 'cc000001-0000-4000-a000-000000000001', 'Account Manager',    '2026-04-01', NULL, 40.00),
+  ('c0000001-0000-4000-a000-000000000020', 'cc000001-0000-4000-a000-000000000003', 'CS Analyst',         '2026-04-01', NULL, 30.00),
+  ('c0000001-0000-4000-a000-000000000020', 'cc000001-0000-4000-a000-000000000002', 'Technical Lead',     '2026-04-01', NULL, 20.00),
 
-  -- FinPay 2026 (active)
-  ('c0000001-0000-4000-a000-000000000005', 'cc000001-0000-4000-a000-000000000002', 'Account Manager',    '2026-02-01', NULL, 50.00),
-  ('c0000001-0000-4000-a000-000000000005', '8c2ca39f-0246-484f-bf98-f9c59828e1e1', 'Executive Sponsor',  '2026-02-01', NULL, 10.00),
+  -- FinPay 2026 (active) - Adan + JJ
+  ('c0000001-0000-4000-a000-000000000016', 'cc000001-0000-4000-a000-000000000002', 'Account Manager',    '2026-02-01', NULL, 50.00),
+  ('c0000001-0000-4000-a000-000000000016', 'cc000001-0000-4000-a000-000000000004', 'CS Analyst',         '2026-02-01', NULL, 30.00),
 
-  -- MedVita (active)
+  -- MedVita (active) - Pereira + Little Legs
   ('c0000001-0000-4000-a000-000000000006', 'cc000001-0000-4000-a000-000000000001', 'Account Manager',    '2025-11-01', NULL, 40.00),
-  ('c0000001-0000-4000-a000-000000000006', 'cc000001-0000-4000-a000-000000000003', 'CS Analyst',         '2025-11-15', NULL, 25.00),
+  ('c0000001-0000-4000-a000-000000000006', 'cc000001-0000-4000-a000-000000000005', 'CS Analyst',         '2025-11-15', NULL, 25.00),
 
-  -- CloudBase (active, high touch)
-  ('c0000001-0000-4000-a000-000000000007', 'cc000001-0000-4000-a000-000000000002', 'Account Manager',    '2025-11-15', NULL, 60.00),
-  ('c0000001-0000-4000-a000-000000000007', 'cc000001-0000-4000-a000-000000000001', 'CS Lead',            '2025-11-15', NULL, 30.00),
-  ('c0000001-0000-4000-a000-000000000007', '8c2ca39f-0246-484f-bf98-f9c59828e1e1', 'Executive Sponsor',  '2025-11-15', NULL, 10.00),
+  -- CloudBase (active, high touch) - Adan + Pereira + Salame
+  ('c0000001-0000-4000-a000-000000000008', 'cc000001-0000-4000-a000-000000000002', 'Account Manager',    '2025-11-15', NULL, 50.00),
+  ('c0000001-0000-4000-a000-000000000008', 'cc000001-0000-4000-a000-000000000001', 'CS Lead',            '2025-11-15', NULL, 20.00),
+  ('c0000001-0000-4000-a000-000000000008', 'cc000001-0000-4000-a000-000000000006', 'CS Analyst',         '2025-11-15', NULL, 30.00),
 
-  -- RetailMax (active)
-  ('c0000001-0000-4000-a000-000000000008', 'cc000001-0000-4000-a000-000000000003', 'Account Manager',    '2025-12-01', NULL, 50.00),
+  -- RetailMax (active) - Foguinho
+  ('c0000001-0000-4000-a000-000000000009', 'cc000001-0000-4000-a000-000000000007', 'Account Manager',    '2025-12-01', NULL, 50.00),
 
-  -- DataStream (active)
-  ('c0000001-0000-4000-a000-000000000009', 'cc000001-0000-4000-a000-000000000003', 'Account Manager',    '2025-12-10', NULL, 40.00),
+  -- DataStream (active) - Torresmo
+  ('c0000001-0000-4000-a000-000000000010', 'cc000001-0000-4000-a000-000000000008', 'Account Manager',    '2025-12-10', NULL, 40.00),
 
-  -- Elevate (active)
-  ('c0000001-0000-4000-a000-000000000010', 'cc000001-0000-4000-a000-000000000001', 'Account Manager',    '2026-01-08', NULL, 40.00),
+  -- Elevate (active) - Pereira + Batata
+  ('c0000001-0000-4000-a000-000000000014', 'cc000001-0000-4000-a000-000000000001', 'Account Manager',    '2026-01-08', NULL, 35.00),
+  ('c0000001-0000-4000-a000-000000000014', 'cc000001-0000-4000-a000-000000000009', 'CS Analyst',         '2026-01-15', NULL, 25.00),
 
-  -- NordPay (active)
-  ('c0000001-0000-4000-a000-000000000011', 'cc000001-0000-4000-a000-000000000002', 'Account Manager',    '2026-01-20', NULL, 40.00),
-  ('c0000001-0000-4000-a000-000000000011', 'cc000001-0000-4000-a000-000000000003', 'CS Analyst',         '2026-02-01', NULL, 20.00),
+  -- NordPay (active) - Adan + Little Legs
+  ('c0000001-0000-4000-a000-000000000015', 'cc000001-0000-4000-a000-000000000002', 'Account Manager',    '2026-01-20', NULL, 40.00),
+  ('c0000001-0000-4000-a000-000000000015', 'cc000001-0000-4000-a000-000000000005', 'CS Analyst',         '2026-02-01', NULL, 20.00),
 
-  -- GreenLeaf (active)
-  ('c0000001-0000-4000-a000-000000000012', 'cc000001-0000-4000-a000-000000000001', 'Account Manager',    '2026-02-05', NULL, 30.00),
+  -- GreenLeaf (active) - Pereira + Foguinho
+  ('c0000001-0000-4000-a000-000000000017', 'cc000001-0000-4000-a000-000000000001', 'Account Manager',    '2026-02-05', NULL, 30.00),
+  ('c0000001-0000-4000-a000-000000000017', 'cc000001-0000-4000-a000-000000000007', 'CS Analyst',         '2026-02-10', NULL, 20.00),
 
-  -- QuickShip (ended assignments)
-  ('c0000001-0000-4000-a000-000000000013', 'cc000001-0000-4000-a000-000000000002', 'Account Manager',    '2025-10-20', '2026-01-18', 50.00),
-  ('c0000001-0000-4000-a000-000000000013', 'cc000001-0000-4000-a000-000000000003', 'CS Analyst',         '2025-10-20', '2026-01-18', 25.00),
+  -- Plataforma Escola (active) - Adan + JJ + Cabral
+  ('c0000001-0000-4000-a000-000000000018', 'cc000001-0000-4000-a000-000000000002', 'Account Manager',    '2026-02-20', NULL, 40.00),
+  ('c0000001-0000-4000-a000-000000000018', 'cc000001-0000-4000-a000-000000000004', 'CS Analyst',         '2026-02-20', NULL, 25.00),
+  ('c0000001-0000-4000-a000-000000000018', 'cc000001-0000-4000-a000-000000000003', 'Technical Lead',     '2026-03-01', NULL, 15.00),
 
-  -- BrightPath (ended)
-  ('c0000001-0000-4000-a000-000000000014', 'cc000001-0000-4000-a000-000000000001', 'Account Manager',    '2025-11-05', '2026-02-03', 40.00),
+  -- CargaRápida (active) - Pereira + Torresmo
+  ('c0000001-0000-4000-a000-000000000019', 'cc000001-0000-4000-a000-000000000001', 'Account Manager',    '2026-03-01', NULL, 35.00),
+  ('c0000001-0000-4000-a000-000000000019', 'cc000001-0000-4000-a000-000000000008', 'CS Analyst',         '2026-03-05', NULL, 25.00),
 
-  -- UrbanLoft (ended, cut early)
-  ('c0000001-0000-4000-a000-000000000015', 'cc000001-0000-4000-a000-000000000003', 'Account Manager',    '2025-12-15', '2026-03-20', 40.00);
+  -- VoltEnergy (ended) - Adan + Salame
+  ('c0000001-0000-4000-a000-000000000013', 'cc000001-0000-4000-a000-000000000002', 'Account Manager',    '2026-01-10', '2026-03-01', 40.00),
+  ('c0000001-0000-4000-a000-000000000013', 'cc000001-0000-4000-a000-000000000006', 'CS Analyst',         '2026-01-15', '2026-03-01', 25.00),
+
+  -- QuickShip (ended) - Adan + JJ
+  ('c0000001-0000-4000-a000-000000000005', 'cc000001-0000-4000-a000-000000000002', 'Account Manager',    '2025-10-20', '2026-01-18', 50.00),
+  ('c0000001-0000-4000-a000-000000000005', 'cc000001-0000-4000-a000-000000000004', 'CS Analyst',         '2025-10-20', '2026-01-18', 25.00),
+
+  -- BrightPath (ended) - Pereira + Little Legs
+  ('c0000001-0000-4000-a000-000000000007', 'cc000001-0000-4000-a000-000000000001', 'Account Manager',    '2025-11-05', '2026-02-03', 40.00),
+  ('c0000001-0000-4000-a000-000000000007', 'cc000001-0000-4000-a000-000000000005', 'CS Analyst',         '2025-11-10', '2026-02-03', 20.00),
+
+  -- UrbanLoft (ended, cut early) - Foguinho + Batata
+  ('c0000001-0000-4000-a000-000000000011', 'cc000001-0000-4000-a000-000000000007', 'Account Manager',    '2025-12-15', '2026-03-20', 40.00),
+  ('c0000001-0000-4000-a000-000000000011', 'cc000001-0000-4000-a000-000000000009', 'CS Analyst',         '2025-12-20', '2026-03-20', 20.00);
 
 COMMIT;
 
 -- =============================================================================
 -- DONE. Audit logs are auto-generated by triggers.
 -- Summary:
---   2 new roles, 16 role permissions
---   4 new collaborators (3 active, 1 invited with token)
---   8 tags, 22 client-tag links
---   12 new clients (9 active, 3 inactive)
---   17 new contracts (3 renewal chains, 9 ACTIVE, 8 ENDED)
---   24 contract logs + 8 value UPDATEs to keep current_value in sync
---   24 contract assignments
+--   2 roles (Manager, Analyst) + 18 role permissions
+--   10 collaborators (2 managers, 7 active analysts, 1 invited analyst)
+--   10 tags, 29 client-tag links
+--   8 services
+--   15 clients (11 active, 4 inactive)
+--   20 contracts (4 renewal chains, 12 ACTIVE, 8 ENDED)
+--   30 contract logs + 10 value UPDATEs
+--   30 contract services
+--   32 contract assignments
 -- =============================================================================
