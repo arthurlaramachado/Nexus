@@ -1,15 +1,16 @@
 import { ReactNode } from 'react'
 import Sidebar from '@/components/layout/Sidebar'
 import MobileLayout from '@/components/layout/MobileLayout'
-import { getFilteredNavigation } from '@/lib/navigation'
-import { getUserCollaborator } from '@/lib/auth/helpers'
+import { NavItem } from '@/lib/navigation'
+import { Collaborator } from '@/types/database'
 
-export default async function MainLayout({ children }: { children: ReactNode }) {
-  const [collaborator, navItems] = await Promise.all([
-    getUserCollaborator(),
-    getFilteredNavigation(),
-  ])
+interface MainLayoutProps {
+  children: ReactNode
+  collaborator: Collaborator | null
+  navItems: NavItem[]
+}
 
+export default function MainLayout({ children, collaborator, navItems }: MainLayoutProps) {
   const userName = collaborator?.full_name || null
   const userEmail = collaborator?.email || null
   const serializableNavItems = navItems.map(({ name, href }) => ({ name, href }))

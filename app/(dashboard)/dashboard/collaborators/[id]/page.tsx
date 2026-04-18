@@ -6,8 +6,10 @@ import Link from 'next/link'
 import Card from '@/components/ui/Card'
 import { Table, TableHead, TableBody, TableRow, TableHeader, TableCell } from '@/components/ui/Table'
 import AuditHistoryList from '@/components/audit/AuditHistoryList'
+import { requirePermission } from '@/lib/auth/helpers'
 
 export default async function CollaboratorDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  await requirePermission('collaborators', 'read')
   const { id } = await params
   const supabase = await createClient()
 

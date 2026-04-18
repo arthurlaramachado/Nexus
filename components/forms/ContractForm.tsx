@@ -11,18 +11,21 @@ import Button from '@/components/ui/Button'
 import { createClient } from '@/lib/supabase/client'
 import { Contract, Client } from '@/types/database'
 import { updateContractValue } from '@/lib/contracts/actions'
+import ServiceMultiSelect from '@/components/features/services/ServiceMultiSelect'
 
 interface ContractFormProps {
   contract?: Contract
   clients: Array<{ id: string; name: string }>
   defaultClientId?: string
+  defaultServiceIds?: string[]
 }
 
-export default function ContractForm({ contract, clients, defaultClientId }: ContractFormProps) {
+export default function ContractForm({ contract, clients, defaultClientId, defaultServiceIds = [] }: ContractFormProps) {
   const router = useRouter()
   const supabase = createClient()
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>(defaultServiceIds)
 
   const formatDateForInput = (dateString: string | null) => {
     if (!dateString) return ''
@@ -61,6 +64,30 @@ export default function ContractForm({ contract, clients, defaultClientId }: Con
         },
   })
 
+  const syncContractServices = async (contractId: string) => {
+    // Remove all existing links
+    const { error: deleteError } = await supabase
+      .from('contract_services')
+      .delete()
+      .eq('contract_id', contractId)
+
+    if (deleteError) throw deleteError
+
+    // Insert new links
+    if (selectedServiceIds.length > 0) {
+      const rows = selectedServiceIds.map(serviceId => ({
+        contract_id: contractId,
+        service_id: serviceId,
+      }))
+
+      const { error: insertError } = await supabase
+        .from('contract_services')
+        .insert(rows)
+
+      if (insertError) throw insertError
+    }
+  }
+
   const onSubmit = async (data: ContractFormData) => {
     setError(null)
     setLoading(true)
@@ -72,7 +99,7 @@ export default function ContractForm({ contract, clients, defaultClientId }: Con
       // If editing an ACTIVE contract and value changed, use updateContractValue (handles Upsell/Downsell)
       if (contract && contract.status === 'ACTIVE' && data.status === 'ACTIVE') {
         const valueChanged = oldValue !== currentValue
-        
+
         if (valueChanged) {
           // Use server action for value updates (handles logging)
           await updateContractValue(contract.id, {
@@ -99,6 +126,8 @@ export default function ContractForm({ contract, clients, defaultClientId }: Con
 
           if (updateError) throw updateError
         }
+
+        await syncContractServices(contract.id)
       } else {
         // Create new contract or update ENDED contract
         const contractData = {
@@ -120,12 +149,18 @@ export default function ContractForm({ contract, clients, defaultClientId }: Con
             .eq('id', contract.id)
 
           if (updateError) throw updateError
+
+          await syncContractServices(contract.id)
         } else {
-          const { error: insertError } = await supabase
+          const { data: newContract, error: insertError } = await supabase
             .from('contracts')
             .insert(contractData)
+            .select('id')
+            .single()
 
-          if (insertError) throw insertError
+          if (insertError || !newContract) throw insertError || new Error('Failed to create contract')
+
+          await syncContractServices(newContract.id)
         }
       }
 
@@ -216,6 +251,11 @@ export default function ContractForm({ contract, clients, defaultClientId }: Con
         step="0.01"
         {...register('current_value')}
         error={errors.current_value?.message}
+      />
+
+      <ServiceMultiSelect
+        value={selectedServiceIds}
+        onChange={setSelectedServiceIds}
       />
 
       <div className="flex gap-4">

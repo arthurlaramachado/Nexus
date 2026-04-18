@@ -1,8 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import ClientDetail from '@/components/features/clients/ClientDetail'
+import { requirePermission } from '@/lib/auth/helpers'
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  await requirePermission('clients', 'read')
   const { id } = await params
   const supabase = await createClient()
   

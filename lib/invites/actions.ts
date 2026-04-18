@@ -63,7 +63,7 @@ export async function createInvite(email: string, roleId: string) {
   }
 
   revalidatePath('/dashboard/collaborators')
-  return { success: true, token }
+  return { success: true }
 }
 
 // 2. Validate Token Action (for Join Page)
@@ -101,37 +101,36 @@ export async function completeSignup(token: string, fullName: string, password: 
   // We check if user exists first to handle cases where auth user exists but collaborator is invited (re-invite)
   let userId: string
 
-  const { data: listData } = await adminClient.auth.admin.listUsers()
-  const existingUser = listData.users.find(u => u.email === email)
+  // Try to create user first; if already exists, update instead
+  const { data: newUser, error: createError } = await adminClient.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+    user_metadata: { full_name: fullName }
+  })
 
-  if (existingUser) {
+  if (createError && createError.message?.includes('already been registered')) {
+    // User exists — find by email and update
+    const { data: existingUsers } = await adminClient.auth.admin.listUsers({
+      page: 1,
+      perPage: 1,
+      filter: email
+    } as any)
+    const existingUser = existingUsers?.users?.[0]
+    if (!existingUser) throw new Error('Failed to find existing user')
     userId = existingUser.id
-    // Update password
     await adminClient.auth.admin.updateUserById(userId, {
-      password: password,
-      user_metadata: { full_name: fullName }
-    })
-  } else {
-    const { data: newUser, error: createError } = await adminClient.auth.admin.createUser({
-      email,
       password,
-      email_confirm: true,
       user_metadata: { full_name: fullName }
     })
-    
-    if (createError) throw createError
+  } else if (createError) {
+    throw createError
+  } else {
     if (!newUser.user) throw new Error('Failed to create user')
     userId = newUser.user.id
   }
 
-  // 3. Update Collaborator Record
-  // Link user_id, set status to active, clear invite token
-  const supabase = await createClient() // Use normal client for this update (RLS allows update if we have permission? No, we are unauthenticated here)
-  // PROBLEM: The user is not logged in yet. We need to perform this update with system permissions OR 
-  // login the user first and then update?
-  // Since we are in a Server Action, we can use the Admin Client for the DB update as well if RLS blocks us.
-  
-  // Use Admin Client for DB update to bypass RLS since the user isn't logged in yet
+  // Update collaborator record via admin client (user isn't logged in yet)
   const { error: updateError } = await adminClient
     .from('collaborators')
     .update({

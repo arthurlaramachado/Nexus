@@ -38,6 +38,13 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
     previousContract = prev
   }
 
+  // Fetch services linked to this contract
+  const { data: contractServices } = await supabase
+    .from('contract_services')
+    .select('*, services(*)')
+    .eq('contract_id', id)
+    .order('created_at', { ascending: true })
+
   const { data: assignments } = await supabase
     .from('contract_assignments')
     .select('*, collaborators(*, roles!collaborators_role_id_fkey(*))')
@@ -248,6 +255,31 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
             )}
           </Card>
         </div>
+      </div>
+
+      {/* Services Section */}
+      <div className="mb-6">
+        <Card title="Services">
+          {contractServices && contractServices.length > 0 ? (
+            <div className="flex flex-wrap gap-3">
+              {contractServices.map((cs: any) => (
+                <div
+                  key={cs.id}
+                  className="px-4 py-3 rounded-lg bg-[#F7F7F8] border border-[#E4E4E8]"
+                >
+                  <p className="text-sm font-medium text-[#1A1A2E]">{cs.services?.name}</p>
+                  {cs.services?.description && (
+                    <p className="text-xs text-[#6B6B78] mt-1">{cs.services.description}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="py-8 text-center">
+              <p className="text-[#9898A3] italic">No services assigned to this contract.</p>
+            </div>
+          )}
+        </Card>
       </div>
 
       {/* Contract Logs Section */}

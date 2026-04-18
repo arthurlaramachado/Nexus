@@ -1,8 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import ContractAssignmentForm from '@/components/forms/ContractAssignmentForm'
+import { requirePermission } from '@/lib/auth/helpers'
 
 export default async function EditContractAssignmentPage({ params }: { params: Promise<{ id: string }> }) {
+  await requirePermission('contract_assignments', 'write')
   const { id } = await params
   const supabase = await createClient()
   const { data: assignment, error } = await supabase

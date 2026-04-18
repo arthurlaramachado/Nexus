@@ -1,11 +1,13 @@
 import ContractAssignmentForm from '@/components/forms/ContractAssignmentForm'
 import { createClient } from '@/lib/supabase/server'
+import { requirePermission } from '@/lib/auth/helpers'
 
 export default async function NewContractAssignmentPage({
   searchParams,
 }: {
   searchParams: Promise<{ contract_id?: string; collaborator_id?: string }>
 }) {
+  await requirePermission('contract_assignments', 'write')
   const { contract_id, collaborator_id } = await searchParams
   const supabase = await createClient()
   const [contractsResult, collaboratorsResult, clientsResult] = await Promise.all([

@@ -142,11 +142,8 @@ export default function CollaboratorsList({ initialCollaborators, canWrite }: Co
                         </div>
                       </TableCell>
                       <TableCell>
-                        {!isExpired ? (
+                        {!isExpired && canWrite ? (
                           <div className="flex items-center gap-2">
-                            <code className="px-2 py-1 bg-[#F7F7F8] rounded-lg text-xs border border-[#E4E4E8] font-mono">
-                              {getInviteUrl(collaborator.invite_token)}
-                            </code>
                             <Button
                               variant="ghost"
                               size="sm"
@@ -155,10 +152,13 @@ export default function CollaboratorsList({ initialCollaborators, canWrite }: Co
                               title="Copy invite link"
                             >
                               <ClipboardIcon className="w-3.5 h-3.5" />
+                              <span className="ml-1 text-xs">Copy link</span>
                             </Button>
                           </div>
-                        ) : (
+                        ) : isExpired ? (
                           <span className="text-[#9898A3] text-sm italic">Link expired</span>
+                        ) : (
+                          <span className="text-[#9898A3] text-sm">Pending</span>
                         )}
                       </TableCell>
                     </TableRow>

@@ -25,9 +25,10 @@ const AppContext = createContext<AppContextType | undefined>(undefined)
 /**
  * AppProvider manages client-side auth state.
  *
- * It does NOT fetch on mount — all auth/permission data is resolved server-side
- * (via requireAuth/checkPermission in server components). This provider only
- * re-fetches when auth state changes (login/logout) to keep client state in sync.
+ * All auth/permission data is resolved server-side (via requireAuth/checkPermission
+ * in server components). This provider only re-fetches when auth state actually
+ * changes (sign-in/sign-out), NOT on initial session — avoiding duplicate
+ * Supabase calls that the server already made.
  */
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any>(null)
@@ -65,15 +66,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (permRes.data) {
         setPermissions(permRes.data)
       }
-    } catch (err) {
-      console.error('Error fetching app state:', err)
+    } catch {
+      // Auth state sync failed — user will be redirected on next server render
     } finally {
       setLoading(false)
     }
   }, [supabase])
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'INITIAL_SESSION') return
       if (session) {
         fetchData()
       } else {

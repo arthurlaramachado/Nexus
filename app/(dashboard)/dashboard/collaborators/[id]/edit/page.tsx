@@ -1,8 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import CollaboratorForm from '@/components/forms/CollaboratorForm'
+import { requirePermission } from '@/lib/auth/helpers'
 
 export default async function EditCollaboratorPage({ params }: { params: Promise<{ id: string }> }) {
+  await requirePermission('collaborators', 'write')
   const { id } = await params
   const supabase = await createClient()
   const { data: collaborator, error } = await supabase

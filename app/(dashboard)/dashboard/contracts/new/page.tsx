@@ -1,13 +1,16 @@
 import ContractForm from '@/components/forms/ContractForm'
 import { createClient } from '@/lib/supabase/server'
+import { requirePermission } from '@/lib/auth/helpers'
 
 export default async function NewContractPage({
   searchParams,
 }: {
   searchParams: Promise<{ client_id?: string }>
 }) {
+  await requirePermission('contracts', 'write')
   const { client_id } = await searchParams
   const supabase = await createClient()
+
   const { data: clients } = await supabase.from('clients').select('id, name').order('name')
 
   return (

@@ -95,6 +95,25 @@ export interface ContractLog {
   contracts?: Contract
 }
 
+export interface Service {
+  id: string
+  name: string
+  description: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface ContractService {
+  id: string
+  contract_id: string
+  service_id: string
+  created_at: string
+
+  // Relations
+  contracts?: Contract
+  services?: Service
+}
+
 export interface AuditLog {
   id: string
   user_id: string | null

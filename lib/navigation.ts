@@ -4,6 +4,7 @@ import {
   DocumentTextIcon,
   BriefcaseIcon,
   ShieldCheckIcon,
+  WrenchScrewdriverIcon,
 } from '@heroicons/react/24/outline'
 
 import { checkPermission } from '@/lib/auth/helpers'
@@ -19,6 +20,7 @@ const navigation: NavItem[] = [
   { name: 'Overview', href: '/dashboard', icon: HomeIcon },
   { name: 'Clients', href: '/dashboard/clients', icon: BriefcaseIcon, permission: { table: 'clients', type: 'read' } },
   { name: 'Contracts', href: '/dashboard/contracts', icon: DocumentTextIcon, permission: { table: 'contracts', type: 'read' } },
+  { name: 'Services', href: '/dashboard/services', icon: WrenchScrewdriverIcon, permission: { table: 'services', type: 'read' } },
   { name: 'Collaborators', href: '/dashboard/collaborators', icon: UsersIcon, permission: { table: 'collaborators', type: 'read' } },
   {
     name: 'Roles',

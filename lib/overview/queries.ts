@@ -112,9 +112,9 @@ export async function getOverviewData(): Promise<OverviewData> {
     supabase.from('clients').select('id', { count: 'exact', head: true }).eq('status', 'active'),
     supabase.from('clients').select('id', { count: 'exact', head: true }).eq('status', 'inactive'),
     supabase.from('contracts').select('status, current_value, client_id, termination_reason, clients(name)'),
-    supabase.from('contract_logs').select('action_type'),
-    supabase.from('contract_logs').select('action_type, delta_value, created_at').gte('created_at', twelveMonthsAgoStr),
-    supabase.from('contract_assignments').select('collaborator_id, allocation_percentage, collaborators(full_name)'),
+    supabase.from('contract_logs').select('action_type').limit(1000),
+    supabase.from('contract_logs').select('action_type, delta_value, created_at').gte('created_at', twelveMonthsAgoStr).limit(1000),
+    supabase.from('contract_assignments').select('collaborator_id, allocation_percentage, collaborators(full_name)').limit(500),
     supabase
       .from('contracts')
       .select('id, name, end_date, clients(name)')
@@ -123,7 +123,7 @@ export async function getOverviewData(): Promise<OverviewData> {
       .gte('end_date', nowStr)
       .order('end_date')
       .limit(10),
-    supabase.from('client_tags').select('tags(name)'),
+    supabase.from('client_tags').select('tags(name)').limit(500),
     supabase.from('contracts').select('status, current_value, start_date, end_date'),
     supabase
       .from('contracts')
@@ -278,11 +278,14 @@ export async function getOverviewData(): Promise<OverviewData> {
     const monthEnd = new Date(year, month, 0) // last day of month
     const monthEndStr = monthEnd.toISOString()
 
+    const monthStart = monthKey + '-01'
     const activeInMonth = allContracts.filter((c: any) => {
       const start = c.start_date
       const end = c.end_date
-      return start <= monthEndStr && (end === null || end >= monthKey + '-01')
-        && c.status === 'ACTIVE' || (c.status === 'ENDED' && end !== null && end >= monthKey + '-01')
+      return start <= monthEndStr && (
+        (c.status === 'ACTIVE' && (end === null || end >= monthStart)) ||
+        (c.status === 'ENDED' && end !== null && end >= monthStart)
+      )
     })
 
     const monthMrr = activeInMonth.reduce((sum: number, c: any) => sum + (c.current_value ?? 0), 0)
